@@ -56,6 +56,19 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: default
+      fonts:
+        - asset: assets/fonts/PRETENDARD-REGULAR.OTF
+          weight: 400
+        - asset: assets/fonts/PRETENDARD-MEDIUM.OTF
+          weight: 500
+        - asset: assets/fonts/PRETENDARD-BOLD.OTF
+          weight: 700
+        - asset: assets/fonts/PRETENDARD-EXTRABOLD.OTF
+          weight: 800
+        - asset: assets/fonts/PRETENDARD-BLACK.OTF
+          weight: 900
 
   # To add assets to your application, add an assets section, like this:
   # assets:
