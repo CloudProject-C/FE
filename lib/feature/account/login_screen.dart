@@ -1,8 +1,10 @@
+import 'package:campit_frontend/feature/home/preference_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:campit_frontend/feature/account/sign_up_step1.dart';
+import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,7 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 // 로그인 버튼
                 PrimaryButton(
                   text: '로그인',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const FoodPreferenceScreen(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 36),
 
@@ -169,38 +178,6 @@ class LoginTextField extends StatelessWidget {
           hintText: hintText,
           hintStyle: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_3),
           suffixIcon: suffixIcon,
-        ),
-      ),
-    );
-  }
-}
-
-class PrimaryButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const PrimaryButton({
-    super.key,
-    required this.text,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.main,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        onPressed: onTap,
-        child: Text(
-          text,
-          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.white),
         ),
       ),
     );
