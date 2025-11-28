@@ -78,6 +78,8 @@ flutter:
           weight: 900
   assets:
     - assets/logo/onboarding/
+    - assets/logo/home/
+    - assets/icon/bottom_bar_icon/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

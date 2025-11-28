@@ -2,6 +2,7 @@ import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:campit_frontend/feature/home/home_screen.dart';
 
 class FoodPreferenceScreen extends StatefulWidget {
   const FoodPreferenceScreen({super.key});
