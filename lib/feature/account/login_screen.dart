@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
+import 'package:campit_frontend/feature/account/sign_up_step1.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: GestureDetector(
@@ -108,7 +110,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 // 회원가입 버튼
                 SecondaryButton(
                   text: '회원가입',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SignUpStep1Screen(),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 30),
