@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
           body: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(
-                maxWidth: 390, // iPhone width
-                maxHeight: 844, // iPhone height
+                maxWidth: 375, // iPhone width
+                maxHeight: 812, // iPhone height
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
