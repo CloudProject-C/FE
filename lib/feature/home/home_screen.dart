@@ -2,9 +2,11 @@ import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+  static const routeName = "/home";
 
   @override
   Widget build(BuildContext context) {
@@ -152,71 +154,10 @@ class HomeScreen extends StatelessWidget {
         ),
 
         // 하단 네비게이션바
-        bottomNavigationBar: Container(
-          height: 68,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            border: Border(
-              top: BorderSide(
-                color: AppColors.grey_4.withOpacity(0.2),
-              ),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _BottomItem(
-                label: '홈',
-                isActive: true,
-                iconPath: AppAssets.home_icon,
-              ),
-              _BottomItem(
-                label: '지도',
-                isActive: false,
-                iconPath: AppAssets.map_icon,
-              ),
-              _BottomItem(
-                label: '프로필',
-                isActive: false,
-                iconPath: AppAssets.profile_icon,
-              ),
-            ],
-          ),
+        bottomNavigationBar: BottomNavBar(
+          currentRoute: HomeScreen.routeName,
         ),
       ),
-    );
-  }
-}
-
-class _BottomItem extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final String iconPath;
-
-  const _BottomItem({
-    required this.label,
-    required this.isActive,
-    required this.iconPath,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          iconPath,
-          height: 28,
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: AppTextStyles.pretendard_regular.copyWith(
-            color: isActive ? AppColors.main : AppColors.grey_4,
-            fontSize: 12,
-          ),
-        ),
-      ],
     );
   }
 }

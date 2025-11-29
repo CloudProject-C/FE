@@ -1,4 +1,6 @@
 // lib/main.dart
+import 'package:campit_frontend/feature/home/home_screen.dart';
+import 'package:campit_frontend/feature/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -21,9 +23,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
-        '/login': (context) => LoginScreen(),
-        //'/register': (context) => RegisterScreen(),
-        //'/shell': (context) => Shell(),
+        //'/login': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+        //'/map': (context) => MapScreen(),
+        '/profile': (context) => ProfileScreen(),
       },
     );
 
