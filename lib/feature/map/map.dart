@@ -39,6 +39,7 @@ class _MapState extends State<Map> {
     setState(() {});
   }
 
+
   Future<void> _loadNearbyRestaurants() async {
     if (_myLocation == null) return;
 
@@ -128,6 +129,33 @@ class _MapState extends State<Map> {
                   ),
                   onMapReady: (controller) async {
                     _mapController = controller;
+
+                    final overlayImage = await NOverlayImage.fromWidget(
+                      context: context,
+                      widget: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      size: const Size(18, 18),
+                    );
+
+                    final myDot = NMarker(
+                      id: 'my_dot',
+                      position: NLatLng(lat, lng),
+                      icon: overlayImage,
+                      size: const Size(18, 18),
+                    );
+
+                    _mapController?.addOverlay(myDot);
+
                     await _loadNearbyRestaurants();
                   },
                 ),
@@ -157,26 +185,6 @@ class _MapState extends State<Map> {
                   ],
                 ),
               ),
-
-              // Positioned(
-              //   right: 16,
-              //   bottom: 16,
-              //   child: FloatingActionButton(
-              //     onPressed: () async {
-              //       final canWrite = await MapService.canWritePost(lat, lng);
-              //       showDialog(
-              //         context: context,
-              //         builder: (_) => AlertDialog(
-              //           title: const Text('글 작성 가능 여부'),
-              //           content: Text(canWrite
-              //               ? '500m 내 대학교 근처입니다. 글 작성 가능 ✅'
-              //               : '대학교 근처가 아닙니다 ❌'),
-              //         ),
-              //       );
-              //     },
-              //     child: const Icon(Icons.edit),
-              //   ),
-              // ),
             ],
           ),
         );
