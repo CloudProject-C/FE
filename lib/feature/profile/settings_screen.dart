@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:campit_frontend/feature/profile/profile_edit_screen.dart';
+import 'package:campit_frontend/feature/profile/password_change_screen.dart';
+import 'package:campit_frontend/feature/profile/language_settings_screen.dart';
+import 'package:campit_frontend/feature/profile/notification_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -49,15 +53,23 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItemData(
                       icon: Icons.person_outline,
                       label: '프로필 편집',
-                      onTap: () {
-                        // TODO: 프로필 편집 화면 이동
+                      onTap: (ctx) {
+                        Navigator.of(ctx).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileEditScreen(),
+                          ),
+                        );
                       },
                     ),
                     SettingsItemData(
                       icon: Icons.lock_outline,
                       label: '비밀번호 변경',
-                      onTap: () {
-                        // TODO: 비밀번호 변경 화면 이동
+                      onTap: (ctx) {
+                        Navigator.of(ctx).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PasswordChangeScreen(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -69,15 +81,24 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItemData(
                       icon: Icons.notifications_none_rounded,
                       label: '알림 설정',
-                      onTap: () {
-                        // TODO: 알림 설정 화면 이동
+                      onTap: (ctx) {
+                        Navigator.of(ctx).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                            const NotificationSettingsScreen(),
+                          ),
+                        );
                       },
                     ),
                     SettingsItemData(
                       icon: Icons.language_rounded,
                       label: '언어 설정',
-                      onTap: () {
-                        // TODO: 언어 설정 화면 이동
+                      onTap: (ctx) {
+                        Navigator.of(ctx).push(
+                          MaterialPageRoute(
+                            builder: (_) => const LanguageSettingsScreen(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -89,15 +110,15 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItemData(
                       icon: Icons.description_outlined,
                       label: '이용약관',
-                      onTap: () {
-                        // TODO: 이용약관 화면 이동
+                      onTap: (ctx) {
+                        // 필요시 다시 작업
                       },
                     ),
                     SettingsItemData(
                       icon: Icons.shield_outlined,
                       label: '개인정보 처리방침',
-                      onTap: () {
-                        // TODO: 개인정보 처리방침 화면 이동
+                      onTap: (ctx) {
+                        // 필요시 다시 작업
                       },
                     ),
                   ],
@@ -124,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
 class SettingsItemData {
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
+  final void Function(BuildContext context) onTap;
 
   SettingsItemData({
     required this.icon,
@@ -187,7 +208,7 @@ class _SettingsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: item.onTap,
+      onTap: () => item.onTap(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         child: Row(
