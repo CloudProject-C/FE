@@ -1,0 +1,222 @@
+import 'package:campit_frontend/feature/home/preference_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:campit_frontend/shared/constants/app_colors.dart';
+import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
+import 'package:campit_frontend/feature/account/sign_up_step1.dart';
+import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool obscure = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: FocusScope.of(context).unfocus,
+          behavior: HitTestBehavior.translucent,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 80),
+                // 로고(이미지 에셋으로 대체할 예정 → 제외 요청)
+                Image.asset(
+                    AppAssets.logo_orange,
+                  scale: 7,
+                ),
+                const SizedBox(height: 10),
+
+                // 이메일
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '이메일',
+                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                LoginTextField(
+                  controller: emailController,
+                  hintText: 'university@example.ac.kr',
+                ),
+                const SizedBox(height: 28),
+
+                // 비밀번호
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '비밀번호',
+                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                LoginTextField(
+                  controller: passwordController,
+                  hintText: '비밀번호를 입력하세요',
+                  obscureText: obscure,
+                  suffixIcon: GestureDetector(
+                    onTap: () => setState(() => obscure = !obscure),
+                    child: Icon(
+                      obscure ? Icons.visibility_off : Icons.visibility,
+                      color: AppColors.grey_4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                // 로그인 버튼
+                PrimaryButton(
+                  text: '로그인',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const FoodPreferenceScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 36),
+
+                // 구분선
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: AppColors.grey_2)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        '또는',
+                        style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: AppColors.grey_2)),
+                  ],
+                ),
+                const SizedBox(height: 28),
+
+                Text(
+                  '아직 계정이 없으신가요?',
+                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                ),
+                const SizedBox(height: 20),
+
+                // 회원가입 버튼
+                SecondaryButton(
+                  text: '회원가입',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SignUpStep1Screen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 30),
+
+                Text(
+                  '학교 이메일 인증이 필요합니다\n경희대학교부터 시작합니다',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+  final bool obscureText;
+  final Widget? suffixIcon;
+
+  const LoginTextField({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.grey_1,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        cursorColor: AppColors.main,
+        style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          hintText: hintText,
+          hintStyle: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_3),
+          suffixIcon: suffixIcon,
+        ),
+      ),
+    );
+  }
+}
+
+class SecondaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const SecondaryButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.main,
+          side: BorderSide(color: AppColors.main, width: 1.4),
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        onPressed: onTap,
+        child: Text(
+          text,
+          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.main),
+        ),
+      ),
+    );
+  }
+}
+
+
+

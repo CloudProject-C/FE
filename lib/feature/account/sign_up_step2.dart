@@ -1,0 +1,233 @@
+import 'package:flutter/material.dart';
+import 'package:campit_frontend/shared/constants/app_colors.dart';
+import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+
+class SignUpStep2Screen extends StatefulWidget {
+  const SignUpStep2Screen({super.key});
+
+  @override
+  State<SignUpStep2Screen> createState() => _SignUpStep2ScreenState();
+}
+
+class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
+  final nicknameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final passwordCheckController = TextEditingController();
+
+  bool hidePw = true;
+  bool hidePwCheck = true;
+
+  bool get isValid =>
+      nicknameController.text.isNotEmpty &&
+          passwordController.text.length >= 8 &&
+          passwordCheckController.text == passwordController.text;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppColors.white,
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.grey_4),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            '회원가입',
+            style: AppTextStyles.pretendard_regular.copyWith(
+              color: AppColors.grey_4,
+            ),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              _StepIndicator(current: 2),
+              const SizedBox(height: 40),
+
+              Text(
+                '추가 정보 입력',
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '거의 다 됐어요!',
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Text(
+                '닉네임',
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4,
+                ),
+              ),
+              const SizedBox(height: 6),
+              _InputField(
+                controller: nicknameController,
+                hint: '2-10자 이내',
+                onChanged: (_) => setState(() {}),
+              ),
+
+              const SizedBox(height: 20),
+
+              Text(
+                '비밀번호',
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4,
+                ),
+              ),
+              const SizedBox(height: 6),
+              _InputField(
+                controller: passwordController,
+                hint: '8자 이상',
+                obscure: hidePw,
+                onSuffixTap: () {
+                  setState(() => hidePw = !hidePw);
+                },
+                onChanged: (_) => setState(() {}),
+              ),
+
+              const SizedBox(height: 20),
+
+              Text(
+                '비밀번호 확인',
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4,
+                ),
+              ),
+              const SizedBox(height: 6),
+              _InputField(
+                controller: passwordCheckController,
+                hint: '비밀번호 재입력',
+                obscure: hidePwCheck,
+                onSuffixTap: () {
+                  setState(() => hidePwCheck = !hidePwCheck);
+                },
+                onChanged: (_) => setState(() {}),
+              ),
+
+              const Spacer(),
+
+              Container(
+                height: 52,
+                decoration: BoxDecoration(
+                  color:
+                  isValid ? AppColors.main : AppColors.main.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '가입 완료',
+                  style: AppTextStyles.pretendard_regular.copyWith(
+                    color: AppColors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InputField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final Function(String)? onChanged;
+  final bool obscure;
+  final Function()? onSuffixTap;
+
+  const _InputField({
+    required this.controller,
+    required this.hint,
+    this.onChanged,
+    this.obscure = false,
+    this.onSuffixTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColors.grey_4.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
+              obscureText: obscure,
+              cursorColor: AppColors.grey_4,
+              style: AppTextStyles.pretendard_regular.copyWith(
+                color: AppColors.grey_4,
+              ),
+              decoration: InputDecoration(
+                hintText: hint,
+                border: InputBorder.none,
+                hintStyle: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_4.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+          if (onSuffixTap != null)
+            GestureDetector(
+              onTap: onSuffixTap,
+              child: Icon(
+                obscure ? Icons.visibility_off : Icons.visibility,
+                color: AppColors.grey_4,
+                size: 20,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepIndicator extends StatelessWidget {
+  final int current;
+
+  const _StepIndicator({required this.current});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(Icons.check_circle,
+            color: current >= 1 ? AppColors.main : AppColors.grey_4),
+        Expanded(
+          child: Container(
+            height: 2,
+            color: current >= 2 ? AppColors.main : AppColors.grey_4,
+          ),
+        ),
+        Icon(Icons.circle,
+            color: current >= 2 ? AppColors.main : AppColors.grey_4),
+      ],
+    );
+  }
+}
