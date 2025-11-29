@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
+import 'package:campit_frontend/feature/map/map.dart';
 
 class MapScreen extends StatefulWidget {
   static const routeName = "/map";
@@ -63,13 +64,14 @@ class _MapScreenState extends State<MapScreen> {
             Expanded(
               child: PageView(
                 controller: pageController,
+                physics: const NeverScrollableScrollPhysics(), // 스와이프 금지
                 onPageChanged: (index) {
                   setState(() {
                     currentTab = MapTab.values[index];
                   });
                 },
                 children: const [
-                  MapTabPage(),
+                  Map(),
                   MapListPage(),
                 ],
               ),
@@ -262,19 +264,19 @@ class _MapTabButton extends StatelessWidget {
 // ------------------------------
 // 탭: 지도 페이지
 // ------------------------------
-class MapTabPage extends StatelessWidget {
-  const MapTabPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.white,
-      child: const Center(
-        child: Text("지도 화면 Placeholder"),
-      ),
-    );
-  }
-}
+// class Map extends StatelessWidget {
+//   const Map({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: AppColors.white,
+//       child: const Center(
+//         child: Text("지도 화면 Placeholder"),
+//       ),
+//     );
+//   }
+// }
 
 // ------------------------------
 // 탭: 리스트 페이지

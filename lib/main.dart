@@ -7,9 +7,16 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:campit_frontend/feature/account/login_screen.dart';
 
 import 'feature/map/map_screen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterNaverMap().init(
+    clientId: 'vxsqc58u7x',
+    onAuthFailed: (ex) => print("인증 실패: $ex"),
+  );
+
   runApp(
     const MyApp(),
   );
