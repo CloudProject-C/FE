@@ -6,8 +6,17 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:campit_frontend/feature/account/login_screen.dart';
 
+import 'feature/map/map_screen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterNaverMap().init(
+    clientId: 'vxsqc58u7x',
+    onAuthFailed: (ex) => print("인증 실패: $ex"),
+  );
+
   runApp(
     const MyApp(),
   );
@@ -25,7 +34,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginScreen(),
         //'/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        //'/map': (context) => MapScreen(),
+        '/map': (context) => MapScreen(),
         '/profile': (context) => ProfileScreen(),
       },
     );
@@ -39,8 +48,8 @@ class MyApp extends StatelessWidget {
           body: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(
-                maxWidth: 390, // iPhone width
-                maxHeight: 844, // iPhone height
+                maxWidth: 375, // iPhone width
+                maxHeight: 812, // iPhone height
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
