@@ -7,7 +7,12 @@ import 'package:campit_frontend/feature/profile/language_settings_screen.dart';
 import 'package:campit_frontend/feature/profile/notification_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  final String currentNickname;
+
+  const SettingsScreen({
+    super.key,
+    required this.currentNickname,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +58,20 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItemData(
                       icon: Icons.person_outline,
                       label: '프로필 편집',
-                      onTap: (ctx) {
-                        Navigator.of(ctx).push(
+                      onTap: (ctx) async {
+                        final updatedName =
+                        await Navigator.of(ctx).push<String>(
                           MaterialPageRoute(
-                            builder: (_) => const ProfileEditScreen(),
+                            builder: (_) => ProfileEditScreen(
+                              initialNickname: currentNickname,
+                            ),
                           ),
                         );
+                        if (updatedName != null &&
+                            updatedName.isNotEmpty) {
+                          // 프로필로 값 전달하고 설정 화면 닫기
+                          Navigator.of(ctx).pop(updatedName);
+                        }
                       },
                     ),
                     SettingsItemData(
@@ -111,14 +124,14 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.description_outlined,
                       label: '이용약관',
                       onTap: (ctx) {
-                        // 필요시 다시 작업
+                        // 필요시 개발
                       },
                     ),
                     SettingsItemData(
                       icon: Icons.shield_outlined,
                       label: '개인정보 처리방침',
                       onTap: (ctx) {
-                        // 필요시 다시 작업
+                        // 필요시 개발
                       },
                     ),
                   ],

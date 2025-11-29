@@ -4,16 +4,30 @@ import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 
 class ProfileEditScreen extends StatefulWidget {
-  const ProfileEditScreen({super.key});
+  final String initialNickname;
+
+  const ProfileEditScreen({
+    super.key,
+    required this.initialNickname,
+  });
 
   @override
   State<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  final nicknameController = TextEditingController(text: '캠퍼스 미식가');
-  final emailController = TextEditingController(text: 'student@khu.ac.kr');
-  final schoolController = TextEditingController(text: '경희대학교');
+  late TextEditingController nicknameController;
+  late TextEditingController emailController;
+  late TextEditingController schoolController;
+
+  @override
+  void initState() {
+    super.initState();
+    nicknameController =
+        TextEditingController(text: widget.initialNickname);
+    emailController = TextEditingController(text: 'student@khu.ac.kr');
+    schoolController = TextEditingController(text: '경희대학교');
+  }
 
   @override
   void dispose() {
@@ -41,7 +55,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         ),
         title: Text(
           '프로필 편집',
-          // TODO: 프로필 기능?
           style: AppTextStyles.pretendard_bold.copyWith(
             fontSize: 18,
             color: AppColors.grey_8,
@@ -60,8 +73,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         child: PrimaryButton(
           text: '저장',
           onTap: () {
-            // TODO: 프로필 저장 로직
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(nicknameController.text.trim());
           },
         ),
       ),
@@ -143,8 +155,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                         label: '닉네임',
                         controller: nicknameController,
                         readOnly: false,
-                        backgroundColor:
-                        Colors.white,
+                        backgroundColor: Colors.white,
                       ),
                       const SizedBox(height: 16),
                       _LabeledField(

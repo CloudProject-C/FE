@@ -3,12 +3,33 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
 import 'package:campit_frontend/feature/account/login_screen.dart';
-//이후 shared로 다시 작업
 import 'package:campit_frontend/feature/profile/settings_screen.dart';
+//TODO: 이후 shared로 연결
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
   static const routeName = '/profile';
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String nickname = '캠퍼스 미식가';
+
+  Future<void> _openSettings() async {
+    final updatedNickname = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(currentNickname: nickname),
+      ),
+    );
+
+    if (updatedNickname != null && updatedNickname.isNotEmpty) {
+      setState(() {
+        nickname = updatedNickname;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +57,18 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ),
-        body: const SafeArea(
+        body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ProfileHeaderCard(),
-                  SizedBox(height: 24),
-                  _PreferenceSection(),
-                  SizedBox(height: 24),
-                  _SettingsSection(),
+                  _ProfileHeaderCard(nickname: nickname),
+                  const SizedBox(height: 24),
+                  const _PreferenceSection(),
+                  const SizedBox(height: 24),
+                  _SettingsSection(onSettingsTap: _openSettings),
                 ],
               ),
             ),
@@ -63,7 +84,11 @@ class ProfileScreen extends StatelessWidget {
 
 /// 상단 프로필 카드 + 통계
 class _ProfileHeaderCard extends StatelessWidget {
-  const _ProfileHeaderCard();
+  final String nickname;
+
+  const _ProfileHeaderCard({
+    required this.nickname,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +125,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '캠퍼스 미식가',
+                      nickname,
                       style: AppTextStyles.pretendard_bold.copyWith(
                         fontSize: 18,
                         color: AppColors.grey_8,
@@ -149,8 +174,8 @@ class _ProfileHeaderCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // 통계 카드 (작성한 리뷰 / 받은 좋아요)
-          Row(
-            children: const [
+          const Row(
+            children: [
               Expanded(
                 child: _StatCard(
                   label: '작성한 리뷰',
@@ -186,7 +211,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // TODO: 상세 화면 이동
+        // TODO: 이후 리뷰나 다른거 개발 후 연결 혹은 연결 페이지 생성
       },
       borderRadius: BorderRadius.circular(16),
       child: Container(
@@ -246,8 +271,8 @@ class _PreferenceSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: const [
+          const Row(
+            children: [
               _PreferenceTile(),
             ],
           ),
@@ -277,8 +302,7 @@ class _PreferenceTile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // TODO: 나중에 이미지 에셋으로 교체
-          // 임시 이모지
+          // TODO: 나중에 이미지 교체
           Container(
             width: 40,
             height: 40,
@@ -309,7 +333,11 @@ class _PreferenceTile extends StatelessWidget {
 
 /// 설정 / 로그아웃 영역
 class _SettingsSection extends StatelessWidget {
-  const _SettingsSection();
+  final Future<void> Function() onSettingsTap;
+
+  const _SettingsSection({
+    required this.onSettingsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -326,11 +354,7 @@ class _SettingsSection extends StatelessWidget {
             label: '설정',
             isDestructive: false,
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SettingsScreen(),
-                ),
-              );
+              onSettingsTap();
             },
           ),
           const Divider(
@@ -512,8 +536,6 @@ Future<void> _showLogoutDialog(BuildContext context) async {
   );
 
   if (shouldLogout == true) {
-    // 실제 로그아웃 처리 필요 시 여기에서 수행
-
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => const LoginScreen(),
