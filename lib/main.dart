@@ -6,6 +6,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:campit_frontend/feature/account/login_screen.dart';
 
+import 'feature/map/map_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginScreen(),
         //'/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        //'/map': (context) => MapScreen(),
+        '/map': (context) => MapScreen(),
         '/profile': (context) => ProfileScreen(),
       },
     );
