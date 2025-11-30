@@ -1,3 +1,4 @@
+import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:location/location.dart';
@@ -64,16 +65,27 @@ class _MapState extends State<Map> {
               title: Text(r['name']),
               content: Text(info ?? '정보를 불러오지 못했습니다.'),
               actions: [
+                // TextButton(
+                //   onPressed: () {
+                //     _openNaverMap(
+                //       _myLocation!.latitude!,
+                //       _myLocation!.longitude!,
+                //       r['lat'],
+                //       r['lng'],
+                //     );
+                //   },
+                //   child: const Text('길찾기'),
+                // ),
                 TextButton(
                   onPressed: () {
-                    _openNaverMap(
-                      _myLocation!.latitude!,
-                      _myLocation!.longitude!,
-                      r['lat'],
-                      r['lng'],
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RestaurantDetailScreen(),
+                      ),
                     );
                   },
-                  child: const Text('길찾기'),
+                  child: const Text('정보 보기'),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
