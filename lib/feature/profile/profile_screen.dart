@@ -4,7 +4,8 @@ import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
 import 'package:campit_frontend/feature/account/login_screen.dart';
 import 'package:campit_frontend/feature/profile/settings_screen.dart';
-//TODO: 이후 shared로 연결
+import 'package:campit_frontend/feature/profile/my_reviews_screen.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -174,45 +175,52 @@ class _ProfileHeaderCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // 통계 카드 (작성한 리뷰 / 받은 좋아요)
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: _StatCard(
                   label: '작성한 리뷰',
-                  value: '12',
+                  value: '12', //TODO: 백엔드 연동 후 실제 리뷰 개수로 교체
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const MyReviewsScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
-              SizedBox(width: 12),
-              Expanded(
+              const SizedBox(width: 12),
+              const Expanded(
                 child: _StatCard(
                   label: '받은 좋아요',
-                  value: '45',
+                  value: '45', //TODO: 백엔드 연동 후 실제 좋아요 개수로 교체
                 ),
               ),
             ],
           ),
-        ],
+        ],  
       ),
     );
   }
 }
 
-/// 피그마 스타일 통계 카드
+/// 통계 카드 (작성한 리뷰 / 받은 좋아요)
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.label,
     required this.value,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        // TODO: 이후 리뷰나 다른거 개발 후 연결 혹은 연결 페이지 생성
-      },
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         height: 88,
