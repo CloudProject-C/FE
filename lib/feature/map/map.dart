@@ -65,17 +65,6 @@ class _MapState extends State<Map> {
               title: Text(r['name']),
               content: Text(info ?? '정보를 불러오지 못했습니다.'),
               actions: [
-                // TextButton(
-                //   onPressed: () {
-                //     _openNaverMap(
-                //       _myLocation!.latitude!,
-                //       _myLocation!.longitude!,
-                //       r['lat'],
-                //       r['lng'],
-                //     );
-                //   },
-                //   child: const Text('길찾기'),
-                // ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -88,8 +77,15 @@ class _MapState extends State<Map> {
                   child: const Text('정보 보기'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('닫기'),
+                  onPressed: () {
+                    _openNaverMap(
+                      _myLocation!.latitude!,
+                      _myLocation!.longitude!,
+                      r['lat'],
+                      r['lng'],
+                    );
+                  },
+                  child: const Text('길찾기'),
                 ),
               ],
             ),
