@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
@@ -256,24 +257,14 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
 
                 const SizedBox(height: 40),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.main,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      '리뷰 등록하기',
-                      style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.white),
-                    ),
-                  ),
+                PrimaryButton(
+                    text: '리뷰 등록하기',
+                    onTap: (){
+                      Navigator.pop(context);
+                      //TODO: 리뷰 등록 로직
+                    },
+                    height: 48,
+                    width: double.infinity
                 ),
               ],
             ),

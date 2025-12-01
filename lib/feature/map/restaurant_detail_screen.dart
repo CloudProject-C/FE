@@ -1,7 +1,11 @@
+import 'package:campit_frontend/feature/map/review_write_screen.dart';
+import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
+import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
 import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:location/location.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   const RestaurantDetailScreen({super.key});
@@ -261,50 +265,33 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocationData? myLocation;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              height: 46,
-              decoration: BoxDecoration(
-                color: AppColors.main,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.chat_bubble_outline, color: AppColors.white, size: 18),
-                  const SizedBox(width: 6),
-                  Text(
-                    "리뷰 작성",
-                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.white),
+            child: PrimaryButton(
+              text: "리뷰 작성",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ReviewWriteScreen(),
                   ),
-                ],
-              ),
+                );
+              },
+              height: 46,
+              width: double.infinity,
             ),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Container(
-              height: 46,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.main, width: 1.4),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.send_rounded, color: AppColors.main, size: 18),
-                  const SizedBox(width: 6),
-                  Text(
-                    "길찾기",
-                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.main),
-                  ),
-                ],
-              ),
+            child: SecondaryButton(
+                text: '길찾기',
+                onTap: (){return null;},
+                width: double.infinity,
+                height: 46,
             ),
           ),
         ],

@@ -20,7 +20,7 @@ class SecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: height,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.main,
