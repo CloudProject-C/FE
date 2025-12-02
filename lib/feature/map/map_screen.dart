@@ -1,3 +1,4 @@
+import 'package:campit_frontend/feature/map/list.dart';
 import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
@@ -72,7 +73,7 @@ class _MapScreenState extends State<MapScreen> {
                 },
                 children: const [
                   Map(),
-                  MapListPage(),
+                  ListScreen(),
                 ],
               ),
             ),
@@ -277,20 +278,3 @@ class _MapTabButton extends StatelessWidget {
 //     );
 //   }
 // }
-
-// ------------------------------
-// 탭: 리스트 페이지
-// ------------------------------
-class MapListPage extends StatelessWidget {
-  const MapListPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.white,
-      child: const Center(
-        child: Text("리스트 화면 Placeholder"),
-      ),
-    );
-  }
-}
