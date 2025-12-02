@@ -310,11 +310,26 @@ class _MapState extends State<Map> {
 
                     await _loadNearbyRestaurants();
                   },
+                  onCameraChange: (reason, animated) {
+                    if (_followOn && reason == NCameraUpdateReason.gesture) {
+                      // 사용자가 카메라 움직이려고 시도함 → 바로 되돌림
+                      if (_myLocation?.latitude != null && _myLocation?.longitude != null) {
+                        _mapController?.updateCamera(
+                          NCameraUpdate.withParams(
+                            target: NLatLng(
+                              _myLocation!.latitude!,
+                              _myLocation!.longitude!,
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
                 ),
               ),
               Positioned(
                 right: 16,
-                bottom: 100,
+                bottom: 80,
                 child: Column(
                   children: [
                     _zoomButton(
@@ -339,7 +354,7 @@ class _MapState extends State<Map> {
               ),
               Positioned(
                 right: 16,
-                bottom: 160,
+                bottom: 20,
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
