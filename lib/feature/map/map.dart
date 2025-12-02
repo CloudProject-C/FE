@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -17,6 +19,10 @@ class _MapState extends State<Map> {
   NaverMapController? _mapController;
   LocationData? _myLocation;
   NMarker? _myDot;
+  LocationData? _prevLocation;
+  Timer? _lerpTimer;
+  Timer? _cameraLerpTimer;
+  bool _followOn = true;
 
   @override
   void initState() {
@@ -27,18 +33,34 @@ class _MapState extends State<Map> {
     _location.onLocationChanged.listen((current) {
       if (!mounted) return;
 
+      _animateMyDot(_prevLocation, current);
+
+      if (_followOn && _mapController != null) {
+        _animateCamera(_prevLocation, current);
+      }
+
       setState(() {
         _myLocation = current;
       });
 
+      _prevLocation = current;
+
       // 파란 점 위치 갱신
-      if (_myDot != null &&
-          current.latitude != null &&
-          current.longitude != null) {
-        _myDot!.setPosition(
-          NLatLng(current.latitude!, current.longitude!),
-        );
-      }
+      // if (_myDot != null &&
+      //     current.latitude != null &&
+      //     current.longitude != null) {
+      //   _myDot!.setPosition(
+      //     NLatLng(current.latitude!, current.longitude!),
+      //   );
+      // }
+
+      // if (_followOn && _mapController != null) {
+      //   _mapController!.updateCamera(
+      //     NCameraUpdate.withParams(
+      //       target: NLatLng(current.latitude!, current.longitude!),
+      //     ),
+      //   );
+      // }
     });
   }
 
@@ -130,6 +152,109 @@ class _MapState extends State<Map> {
     }
   }
 
+  void _animateMyDot(LocationData? from, LocationData to) {
+    if (_myDot == null) return;
+    if (to.latitude == null || to.longitude == null) return;
+
+    // 이전 위치가 없으면 즉시 이동
+    if (from == null || from.latitude == null || from.longitude == null) {
+      _myDot!.setPosition(NLatLng(to.latitude!, to.longitude!));
+      return;
+    }
+
+    // 이전 타이머 있으면 중지
+    _lerpTimer?.cancel();
+
+    final startLat = from.latitude!;
+    final startLng = from.longitude!;
+    final endLat = to.latitude!;
+    final endLng = to.longitude!;
+
+    const duration = 700; // ms
+    const fps = 60;
+    final totalFrames = (fps * duration / 1000).ceil();
+    int frame = 0;
+
+    _lerpTimer = Timer.periodic(
+      Duration(milliseconds: (1000 / fps).ceil()),
+          (timer) {
+        frame++;
+        final t = frame / totalFrames; // 0.0 → 1.0
+
+        if (t >= 1.0) {
+          timer.cancel();
+          _myDot!.setPosition(NLatLng(endLat, endLng));
+          return;
+        }
+
+        // 선형 보간
+        final curLat = startLat + (endLat - startLat) * t;
+        final curLng = startLng + (endLng - startLng) * t;
+
+        _myDot!.setPosition(NLatLng(curLat, curLng));
+      },
+    );
+  }
+
+  void _animateCamera(LocationData? from, LocationData to) {
+    if (to.latitude == null || to.longitude == null) return;
+
+    if (_mapController == null) return;
+
+    // 첫 위치라면 즉시 이동
+    if (from == null || from.latitude == null || from.longitude == null) {
+      _mapController!.updateCamera(
+        NCameraUpdate.withParams(
+          target: NLatLng(to.latitude!, to.longitude!),
+        ),
+      );
+      return;
+    }
+
+    // 기존 타이머 중단
+    _cameraLerpTimer?.cancel();
+
+    final startLat = from.latitude!;
+    final startLng = from.longitude!;
+    final endLat = to.latitude!;
+    final endLng = to.longitude!;
+
+    const duration = 700;
+    const fps = 60;
+    final totalFrames = (fps * duration / 1000).ceil();
+    int frame = 0;
+
+    _cameraLerpTimer = Timer.periodic(
+      Duration(milliseconds: (1000 / fps).ceil()),
+          (timer) {
+        frame++;
+        double t = frame / totalFrames;
+
+        // 부드러운 easeInOut 곡선 (파란 점보다 카메라에 더 적합)
+        t = t * t * (3 - 2 * t);
+
+        if (t >= 1.0) {
+          timer.cancel();
+          _mapController!.updateCamera(
+            NCameraUpdate.withParams(
+              target: NLatLng(endLat, endLng),
+            ),
+          );
+          return;
+        }
+
+        final curLat = startLat + (endLat - startLat) * t;
+        final curLng = startLng + (endLng - startLng) * t;
+
+        _mapController!.updateCamera(
+          NCameraUpdate.withParams(
+            target: NLatLng(curLat, curLng),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final lat = _myLocation?.latitude;
@@ -210,6 +335,34 @@ class _MapState extends State<Map> {
                       },
                     ),
                   ],
+                ),
+              ),
+              Positioned(
+                right: 16,
+                bottom: 160,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _followOn = !_followOn;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 6,
+                        )
+                      ],
+                    ),
+                    child: Icon(
+                      _followOn ? Icons.gps_fixed : Icons.gps_not_fixed,
+                      color: Colors.blue,
+                    ),
+                  ),
                 ),
               ),
             ],
