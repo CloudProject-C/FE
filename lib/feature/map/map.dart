@@ -16,11 +16,30 @@ class _MapState extends State<Map> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
+  NMarker? _myDot;
 
   @override
   void initState() {
     super.initState();
     _initLocation();
+
+    // 위치 변화 실시간 감지
+    _location.onLocationChanged.listen((current) {
+      if (!mounted) return;
+
+      setState(() {
+        _myLocation = current;
+      });
+
+      // 파란 점 위치 갱신
+      if (_myDot != null &&
+          current.latitude != null &&
+          current.longitude != null) {
+        _myDot!.setPosition(
+          NLatLng(current.latitude!, current.longitude!),
+        );
+      }
+    });
   }
 
   Future<void> _initLocation() async {
@@ -155,14 +174,14 @@ class _MapState extends State<Map> {
                       size: const Size(18, 18),
                     );
 
-                    final myDot = NMarker(
+                    _myDot = NMarker(
                       id: 'my_dot',
                       position: NLatLng(lat, lng),
                       icon: overlayImage,
                       size: const Size(18, 18),
                     );
 
-                    _mapController?.addOverlay(myDot);
+                    _mapController?.addOverlay(_myDot!);
 
                     await _loadNearbyRestaurants();
                   },
