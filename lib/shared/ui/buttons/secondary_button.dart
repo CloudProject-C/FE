@@ -2,28 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 
-class PrimaryButton extends StatelessWidget {
+class SecondaryButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
-  final double height;
   final double width;
+  final double height;
 
-  const PrimaryButton({
+  const SecondaryButton({
     super.key,
     required this.text,
     required this.onTap,
-    required this.height,
     required this.width,
+    required this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width,
-      height: height, //기본 54
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.main,
+      width: double.infinity,
+      height: height,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.main,
+          side: BorderSide(color: AppColors.main, width: 1.4),
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -31,7 +33,7 @@ class PrimaryButton extends StatelessWidget {
         onPressed: onTap,
         child: Text(
           text,
-          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.white),
+          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.main),
         ),
       ),
     );

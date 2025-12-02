@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                         //   'assets/logo/school_icon.png', // 학교 아이콘
                         //   height: 32,
                         // ),
-                        const SizedBox(width: 120),
+                        const SizedBox(width: 80),
                         Text(
                           '경희대학교',
                           style: AppTextStyles.pretendard_regular.copyWith(

@@ -1,4 +1,5 @@
 import 'package:campit_frontend/feature/home/preference_screen.dart';
+import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
@@ -91,6 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
                   },
+                  height: 54,
+                  width: double.infinity,
                 ),
                 const SizedBox(height: 36),
 
@@ -127,6 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
                   },
+                  width: double.infinity,
+                  height: 54,
                 ),
 
                 const SizedBox(height: 30),
@@ -178,40 +183,6 @@ class LoginTextField extends StatelessWidget {
           hintText: hintText,
           hintStyle: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_3),
           suffixIcon: suffixIcon,
-        ),
-      ),
-    );
-  }
-}
-
-class SecondaryButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const SecondaryButton({
-    super.key,
-    required this.text,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.main,
-          side: BorderSide(color: AppColors.main, width: 1.4),
-          backgroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        onPressed: onTap,
-        child: Text(
-          text,
-          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.main),
         ),
       ),
     );
