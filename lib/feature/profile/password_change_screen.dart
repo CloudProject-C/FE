@@ -61,7 +61,8 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        // 가로 패딩 24 → 16
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
           text: '변경하기',
           onTap: () {
@@ -71,43 +72,51 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _PasswordLabeledField(
-                  label: '현재 비밀번호',
-                  controller: currentController,
-                  hintText: '현재 비밀번호를 입력하세요',
-                  obscure: obscureCurrent,
-                  onToggle: () =>
-                      setState(() => obscureCurrent = !obscureCurrent),
-                ),
-                const SizedBox(height: 20),
-                _PasswordLabeledField(
-                  label: '새 비밀번호',
-                  controller: newController,
-                  hintText: '8자 이상 입력하세요',
-                  obscure: obscureNew,
-                  onToggle: () => setState(() => obscureNew = !obscureNew),
-                ),
-                const SizedBox(height: 20),
-                _PasswordLabeledField(
-                  label: '새 비밀번호 확인',
-                  controller: confirmController,
-                  hintText: '비밀번호를 다시 입력하세요',
-                  obscure: obscureConfirm,
-                  onToggle: () =>
-                      setState(() => obscureConfirm = !obscureConfirm),
-                ),
-              ],
+        child: GestureDetector(
+          // 빈 곳 탭하면 키보드 내려가도록
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: SingleChildScrollView(
+            // 가로 패딩 24 → 16
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 80),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              // 내부 가로 패딩 20 → 16
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PasswordLabeledField(
+                    label: '현재 비밀번호',
+                    controller: currentController,
+                    hintText: '현재 비밀번호를 입력하세요',
+                    obscure: obscureCurrent,
+                    onToggle: () =>
+                        setState(() => obscureCurrent = !obscureCurrent),
+                  ),
+                  const SizedBox(height: 20),
+                  _PasswordLabeledField(
+                    label: '새 비밀번호',
+                    controller: newController,
+                    hintText: '8자 이상 입력하세요',
+                    obscure: obscureNew,
+                    onToggle: () =>
+                        setState(() => obscureNew = !obscureNew),
+                  ),
+                  const SizedBox(height: 20),
+                  _PasswordLabeledField(
+                    label: '새 비밀번호 확인',
+                    controller: confirmController,
+                    hintText: '비밀번호를 다시 입력하세요',
+                    obscure: obscureConfirm,
+                    onToggle: () =>
+                        setState(() => obscureConfirm = !obscureConfirm),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

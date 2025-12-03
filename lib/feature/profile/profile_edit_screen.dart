@@ -69,7 +69,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
           text: '저장',
           onTap: () {
@@ -78,104 +78,108 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 프로필 이미지 + 사진 변경
-                Column(
-                  children: [
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.main_30per,
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 50,
-                            color: AppColors.main,
-                          ),
-                        ),
-                        Positioned(
-                          right: 6,
-                          bottom: 6,
-                          child: Container(
-                            width: 32,
-                            height: 32,
+        child: GestureDetector(
+          // 빈 곳 탭하면 키보드 내려가도록
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 80),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // 프로필 이미지 + 사진 변경
+                  Column(
+                    children: [
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
                             decoration: const BoxDecoration(
-                              color: AppColors.main,
                               shape: BoxShape.circle,
+                              color: AppColors.main_30per,
                             ),
                             child: const Icon(
-                              Icons.camera_alt_outlined,
-                              size: 18,
-                              color: Colors.white,
+                              Icons.person,
+                              size: 50,
+                              color: AppColors.main,
                             ),
                           ),
+                          Positioned(
+                            right: 6,
+                            bottom: 6,
+                            child: Container(
+                              width: 32,
+                              height: 32,
+                              decoration: const BoxDecoration(
+                                color: AppColors.main,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '사진 변경',
+                        style: AppTextStyles.pretendard_medium.copyWith(
+                          fontSize: 13,
+                          color: AppColors.main,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '사진 변경',
-                      style: AppTextStyles.pretendard_medium.copyWith(
-                        fontSize: 13,
-                        color: AppColors.main,
-                      ),
-                    ),
-                  ],
-                ),
-                //더미 데이터
-
-                const SizedBox(height: 32),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColors.grey_1,
-                ),
-                const SizedBox(height: 24),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _LabeledField(
-                        label: '닉네임',
-                        controller: nicknameController,
-                        readOnly: false,
-                        backgroundColor: Colors.white,
-                      ),
-                      const SizedBox(height: 16),
-                      _LabeledField(
-                        label: '이메일',
-                        controller: emailController,
-                        readOnly: true,
-                        backgroundColor: AppColors.grey_1,
-                      ),
-                      const SizedBox(height: 16),
-                      _LabeledField(
-                        label: '학교',
-                        controller: schoolController,
-                        readOnly: true,
-                        backgroundColor: AppColors.grey_1,
                       ),
                     ],
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 32),
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: AppColors.grey_1,
+                  ),
+                  const SizedBox(height: 24),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _LabeledField(
+                          label: '닉네임',
+                          controller: nicknameController,
+                          readOnly: false,
+                          backgroundColor: Colors.white,
+                        ),
+                        const SizedBox(height: 16),
+                        _LabeledField(
+                          label: '이메일',
+                          controller: emailController,
+                          readOnly: true,
+                          backgroundColor: AppColors.grey_1,
+                        ),
+                        const SizedBox(height: 16),
+                        _LabeledField(
+                          label: '학교',
+                          controller: schoolController,
+                          readOnly: true,
+                          backgroundColor: AppColors.grey_1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

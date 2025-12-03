@@ -12,192 +12,94 @@ class MyReviewsScreen extends StatefulWidget {
 
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
   late List<_Review> _reviews;
-  ReviewSortType _sortType = ReviewSortType.latest;
+
+  /// 드롭다운 선택값
+  String _selectedSort = '최신순';
 
   @override
   void initState() {
     super.initState();
-    //TODO: 더미 데이터 (나중에 API 연동 시 교체)
+    final now = DateTime.now();
+
+    // TODO: 백엔드 연동 후 실제 데이터로 교체
     _reviews = [
       _Review(
-        id: '1',
-        placeName: '플립브런치',
-        rating: 4, 
+        id: 1,
+        restaurantName: '플립브런치',
+        rating: 4,
+        createdAt: now.subtract(const Duration(days: 1)), // 1일 전
         content:
-            '빵이 정말 맛있어요. 다만 커피의 질이 조금 아쉬운것 같습니다. 다음에 또 올 것 같아요!',
+        '빵이 정말 맛있어요. 다만 커피의 질이 조금 아쉬운 것 같습니다. 다음에 또 올 것 같아요!',
         likes: 8,
-        createdAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
       _Review(
-        id: '2',
-        placeName: '경희떡볶이',
+        id: 2,
+        restaurantName: '경희떡볶이',
         rating: 5,
+        createdAt: now.subtract(const Duration(days: 2)), // 2일 전
         content: '오래된 맛집이에요. 사장님도 친절하시고 가성비 최고입니다.',
         likes: 20,
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
       ),
     ];
+
+    _sortReviews(); // 기본값: 최신순
   }
 
-  List<_Review> get _sortedReviews {
-    final list = [..._reviews];
-    switch (_sortType) {
-      case ReviewSortType.latest:
-        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        break;
-      case ReviewSortType.oldest:
-        list.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        break;
-      case ReviewSortType.likes:
-        list.sort((a, b) => b.likes.compareTo(a.likes));
-        break;
-      case ReviewSortType.ratingHigh:
-        list.sort((a, b) => b.rating.compareTo(a.rating));
-        break;
-      case ReviewSortType.ratingLow:
-        list.sort((a, b) => a.rating.compareTo(b.rating));
-        break;
-    }
-    return list;
+  /// 정렬 기준에 따라 리스트 정렬
+  void _sortReviews() {
+    _reviews.sort((a, b) {
+      switch (_selectedSort) {
+        case '최신순':
+        // 최근 날짜 먼저
+          return b.createdAt.compareTo(a.createdAt);
+        case '좋아요순':
+        // 좋아요 많은 순, 같으면 최신순
+          final likeDiff = b.likes.compareTo(a.likes);
+          if (likeDiff != 0) return likeDiff;
+          return b.createdAt.compareTo(a.createdAt);
+        case '오래된순':
+        // 오래된 날짜 먼저
+          return a.createdAt.compareTo(b.createdAt);
+        case '별점높은순':
+        // 별점 높은 순, 같으면 최신순
+          final ratingDiff = b.rating.compareTo(a.rating);
+          if (ratingDiff != 0) return ratingDiff;
+          return b.createdAt.compareTo(a.createdAt);
+        case '별점낮은순':
+        // 별점 낮은 순, 같으면 오래된순
+          final ratingDiff = a.rating.compareTo(b.rating);
+          if (ratingDiff != 0) return ratingDiff;
+          return a.createdAt.compareTo(b.createdAt);
+        default:
+          return 0;
+      }
+    });
   }
 
-  String _formatTimeAgo(DateTime createdAt) {
-    final diffDays = DateTime.now().difference(createdAt).inDays;
-    if (diffDays <= 0) return '오늘';
-    return '${diffDays}일 전';
+  /// 드롭다운 변경 시
+  void _changeSort(String? value) {
+    if (value == null) return;
+    setState(() {
+      _selectedSort = value;
+      _sortReviews();
+    });
   }
 
-  String _sortLabel(ReviewSortType type) {
-    switch (type) {
-      case ReviewSortType.latest:
-        return '최신순';
-      case ReviewSortType.likes:
-        return '좋아요순';
-      case ReviewSortType.oldest:
-        return '오래된순';
-      case ReviewSortType.ratingHigh:
-        return '별점높은순';
-      case ReviewSortType.ratingLow:
-        return '별점낮은순';
-    }
+  void _deleteReview(_Review review) {
+    // TODO: 백엔드 연동 후 서버 삭제 로직 추가
+    setState(() {
+      _reviews.removeWhere((r) => r.id == review.id);
+    });
   }
 
-  Future<void> _confirmDelete(_Review review) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40),
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '리뷰 삭제',
-                    style: AppTextStyles.pretendard_bold.copyWith(
-                      fontSize: 16,
-                      color: AppColors.grey_8,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '리뷰를 삭제하시겠습니까?\n삭제된 리뷰는 복구할 수 없습니다.',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.pretendard_regular.copyWith(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: AppColors.grey_5,
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop(false);
-                          },
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: const BorderSide(color: AppColors.grey_3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 11),
-                          ),
-                          child: Text(
-                            '취소',
-                            style:
-                                AppTextStyles.pretendard_medium.copyWith(
-                              fontSize: 14,
-                              color: AppColors.grey_7,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop(true);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.main,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 11),
-                          ),
-                          child: Text(
-                            '삭제',
-                            style:
-                                AppTextStyles.pretendard_bold.copyWith(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
-    if (shouldDelete == true) {
-      setState(() {
-        _reviews.removeWhere((r) => r.id == review.id);
-        //TODO: 백엔드 연동 후 서버에도 해당 리뷰 삭제 요청 보내고, 프로필 화면의 리뷰 개수와도 동기화하기
-      });
-    }
+  String _formatDaysAgo(DateTime date) {
+    final diff = DateTime.now().difference(date).inDays;
+    if (diff <= 0) return '오늘';
+    return '${diff}일 전';
   }
 
   @override
   Widget build(BuildContext context) {
-    final reviews = _sortedReviews;
-
     return Scaffold(
       backgroundColor: AppColors.grey_1,
       appBar: AppBar(
@@ -232,79 +134,67 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(20),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 정렬 드롭다운
+                // 상단 정렬 드롭다운
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      popupMenuTheme: const PopupMenuThemeData(
-                        color: Colors.white,
-                        surfaceTintColor: Colors.white,
+                  child: Container(
+                    height: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.main,
+                        width: 1,
                       ),
                     ),
-                    child: PopupMenuButton<ReviewSortType>(
-                      onSelected: (value) {
-                        setState(() {
-                          _sortType = value;
-                        });
-                      },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(
-                          value: ReviewSortType.latest,
-                          child: Text('최신순'),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedSort,
+                        isDense: true,
+                        iconSize: 16,
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 16,
+                          color: AppColors.main,
                         ),
-                        PopupMenuItem(
-                          value: ReviewSortType.likes,
-                          child: Text('좋아요순'),
+                        dropdownColor: AppColors.white,
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          fontSize: 12,
+                          color: AppColors.main,
                         ),
-                        PopupMenuItem(
-                          value: ReviewSortType.oldest,
-                          child: Text('오래된순'),
-                        ),
-                        PopupMenuItem(
-                          value: ReviewSortType.ratingHigh,
-                          child: Text('별점높은순'),
-                        ),
-                        PopupMenuItem(
-                          value: ReviewSortType.ratingLow,
-                          child: Text('별점낮은순'),
-                        ),
-                      ],
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.grey_3),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _sortLabel(_sortType),
-                              style: AppTextStyles.pretendard_regular.copyWith(
-                                fontSize: 13,
-                                color: AppColors.grey_7,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.arrow_drop_down,
-                              size: 18,
-                              color: AppColors.grey_7,
-                            ),
-                          ],
-                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: '최신순',
+                            child: Text('최신순'),
+                          ),
+                          DropdownMenuItem(
+                            value: '좋아요순',
+                            child: Text('좋아요순'),
+                          ),
+                          DropdownMenuItem(
+                            value: '오래된순',
+                            child: Text('오래된순'),
+                          ),
+                          DropdownMenuItem(
+                            value: '별점높은순',
+                            child: Text('별점높은순'),
+                          ),
+                          DropdownMenuItem(
+                            value: '별점낮은순',
+                            child: Text('별점낮은순'),
+                          ),
+                        ],
+                        onChanged: _changeSort,
                       ),
                     ),
                   ),
@@ -313,7 +203,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
                 // 리뷰 리스트
                 Expanded(
-                  child: reviews.isEmpty
+                  child: _reviews.isEmpty
                       ? Center(
                     child: Text(
                       '작성한 리뷰가 없습니다.',
@@ -323,15 +213,15 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                     ),
                   )
                       : ListView.separated(
-                    itemCount: reviews.length,
+                    itemCount: _reviews.length,
                     separatorBuilder: (_, __) =>
                     const SizedBox(height: 24),
                     itemBuilder: (context, index) {
-                      final review = reviews[index];
-                      return _ReviewCard(
+                      final review = _reviews[index];
+                      return _ReviewTile(
                         review: review,
-                        timeAgo: _formatTimeAgo(review.createdAt),
-                        onDelete: () => _confirmDelete(review),
+                        daysAgoText: _formatDaysAgo(review.createdAt),
+                        onDelete: () => _deleteReview(review),
                       );
                     },
                   ),
@@ -345,40 +235,31 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   }
 }
 
-enum ReviewSortType {
-  latest,
-  likes,
-  oldest,
-  ratingHigh,
-  ratingLow,
-}
-
 class _Review {
-  final String id;
-  final String placeName;
-  final int rating; // 1~5, int만
+  final int id;
+  final String restaurantName;
+  final int rating;
+  final DateTime createdAt;
   final String content;
   final int likes;
-  final DateTime createdAt;
 
   _Review({
     required this.id,
-    required this.placeName,
+    required this.restaurantName,
     required this.rating,
+    required this.createdAt,
     required this.content,
     required this.likes,
-    required this.createdAt,
   });
 }
-
-class _ReviewCard extends StatelessWidget {
+class _ReviewTile extends StatelessWidget {
   final _Review review;
-  final String timeAgo;
+  final String daysAgoText;
   final VoidCallback onDelete;
 
-  const _ReviewCard({
+  const _ReviewTile({
     required this.review,
-    required this.timeAgo,
+    required this.daysAgoText,
     required this.onDelete,
   });
 
@@ -387,26 +268,24 @@ class _ReviewCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 작성 시간 + 삭제 버튼
+        // "1일 전" + "삭제"
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              timeAgo,
+              daysAgoText,
               style: AppTextStyles.pretendard_regular.copyWith(
                 fontSize: 13,
                 color: AppColors.grey_5,
               ),
             ),
+            const Spacer(),
             GestureDetector(
               onTap: onDelete,
               child: Text(
                 '삭제',
                 style: AppTextStyles.pretendard_regular.copyWith(
                   fontSize: 13,
-                  color: AppColors.grey_5,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.grey_4,
+                  color: AppColors.grey_4,
                 ),
               ),
             ),
@@ -414,46 +293,48 @@ class _ReviewCard extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // 이미지 + 가게 이름 + 별점
+        // 이미지 + 가게 이름 / 별점
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 음식 이미지 (지금은 placeholder, 나중에 asset으로 교체)
-            Container(
-              width: 96,
-              height: 96,
-              decoration: BoxDecoration(
-                color: AppColors.grey_1,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.restaurant,
-                color: AppColors.grey_5,
-                size: 32,
+            // 음식 사진
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 80,
+                height: 80,
+                color: AppColors.grey_2,
               ),
             ),
             const SizedBox(width: 12),
+
+            // 가게 이름 + 별점
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 가게 이름
                   Text(
-                    review.placeName,
+                    review.restaurantName,
                     style: AppTextStyles.pretendard_medium.copyWith(
                       fontSize: 15,
-                      color: AppColors.grey_8,
+                      color: AppColors.grey_7,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
+
+                  // 별점 + 점수
                   Row(
                     children: [
-                      _StarRating(rating: review.rating),
+                      _StarRow(rating: review.rating),
                       const SizedBox(width: 6),
                       Text(
-                        review.rating.toString(), // 4.5 대신 4, 5 이런 식
+                        review.rating.toString(),
                         style: AppTextStyles.pretendard_regular.copyWith(
                           fontSize: 13,
-                          color: AppColors.grey_7,
+                          color: AppColors.grey_6,
                         ),
                       ),
                     ],
@@ -463,6 +344,7 @@ class _ReviewCard extends StatelessWidget {
             ),
           ],
         ),
+
         const SizedBox(height: 8),
 
         // 리뷰 내용
@@ -470,26 +352,28 @@ class _ReviewCard extends StatelessWidget {
           review.content,
           style: AppTextStyles.pretendard_regular.copyWith(
             fontSize: 13,
-            color: AppColors.grey_7,
-            height: 1.4,
+            color: AppColors.grey_6,
           ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
+
         const SizedBox(height: 8),
 
-        // 좋아요
+        // 하트 + 좋아요 수 (리뷰 아래)
         Row(
           children: [
             const Icon(
               Icons.favorite_border,
-              size: 18,
-              color: AppColors.grey_5,
+              size: 16,
+              color: AppColors.grey_4,
             ),
             const SizedBox(width: 4),
             Text(
               review.likes.toString(),
               style: AppTextStyles.pretendard_regular.copyWith(
-                fontSize: 13,
-                color: AppColors.grey_7,
+                fontSize: 12,
+                color: AppColors.grey_5,
               ),
             ),
           ],
@@ -499,23 +383,21 @@ class _ReviewCard extends StatelessWidget {
   }
 }
 
-class _StarRating extends StatelessWidget {
-  final int rating; // 1~5
+class _StarRow extends StatelessWidget {
+  final int rating;
 
-  const _StarRating({required this.rating});
+  const _StarRow({required this.rating});
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         final filled = index < rating;
-        return Padding(
-          padding: EdgeInsets.only(right: index == 4 ? 0 : 0.0),
-          child: Icon(
-            filled ? Icons.star : Icons.star_border,
-            size: 15,
-            color: filled ? Colors.amber : AppColors.grey_3,
-          ),
+        return Icon(
+          filled ? Icons.star : Icons.star_border,
+          size: 16,
+          color: Colors.amber,
         );
       }),
     );

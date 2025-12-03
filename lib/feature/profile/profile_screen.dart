@@ -5,7 +5,7 @@ import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
 import 'package:campit_frontend/feature/account/login_screen.dart';
 import 'package:campit_frontend/feature/profile/settings_screen.dart';
 import 'package:campit_frontend/feature/profile/my_reviews_screen.dart';
-
+import 'package:campit_frontend/feature/profile/liked_restaurants_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppColors.white,
           elevation: 0,
           centerTitle: false,
-          titleSpacing: 24,
+          titleSpacing: 16, // 24 -> 16으로 살짝 줄임
           title: Text(
             '프로필',
             style: AppTextStyles.pretendard_bold.copyWith(
@@ -61,7 +61,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              // 가로 패딩 24 -> 16
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -99,7 +100,7 @@ class _ProfileHeaderCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -174,13 +175,13 @@ class _ProfileHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          // 통계 카드 (작성한 리뷰 / 받은 좋아요)
+          // 통계 카드 (작성한 리뷰 / 좋아요한 식당)
           Row(
             children: [
               Expanded(
                 child: _StatCard(
                   label: '작성한 리뷰',
-                  value: '12', //TODO: 백엔드 연동 후 실제 리뷰 개수로 교체
+                  value: '12', // TODO: 백엔드 연동 후 실제 리뷰 개수로 교체
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -191,21 +192,28 @@ class _ProfileHeaderCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: _StatCard(
-                  label: '받은 좋아요',
-                  value: '45', //TODO: 백엔드 연동 후 실제 좋아요 개수로 교체
+                  label: '좋아요한 식당',
+                  value: '3', // TODO: 백엔드 연동 후 실제 좋아요한 식당 개수로 교체
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const LikedRestaurantsScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
-        ],  
+        ],
       ),
     );
   }
 }
 
-/// 통계 카드 (작성한 리뷰 / 받은 좋아요)
+/// 통계 카드
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -267,7 +275,7 @@ class _PreferenceSection extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24), // 20->16로 줄임
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -412,7 +420,7 @@ class _SettingsItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
             Icon(
