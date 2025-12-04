@@ -54,9 +54,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
-        final loginResponse = jsonDecode(response.body);
-        final accessToken = loginResponse.data['token'].toString();
-        debugPrint('-----login response is: $loginResponse-----');
+        final accessToken = response.body;
+        //final accessToken = loginResponse.data['token'].toString();
+        //debugPrint('-----login response is: $loginResponse-----');
 
         // 2. 토큰 저장
         await StorageService.saveAccessToken(accessToken);

@@ -128,7 +128,10 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const SignUpStep2Screen(),
+            builder: (_) => SignUpStep2Screen(
+              email: _email,
+              schoolId: 1,
+            ),
           ),
         );
       } else {
