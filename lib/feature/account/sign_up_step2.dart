@@ -1,9 +1,19 @@
+import 'package:campit_frontend/services/storage_service.dart';
+import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SignUpStep2Screen extends StatefulWidget {
-  const SignUpStep2Screen({super.key});
+  final int schoolId;
+  final String email;
+  const SignUpStep2Screen({
+    super.key,
+    required this.schoolId,
+    required this.email,
+  });
 
   @override
   State<SignUpStep2Screen> createState() => _SignUpStep2ScreenState();
@@ -19,8 +29,79 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
 
   bool get isValid =>
       nicknameController.text.isNotEmpty &&
-          passwordController.text.length >= 8 &&
+          passwordController.text.length >= 4 &&
           passwordCheckController.text == passwordController.text;
+
+  void register() async{
+    try{
+      final _schoolId = widget.schoolId;
+      final _email = widget.email;
+      final _nickname = nicknameController.text.trim();
+      final _password = passwordController.text.trim();
+      final _passwordCheck = passwordCheckController.text.trim();
+      final _profileImage = 'exampleImageUrl';
+      final _gender = 'MALE';
+
+      if (_password.toString() != _passwordCheck.toString()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('비밀번호와 비밀번호 확인이 일치하지 않습니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      if (_nickname.isEmpty || _password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('닉네임과 비밀번호를 모두 입력하세요.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      final registerUri = Uri.parse('$baseUrl/join').toString();
+      final response = await http.post(
+        Uri.parse(registerUri),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'schoolId': _schoolId,
+          'email': _email,
+          'password': _password,
+          'nickname': _nickname,
+          'profileImage': _profileImage,
+          'gender': _gender
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        //final registerResponse = jsonDecode(response.body);
+        //여기서 오류나는듯
+        //debugPrint('-----register response is: $registerResponse-----');
+
+        Navigator.pushNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('회원가입에 실패했습니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('회원가입 처리 중 오류가 발생했습니다: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      debugPrint('register Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +175,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               const SizedBox(height: 6),
               _InputField(
                 controller: passwordController,
-                hint: '8자 이상',
+                hint: '4자 이상',
                 obscure: hidePw,
                 onSuffixTap: () {
                   setState(() => hidePw = !hidePw);
@@ -123,19 +204,24 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
 
               const Spacer(),
 
-              Container(
-                height: 52,
-                decoration: BoxDecoration(
-                  color:
-                  isValid ? AppColors.main : AppColors.main.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  '가입 완료',
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    color: AppColors.white,
-                    fontSize: 16,
+              TextButton(
+                onPressed: () {
+                  register();
+                },
+                child: Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color:
+                    isValid ? AppColors.main : AppColors.main.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '가입 완료',
+                    style: AppTextStyles.pretendard_regular.copyWith(
+                      color: AppColors.white,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),

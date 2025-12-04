@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:campit_frontend/feature/home/home_screen.dart';
+import 'package:campit_frontend/feature/home/preference_screen.dart';
 import 'package:campit_frontend/feature/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginScreen(),
         //'/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
+        '/preference': (context) => FoodPreferenceScreen(),
         '/map': (context) => MapScreen(),
         '/profile': (context) => ProfileScreen(),
       },

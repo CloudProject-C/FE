@@ -1,4 +1,6 @@
 import 'package:campit_frontend/feature/home/preference_screen.dart';
+import 'package:campit_frontend/services/storage_service.dart';
+import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
@@ -6,6 +8,8 @@ import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:campit_frontend/feature/account/sign_up_step1.dart';
 import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +22,68 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool obscure = true;
+
+  void login(String id, String pw) async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    debugPrint('Login Attempt: ID: $id, PW: $pw');
+
+    if (id.isEmpty || pw.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('아이디와 비밀번호를 모두 입력하세요.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    try{
+      // 1. 로그인 API 호출
+      final loginUri = Uri.parse('$baseUrl/login').toString();
+
+      final response = await http.post(
+        Uri.parse(loginUri),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final accessToken = response.body;
+        //final accessToken = loginResponse.data['token'].toString();
+        //debugPrint('-----login response is: $loginResponse-----');
+
+        // 2. 토큰 저장
+        await StorageService.saveAccessToken(accessToken);
+
+        print("-----my access token is: $accessToken-----");
+
+        Navigator.pushNamed(context, '/preference');
+      } else {
+        //throw Exception('Login failed: ${response.statusCode}');
+        ///throw Exception 대신 email, pw일치하지 않다는 ui바를 호출
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('이메일 또는 비밀번호가 일치하지 않습니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('로그인 중 오류가 발생했습니다: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      debugPrint('Login Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 PrimaryButton(
                   text: '로그인',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FoodPreferenceScreen(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => const FoodPreferenceScreen(),
+                    //   ),
+                    // );
+                    login(emailController.text, passwordController.text);
                   },
                   height: 54,
                   width: double.infinity,
