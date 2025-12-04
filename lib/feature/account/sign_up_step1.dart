@@ -1,7 +1,10 @@
+import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/feature/account/sign_up_step2.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SignUpStep1Screen extends StatefulWidget {
   const SignUpStep1Screen({super.key});
@@ -19,6 +22,136 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
       (selectedSchool != null && selectedSchool!.isNotEmpty) &&
           emailController.text.isNotEmpty &&
           codeController.text.isNotEmpty;
+
+  void sendEmail() async {
+    // try{
+    //   final email = emailController.text.trim();
+    //   final verifyEmailUri = Uri.parse('$baseUrl/email/send-email');
+    //   final response = await http.post(
+    //     verifyEmailUri,
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: jsonEncode({
+    //       'email': email
+    //     })
+    //   );
+    //
+    //   if (response.statusCode == 200) {
+    //     final verifyEmailResponse = jsonDecode(response.body);
+    //     final code = verifyEmailResponse['code'].toString();
+    //     debugPrint('----- response is: $verifyEmailResponse-----');
+    //   } else {
+    //     //throw Exception('verifyEmail failed: ${response.statusCode}');
+    //     ///throw Exception 대신 인증 중 오류가 발생했다는 ui바를 호출
+    //     debugPrint(jsonDecode(response.body).toString());
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('인증 중 서버에서 오류가 발생했습니다.'),
+    //         duration: Duration(seconds: 2),
+    //       ),
+    //     );
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('이메일 인증 중 클라이언트에서 오류가 발생했습니다: $e'),
+    //       duration: const Duration(seconds: 2),
+    //     ),
+    //   );
+    //   debugPrint('Login Error: $e');
+    // }
+    try {
+      final email = emailController.text.trim();
+
+      // email을 query parameter로 포함
+      final verifyEmailUri = Uri.parse('$baseUrl/email/send-email')
+          .replace(queryParameters: {
+        'email': email,
+      });
+
+      final response = await http.post(
+        verifyEmailUri,
+        headers: {
+          'Content-Type': 'application/json', // 서버가 요구하면 유지, 아니면 삭제 가능
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final verifyEmailResponse = jsonDecode(response.body);
+
+        final code = verifyEmailResponse['code'].toString();
+
+        debugPrint('----- response is: $verifyEmailResponse -----');
+      } else {
+        final decodedError = jsonDecode(response.body);
+        debugPrint(decodedError.toString());
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('인증 중 서버에서 오류가 발생했습니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이메일 인증 중 클라이언트에서 오류가 발생했습니다: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      debugPrint('Send-Email Error: $e');
+    }
+  }
+
+  void verifyCode() async {
+    try{
+      final _email = emailController.text.trim();
+      final _code = codeController.text.trim(); //int인데 괜찮을지?
+      final verifyCodeUri = Uri.parse('$baseUrl/email/verify');
+      final response = await http.post(
+        verifyCodeUri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': _email,
+          'code': _code
+        })
+      );
+
+      if (response.statusCode == 200) {
+        final verifyCodeResponse = jsonDecode(response.body);
+        debugPrint('----- response is: $verifyCodeResponse-----');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SignUpStep2Screen(),
+          ),
+        );
+      } else {
+        //throw Exception('verifyCode failed: ${response.statusCode}');
+        ///throw Exception 대신 코드 인증 중 오류가 발생했다는 ui바를 호출
+        debugPrint(jsonDecode(response.body).toString());
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('코드 인증 중 서버에서 오류가 발생했습니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('코드 인증 중 클라이언트에서 오류가 발생했습니다: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      debugPrint('Code Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,18 +278,23 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: AppColors.main.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                '인증 코드',
-                                style: AppTextStyles.pretendard_regular
-                                    .copyWith(
-                                  color: AppColors.white,
+                            TextButton(
+                              onPressed: () {
+                                sendEmail();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 14),
+                                decoration: BoxDecoration(
+                                  color: AppColors.main.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '인증 코드',
+                                  style: AppTextStyles.pretendard_regular
+                                      .copyWith(
+                                    color: AppColors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -192,12 +330,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         GestureDetector(
                           onTap: isFormValid
                               ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const SignUpStep2Screen(),
-                              ),
-                            );
+                            verifyCode();
                           }
                               : null,
                           child: Container(
