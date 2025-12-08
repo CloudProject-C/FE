@@ -64,6 +64,8 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         // 가로 패딩 24 → 16
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
+          width: double.infinity,
+          height: 54,
           text: '변경하기',
           onTap: () {
             // TODO: 비밀번호 변경 로직
