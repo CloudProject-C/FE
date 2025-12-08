@@ -15,10 +15,10 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   bool _loading = true;
   List<Map<String, dynamic>> _restaurants = [];
-
-  // 목데이터: 장르, 좋아요, 리뷰, 거리, 매칭률(퍼센트)
-  final List<String> genres = ["양식", "치킨", "디저트", "한식", "분식"];
-  final Random _random = Random();
+  //
+  // // 목데이터: 장르, 좋아요, 리뷰, 거리, 매칭률(퍼센트)
+  // final List<String> genres = ["양식", "치킨", "디저트", "한식", "분식"];
+  // final Random _random = Random();
 
   @override
   void initState() {
@@ -28,20 +28,28 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _loadRestaurants() async {
     // 현재 위치 없이 임의 좌표로 테스트
-    const double fakeLat = 37.12345;
-    const double fakeLng = 127.12345;
+    const double lat = 37.2479;
+    const double lng = 127.0772;
 
-    final data = await MapService.fetchRestaurants(fakeLat, fakeLng);
+    final data = await MapService.fetchRestaurants(lat, lng);
 
+    print(data);
+
+    if(data == null) return;
+
+    if (!mounted) return;
     setState(() {
       _restaurants = data.map((r) {
         return {
           ...r,
-          "genre": genres[_random.nextInt(genres.length)],
-          "distance": "${100 + _random.nextInt(200)}m",
-          "likes": 30 + _random.nextInt(150),
-          "reviews": 5 + _random.nextInt(50),
-          "match": 80 + _random.nextInt(20), // 80~99%
+          "placeName": r["placeName"],
+          "genre": r["categoryName"],
+          "distance": "${r["distance"]}m",
+          "likes": r["placeLikeCount"],
+          "reviews": r["reviewCount"],
+          "match": r["preferencePercent"], // 80~99%
+          //"isLiked": r["isLiked"],
+          //"rating": r["rating"],
         };
       }).toList();
 
@@ -51,6 +59,7 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(" length of restaurant is: ${_restaurants.length}");
     return Container(
       color: AppColors.white,
       child: _loading
@@ -101,7 +110,7 @@ class _ListScreenState extends State<ListScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    item["name"],
+                    item["placeName"],
                     style: AppTextStyles.pretendard_regular.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,

@@ -39,6 +39,7 @@ class _MapState extends State<Map> {
         _animateCamera(_prevLocation, current);
       }
 
+      if (!mounted) return;
       setState(() {
         _myLocation = current;
       });
@@ -78,6 +79,7 @@ class _MapState extends State<Map> {
     }
 
     _myLocation = await _location.getLocation();
+    if (!mounted) return;
     setState(() {});
   }
 
@@ -89,6 +91,8 @@ class _MapState extends State<Map> {
       _myLocation!.latitude!,
       _myLocation!.longitude!,
     );
+
+    if(restaurants == null) return;
 
     for (final r in restaurants) {
       final marker = NMarker(
