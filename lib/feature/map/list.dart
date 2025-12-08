@@ -74,7 +74,7 @@ class _ListScreenState extends State<ListScreen> {
           "reviews": r["reviewCount"],
           "match": r["preferencePercent"], // 80~99%
           //"isLiked": r["isLiked"],
-          //"rating": r["rating"],
+          "rating": r["rating"],
         };
       }).toList();
 
@@ -195,7 +195,7 @@ class _ListScreenState extends State<ListScreen> {
 
             const SizedBox(height: 12),
 
-            /// 좋아요 + 리뷰
+            /// 좋아요 + 리뷰 + 별점
             Row(
               children: [
                 Icon(Icons.favorite_border,
@@ -214,6 +214,18 @@ class _ListScreenState extends State<ListScreen> {
                 const SizedBox(width: 4),
                 Text(
                   "${item['reviews']}",
+                  style: AppTextStyles.pretendard_regular.copyWith(
+                    fontSize: 13,
+                    color: AppColors.grey_4,
+                  ),
+                ),
+                const SizedBox(width: 16), // 간격
+
+                // 3. 별점 (Rating)
+                const Icon(Icons.star, color: Colors.amber, size: 18), // 노란색 별
+                const SizedBox(width: 4),
+                Text(
+                  "${item['rating']}", // 점수 표시 (예: 4.5)
                   style: AppTextStyles.pretendard_regular.copyWith(
                     fontSize: 13,
                     color: AppColors.grey_4,
