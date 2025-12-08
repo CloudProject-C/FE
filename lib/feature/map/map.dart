@@ -65,6 +65,18 @@ class _MapState extends State<Map> {
     });
   }
 
+  @override
+  void dispose() {
+    // 1. 타이머 정지 (가장 중요)
+    _lerpTimer?.cancel();
+    _cameraLerpTimer?.cancel();
+
+    // 2. 지도 컨트롤러 해제 (선택 사항이지만 권장)
+    _mapController = null;
+
+    super.dispose();
+  }
+
   Future<void> _initLocation() async {
     bool enabled = await _location.serviceEnabled();
     if (!enabled) {
@@ -97,8 +109,8 @@ class _MapState extends State<Map> {
     for (final r in restaurants) {
       final marker = NMarker(
         id: r['id'].toString(),
-        position: NLatLng(r['lat'], r['lng']),
-        caption: NOverlayCaption(text: r['name']),
+        position: NLatLng(r['latitude'], r['longitude']),
+        caption: NOverlayCaption(text: r['placeName']),
       );
 
       marker.setOnTapListener((overlay) async {
@@ -312,7 +324,7 @@ class _MapState extends State<Map> {
 
                     _mapController?.addOverlay(_myDot!);
 
-                    await _loadNearbyRestaurants();
+                    //await _loadNearbyRestaurants();
                   },
                   onCameraChange: (reason, animated) {
                     if (_followOn && reason == NCameraUpdateReason.gesture) {

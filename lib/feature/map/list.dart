@@ -4,6 +4,7 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/services/map/map_service.dart';
 import 'dart:math';
+import 'package:geolocator/geolocator.dart';
 
 class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
@@ -27,11 +28,35 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _loadRestaurants() async {
-    // 현재 위치 없이 임의 좌표로 테스트
-    const double lat = 37.2479;
-    const double lng = 127.0772;
 
-    final data = await MapService.fetchRestaurants(lat, lng);
+    // 1. 위치 권한 확인 및 요청
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // 권한 거부됨 -> 기본 위치(예: 서울역)나 에러 처리
+        print('위치 권한이 거부되었습니다.');
+        setState(() => _loading = false);
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // 권한 영구 거부됨 -> 설정으로 유도하거나 에러 처리
+      print('위치 권한이 영구적으로 거부되었습니다.');
+      setState(() => _loading = false);
+      return;
+    }
+
+    // 2. 현재 위치 가져오기
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    print("현재 위치: ${position.latitude}, ${position.longitude}");
+    // 현재 위치 없이 임의 좌표로 테스트
+
+    final data = await MapService.fetchRestaurants(position.latitude, position.longitude);
 
     print(data);
 
