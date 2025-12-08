@@ -25,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // 에러가 발생했는지 확인 (이 부분이 없어서 원인을 모르는 것임)
+          if (snapshot.hasError) {
+            debugPrint("Snapshot Error: ${snapshot.error}"); // 콘솔에도 출력
+            return Center(child: Text('에러 발생: ${snapshot.error}'));
+          }
+
           if (!snapshot.hasData || snapshot.data == null) {
             return const Center(child: Text('데이터를 불러오지 못했습니다.'));
           }
