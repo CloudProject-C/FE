@@ -112,7 +112,7 @@ class _MapState extends State<Map> {
       // 데이터 안전하게 파싱 (String으로 올 수도 있으므로 toString 후 parse)
       final lat = double.tryParse(r['latitude'].toString()) ?? 0.0;
       final lng = double.tryParse(r['longitude'].toString()) ?? 0.0;
-      final id = r['id'].toString();
+      final id = r['placeId'].toString();
       final name = r['placeName'] ?? '이름 없음';
 
       // 좌표가 0.0이면 마커 생성 스킵
