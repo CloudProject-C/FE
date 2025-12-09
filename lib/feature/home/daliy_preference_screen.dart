@@ -4,14 +4,14 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/feature/home/home_screen.dart';
 
-class FoodPreferenceScreen extends StatefulWidget {
-  const FoodPreferenceScreen({super.key});
+class DaliyFoodPreferenceScreen extends StatefulWidget {
+  const DaliyFoodPreferenceScreen({super.key});
 
   @override
-  State<FoodPreferenceScreen> createState() => _FoodPreferenceScreenState();
+  State<DaliyFoodPreferenceScreen> createState() => _DaliyFoodPreferenceScreenState();
 }
 
-class _FoodPreferenceScreenState extends State<FoodPreferenceScreen> {
+class _DaliyFoodPreferenceScreenState extends State<DaliyFoodPreferenceScreen> {
   final List<String> items = [
     "면",
     "밥",
@@ -47,22 +47,22 @@ class _FoodPreferenceScreenState extends State<FoodPreferenceScreen> {
                   children: [
                     Image.asset(
                       AppAssets.logo_orange,
-                      height: 80,
+                      height: 110,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      '선호하는 음식을 선택해주세요',
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_4,
+                      '오늘 땡기는 음식을 선택하고 식당을\n추천받아보세요!',
+                      style: AppTextStyles.pretendard_bold.copyWith(
+                        color: AppColors.main,
                         fontSize: 18,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 20),
                     Text(
-                      'AI가 당신의 취향을 분석해드립니다!',
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_4.withOpacity(0.7),
-                        fontSize: 14,
+                      '가입 시 조사한 선호도와 함께 가중치를\n매겨 식당별 선호도 매칭률 %를 계산합니다.\n(매 로그인 시 진행)',
+                      style: AppTextStyles.pretendard_medium.copyWith(
+                        color: AppColors.grey_4,
+                        fontSize: 15,
                       ),
                     ),
                   ],

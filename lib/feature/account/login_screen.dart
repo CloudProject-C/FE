@@ -1,4 +1,4 @@
-import 'package:campit_frontend/feature/home/preference_screen.dart';
+import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
 import 'package:campit_frontend/services/storage_service.dart';
 import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
