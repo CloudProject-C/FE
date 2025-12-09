@@ -1,4 +1,5 @@
 import 'package:campit_frontend/feature/map/list.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
@@ -32,52 +33,51 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      bottomNavigationBar: const BottomNavBar(
-        currentRoute: MapScreen.routeName,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-
-            // ⬆ 상단 로고 & 검색창 (UI만 구성, 로직 없음)
-            _buildHeader(),
-
-            const SizedBox(height: 12),
-
-            // ⬆ 필터 영역 (코드만 만들고 기능은 X)
-            _buildFilterArea(),
-
-            const SizedBox(height: 16),
-
-            // ================================
-            //      상단 탭 영역 (지도 / 리스트)
-            // ================================
-            _buildMapTabBar(),
-
-            const SizedBox(height: 10),
-
-            // ================================
-            //       탭에 따른 페이지 전환
-            // ================================
-            Expanded(
-              child: PageView(
-                controller: pageController,
-                physics: const NeverScrollableScrollPhysics(), // 스와이프 금지
-                onPageChanged: (index) {
-                  setState(() {
-                    currentTab = MapTab.values[index];
-                  });
-                },
-                children: const [
-                  Map(),
-                  ListScreen(),
-                ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        bottomNavigationBar: const BottomNavBar(
+          currentRoute: MapScreen.routeName,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Image.asset(
+                AppAssets.logo_orange,
+                width: 100,
               ),
-            ),
-          ],
+              _buildHeader(),
+      
+              const SizedBox(height: 12),
+      
+              _buildFilterArea(),
+      
+              const SizedBox(height: 16),
+      
+              //상단 탭 영역 (지도 / 리스트)
+              _buildMapTabBar(),
+
+              const SizedBox(height: 10),
+      
+              //탭에 따른 페이지 전환
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  physics: const NeverScrollableScrollPhysics(), // 스와이프 금지
+                  onPageChanged: (index) {
+                    setState(() {
+                      currentTab = MapTab.values[index];
+                    });
+                  },
+                  children: const [
+                    Map(),
+                    ListScreen(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -90,10 +90,6 @@ class _MapScreenState extends State<MapScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 36, child: Placeholder()), // 로고 자리
-
-          const SizedBox(height: 14),
-
           // 검색창
           Container(
             height: 44,
@@ -104,7 +100,7 @@ class _MapScreenState extends State<MapScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Row(
               children: [
-                const SizedBox(width: 22, height: 22, child: Placeholder()),
+                const Icon(Icons.search, size: 22, color: AppColors.grey_4),
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
@@ -171,6 +167,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           Expanded(
             child: _MapTabButton(
+              icon: Icons.map,
               tab: MapTab.map,
               label: "지도",
               isActive: currentTab == MapTab.map,
@@ -179,6 +176,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Expanded(
             child: _MapTabButton(
+              icon: Icons.list,
               tab: MapTab.list,
               label: "리스트",
               isActive: currentTab == MapTab.list,
@@ -223,12 +221,14 @@ class _MapScreenState extends State<MapScreen> {
 // 상단 탭 버튼 (지도 / 리스트)
 // ------------------------------
 class _MapTabButton extends StatelessWidget {
+  final IconData icon;
   final MapTab tab;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
 
   const _MapTabButton({
+    required this.icon,
     required this.tab,
     required this.label,
     required this.isActive,
@@ -241,14 +241,19 @@ class _MapTabButton extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          SizedBox(width: 30, height: 30, child: Placeholder()), // 아이콘 자리
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: AppTextStyles.pretendard_regular.copyWith(
-              color: isActive ? AppColors.main : AppColors.grey_4,
-              fontSize: 15,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 22, color: isActive ? AppColors.main : AppColors.grey_4,), // 아이콘 자리
+              const SizedBox(width: 3),
+              Text(
+                label,
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: isActive ? AppColors.main : AppColors.grey_4,
+                  fontSize: 15,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 6),
           Container(
@@ -261,20 +266,3 @@ class _MapTabButton extends StatelessWidget {
     );
   }
 }
-
-// ------------------------------
-// 탭: 지도 페이지
-// ------------------------------
-// class Map extends StatelessWidget {
-//   const Map({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: AppColors.white,
-//       child: const Center(
-//         child: Text("지도 화면 Placeholder"),
-//       ),
-//     );
-//   }
-// }
