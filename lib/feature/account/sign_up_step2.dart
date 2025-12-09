@@ -303,6 +303,7 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        const SizedBox(width: 40),
         Icon(Icons.check_circle,
             color: current >= 1 ? AppColors.main : AppColors.grey_4),
         Expanded(
@@ -313,6 +314,7 @@ class _StepIndicator extends StatelessWidget {
         ),
         Icon(Icons.circle,
             color: current >= 2 ? AppColors.main : AppColors.grey_4),
+        const SizedBox(width: 40),
       ],
     );
   }
