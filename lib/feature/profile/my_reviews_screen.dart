@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
+import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
 import 'package:campit_frontend/services/profile/profile_service.dart';
 
 class MyReviewsScreen extends StatefulWidget {
@@ -14,13 +15,13 @@ class MyReviewsScreen extends StatefulWidget {
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
   List<_ReviewVM> _reviews = [];
 
-  /// 드롭다운
-  String _selectedSort = '최신순';
-
   bool _loading = true;
   bool _error = false;
 
-  static const List<String> _sortLabels = [
+  /// 드롭다운 선택값(한글 라벨)
+  String _selectedSort = '최신순';
+
+  final List<String> _sortItems = const [
     '최신순',
     '좋아요순',
     '오래된순',
@@ -28,27 +29,27 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     '별점낮은순',
   ];
 
-  String _toSortCode(String label) {
+  @override
+  void initState() {
+    super.initState();
+    _loadReviews();
+  }
+
+  String _toApiSort(String label) {
     switch (label) {
       case '최신순':
         return 'LATEST';
-      case '좋아요순':
-        return 'LIKES';
       case '오래된순':
         return 'OLDEST';
       case '별점높은순':
         return 'RATING_HIGH';
       case '별점낮은순':
         return 'RATING_LOW';
+      case '좋아요순':
+        return 'LIKES';
       default:
         return 'LATEST';
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadReviews();
   }
 
   Future<void> _loadReviews() async {
@@ -59,7 +60,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
     try {
       final data = await ProfileService.fetchMyReviews(
-        sort: _toSortCode(_selectedSort),
+        sort: _toApiSort(_selectedSort),
         page: 0,
         size: 50,
       );
@@ -77,13 +78,25 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
       final list = content.map((e) {
         final m = e as Map<String, dynamic>;
+
+        DateTime? createdAt;
+        final rawCreatedAt = m['createdAt'] ?? m['createdDate'] ?? m['createdTime'];
+        if (rawCreatedAt is String && rawCreatedAt.isNotEmpty) {
+          try {
+            createdAt = DateTime.parse(rawCreatedAt);
+          } catch (_) {
+            createdAt = null;
+          }
+        }
+
         return _ReviewVM(
           id: (m['reviewId'] ?? 0) as int,
-          restaurantName: (m['placeName'] ?? '').toString(),
+          placeName: (m['placeName'] ?? '').toString(),
           rating: (m['rating'] ?? 0) as int,
           content: (m['content'] ?? '').toString(),
-          likes: (m['likeCount'] ?? 0) as int,
           imageUrl: m['representativeImageUrl']?.toString(),
+          likeCount: (m['likeCount'] ?? 0) as int,
+          createdAt: createdAt,
         );
       }).toList();
 
@@ -99,13 +112,18 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     }
   }
 
-  /// 드롭다운 변경 시
-  void _changeSort(String? value) {
-    if (value == null) return;
+  void _changeSort(String value) {
     setState(() {
       _selectedSort = value;
     });
     _loadReviews();
+  }
+
+  String _formatDaysAgo(DateTime? date) {
+    if (date == null) return '작성일 정보 없음';
+    final diff = DateTime.now().difference(date).inDays;
+    if (diff <= 0) return '오늘';
+    return '${diff}일 전';
   }
 
   @override
@@ -154,44 +172,14 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 상단 정렬 드롭다운
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Container(
-                    height: 30,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.main,
-                        width: 1,
-                      ),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedSort,
-                        isDense: true,
-                        iconSize: 16,
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 16,
-                          color: AppColors.main,
-                        ),
-                        dropdownColor: AppColors.white,
-                        style: AppTextStyles.pretendard_regular.copyWith(
-                          fontSize: 12,
-                          color: AppColors.main,
-                        ),
-                        items: _sortLabels
-                            .map(
-                              (label) => DropdownMenuItem(
-                            value: label,
-                            child: Text(label),
-                          ),
-                        )
-                            .toList(),
-                        onChanged: _changeSort,
-                      ),
+                  child: SizedBox(
+                    width: 140,
+                    child: CustomDropdownFilter(
+                      selected: _selectedSort,
+                      items: _sortItems,
+                      onSelected: _changeSort,
                     ),
                   ),
                 ),
@@ -203,9 +191,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                       : _error
                       ? Center(
                     child: Text(
-                      '리뷰를 불러오지 못했습니다.',
-                      style:
-                      AppTextStyles.pretendard_regular.copyWith(
+                      '작성한 리뷰를 불러오지 못했습니다.',
+                      style: AppTextStyles.pretendard_regular.copyWith(
                         color: AppColors.grey_5,
                       ),
                     ),
@@ -214,8 +201,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                       ? Center(
                     child: Text(
                       '작성한 리뷰가 없습니다.',
-                      style: AppTextStyles.pretendard_regular
-                          .copyWith(
+                      style: AppTextStyles.pretendard_regular.copyWith(
                         color: AppColors.grey_5,
                       ),
                     ),
@@ -226,7 +212,10 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                     const SizedBox(height: 24),
                     itemBuilder: (context, index) {
                       final review = _reviews[index];
-                      return _ReviewTile(review: review);
+                      return _ReviewTile(
+                        review: review,
+                        daysAgoText: _formatDaysAgo(review.createdAt),
+                      );
                     },
                   ),
                 ),
@@ -241,44 +230,49 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
 class _ReviewVM {
   final int id;
-  final String restaurantName;
+  final String placeName;
   final int rating;
   final String content;
-  final int likes;
   final String? imageUrl;
+  final int likeCount;
+  final DateTime? createdAt;
 
   _ReviewVM({
     required this.id,
-    required this.restaurantName,
+    required this.placeName,
     required this.rating,
     required this.content,
-    required this.likes,
     required this.imageUrl,
+    required this.likeCount,
+    required this.createdAt,
   });
 }
 
 class _ReviewTile extends StatelessWidget {
   final _ReviewVM review;
+  final String daysAgoText;
 
   const _ReviewTile({
     required this.review,
+    required this.daysAgoText,
   });
 
   @override
   Widget build(BuildContext context) {
+    final safeRating = review.rating.clamp(0, 5);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              '',
+              daysAgoText,
               style: AppTextStyles.pretendard_regular.copyWith(
                 fontSize: 13,
                 color: AppColors.grey_5,
               ),
             ),
-            const Spacer(),
           ],
         ),
         const SizedBox(height: 8),
@@ -287,24 +281,29 @@ class _ReviewTile extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 음식 사진
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 width: 80,
                 height: 80,
                 color: AppColors.grey_2,
+                child: (review.imageUrl != null && review.imageUrl!.isNotEmpty)
+                    ? Image.network(
+                  review.imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                )
+                    : const SizedBox.shrink(),
               ),
             ),
             const SizedBox(width: 12),
 
-            // 오른쪽: 가게 이름 + 별점만
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    review.restaurantName,
+                    review.placeName,
                     style: AppTextStyles.pretendard_medium.copyWith(
                       fontSize: 15,
                       color: AppColors.grey_7,
@@ -316,7 +315,7 @@ class _ReviewTile extends StatelessWidget {
 
                   Row(
                     children: [
-                      _StarRow(rating: review.rating),
+                      _StarRow(rating: safeRating),
                       const SizedBox(width: 6),
                       Text(
                         review.rating.toString(),
@@ -348,7 +347,7 @@ class _ReviewTile extends StatelessWidget {
 
         const SizedBox(height: 8),
 
-        // 하트 + 좋아요 수
+        // 좋아요 수
         Row(
           children: [
             const Icon(
@@ -358,7 +357,7 @@ class _ReviewTile extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              review.likes.toString(),
+              review.likeCount.toString(),
               style: AppTextStyles.pretendard_regular.copyWith(
                 fontSize: 12,
                 color: AppColors.grey_5,
