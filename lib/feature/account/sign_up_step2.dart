@@ -77,7 +77,6 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
           'gender': _gender
         }),
       );
-
       if (response.statusCode == 200) {
         //final registerResponse = jsonDecode(response.body);
         //여기서 오류나는듯

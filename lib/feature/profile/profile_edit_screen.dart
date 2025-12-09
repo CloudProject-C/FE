@@ -72,6 +72,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
           text: '저장',
+          height: 52,
+          width: double.infinity,
           onTap: () {
             Navigator.of(context).pop(nicknameController.text.trim());
           },
