@@ -22,6 +22,19 @@ class _MapScreenState extends State<MapScreen> {
   MapTab currentTab = MapTab.map;
   final PageController pageController = PageController();
 
+  // 필터 영역
+  String selectedSort = "AI 추천순";
+  String selectedCategory = "한식";
+
+  final Map<String, String> Kor_Eng_Dictionary = {
+    "한식": "KOREAN",
+    "양식": "WESTERN",
+    "일식": "JAPANESE",
+    "중식": "CHINESE",
+    "카페": "CAFE",
+    "디저트": "DESSERT",
+  };
+
   void _onTabSelected(MapTab tab) {
     setState(() => currentTab = tab);
     pageController.animateToPage(
@@ -70,8 +83,8 @@ class _MapScreenState extends State<MapScreen> {
                       currentTab = MapTab.values[index];
                     });
                   },
-                  children: const [
-                    Map(),
+                  children: [
+                    MapArea(category: Kor_Eng_Dictionary[selectedCategory]),
                     ListScreen(),
                   ],
                 ),
@@ -126,10 +139,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // 필터 영역
-  String selectedSort = "AI 추천순";
-  String selectedCategory = "전체";
-
   Widget _buildFilterArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -148,7 +157,7 @@ class _MapScreenState extends State<MapScreen> {
           Expanded(
             child: CustomDropdownFilter(
               selected: selectedCategory,
-              items: const ["전체", "한식", "양식", "분식"],
+              items: const ["한식", "양식", "일식", "중식", "카페", "디저트"],
               onSelected: (value) {
                 setState(() => selectedCategory = value);
               },

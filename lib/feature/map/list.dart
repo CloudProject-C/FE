@@ -56,7 +56,11 @@ class _ListScreenState extends State<ListScreen> {
     print("현재 위치: ${position.latitude}, ${position.longitude}");
     // 현재 위치 없이 임의 좌표로 테스트
 
-    final data = await MapService.fetchRestaurants(position.latitude, position.longitude);
+    final data = await MapService.fetchRestaurants(
+      position.latitude,
+      position.longitude,
+      category: "KOREAN",
+    );
 
     print(data);
 

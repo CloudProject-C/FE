@@ -7,14 +7,19 @@ import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campit_frontend/services/map/map_service.dart';
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+class MapArea extends StatefulWidget {
+  final String? category;
+
+  const MapArea({
+    super.key,
+    required this.category,
+  });
 
   @override
-  State<Map> createState() => _MapState();
+  State<MapArea> createState() => _MapAreaState();
 }
 
-class _MapState extends State<Map> {
+class _MapAreaState extends State<MapArea> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
@@ -65,6 +70,27 @@ class _MapState extends State<Map> {
     });
   }
 
+  // [추가] 부모 위젯(MapScreen)의 상태가 변해서 이 위젯이 다시 빌드될 때 호출됨
+  @override
+  void didUpdateWidget(covariant MapArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 카테고리가 변경되었다면 식당 목록 다시 불러오기
+    if (widget.category != oldWidget.category) {
+      print("카테고리 변경 감지: ${oldWidget.category} -> ${widget.category}");
+
+      // 기존 마커 지우기 (선택 사항)
+      _mapController?.clearOverlays();
+
+      // 변경된 카테고리로 다시 로드
+      _loadNearbyRestaurants();
+    }
+
+    if (_myDot != null) {
+      _mapController?.addOverlay(_myDot!);
+    }
+  }
+
   @override
   void dispose() {
     // 1. 타이머 정지 (가장 중요)
@@ -103,6 +129,7 @@ class _MapState extends State<Map> {
     final restaurants = await MapService.fetchRestaurants(
       _myLocation!.latitude!,
       _myLocation!.longitude!,
+      category: widget.category,
     );
 
     if (restaurants == null || restaurants.isEmpty) return;
