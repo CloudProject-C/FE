@@ -23,7 +23,7 @@ class _MapScreenState extends State<MapScreen> {
   final PageController pageController = PageController();
 
   // 필터 영역
-  String selectedSort = "AI 추천순";
+  String selectedSort = "추천순(유사도)";
   String selectedCategory = "한식";
 
   final Map<String, String> Kor_Eng_Dictionary = {
@@ -33,6 +33,11 @@ class _MapScreenState extends State<MapScreen> {
     "중식": "CHINESE",
     "카페": "CAFE",
     "디저트": "DESSERT",
+
+    "거리순": "DISTANCE",
+    "평점순": "LIKES",
+    "리뷰 많은 순": "REVIEW",
+    "추천순(유사도)": "RECOMMENDATION",
   };
 
   void _onTabSelected(MapTab tab) {
@@ -85,7 +90,10 @@ class _MapScreenState extends State<MapScreen> {
                   },
                   children: [
                     MapArea(category: Kor_Eng_Dictionary[selectedCategory]),
-                    ListScreen(category: Kor_Eng_Dictionary[selectedCategory],),
+                    ListScreen(
+                      category: Kor_Eng_Dictionary[selectedCategory],
+                      sort: Kor_Eng_Dictionary[selectedSort] ?? "",
+                    ),
                   ],
                 ),
               ),
@@ -147,7 +155,7 @@ class _MapScreenState extends State<MapScreen> {
           Expanded(
             child: CustomDropdownFilter(
               selected: selectedSort,
-              items: const ["최신순", "좋아요순", "AI 추천순"],
+              items: const ["추천순(유사도)", "거리순", "리뷰 많은 순", "평점순"],
               onSelected: (value) {
                 setState(() => selectedSort = value);
               },

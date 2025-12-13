@@ -8,10 +8,12 @@ import 'package:geolocator/geolocator.dart';
 
 class ListScreen extends StatefulWidget {
   final String? category;
+  final String sort;
 
   const ListScreen({
     super.key,
     required this.category,
+    required this.sort,
   });
 
   @override
@@ -73,6 +75,7 @@ class _ListScreenState extends State<ListScreen> {
       position.latitude,
       position.longitude,
       category: widget.category, // 전달받은 카테고리 적용
+      sort: widget.sort
     );
 
     print(data);
