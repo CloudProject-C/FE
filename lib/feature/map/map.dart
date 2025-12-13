@@ -154,46 +154,7 @@ class _MapAreaState extends State<MapArea> {
 
         showDialog(
           context: context,
-          builder: (_) => AlertDialog(
-            title: Text(name),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("카테고리: ${r['categoryName'] ?? '-'}"),
-                const SizedBox(height: 8),
-                Text("거리: ${r['distance']}m"),
-                const SizedBox(height: 8),
-                // Text(info ?? '상세 정보 없음'), // 상세 정보 API가 있다면 사용
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // 다이얼로그 닫기
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const RestaurantDetailScreen(),
-                    ),
-                  );
-                },
-                child: const Text('상세 정보'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _openNaverMap(
-                    _myLocation!.latitude!,
-                    _myLocation!.longitude!,
-                    lat, // 파싱해둔 lat 사용
-                    lng, // 파싱해둔 lng 사용
-                  );
-                },
-                child: const Text('길찾기'),
-              ),
-            ],
-          ),
+          builder: (_) => _customDialog(r, lat, lng),
         );
       });
 
@@ -473,6 +434,49 @@ class _MapAreaState extends State<MapArea> {
           style: const TextStyle(fontSize: 20, color: Colors.black),
         ),
       ),
+    );
+  }
+
+  Widget _customDialog(Map<String, dynamic> restaurantInfo, double lat, double lng) {
+    return AlertDialog(
+      title: Text(restaurantInfo['placeName']),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("카테고리: ${restaurantInfo['categoryName'] ?? '-'}"),
+          const SizedBox(height: 8),
+          Text("거리: ${restaurantInfo['distance']}m"),
+          const SizedBox(height: 8),
+          // Text(info ?? '상세 정보 없음'), // 상세 정보 API가 있다면 사용
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // 다이얼로그 닫기
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const RestaurantDetailScreen(),
+              ),
+            );
+          },
+          child: const Text('상세 정보'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _openNaverMap(
+              _myLocation!.latitude!,
+              _myLocation!.longitude!,
+              lat, // 파싱해둔 lat 사용
+              lng, // 파싱해둔 lng 사용
+            );
+          },
+          child: const Text('길찾기'),
+        ),
+      ],
     );
   }
 }
