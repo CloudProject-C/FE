@@ -94,6 +94,7 @@ class _ListScreenState extends State<ListScreen> {
       _restaurants = data.map((r) {
         return {
           ...r,
+          "id": r["placeId"],
           "placeName": r["placeName"],
           "genre": r["categoryName"],
           "distance": "${r["distance"]}m",
@@ -135,7 +136,9 @@ class _ListScreenState extends State<ListScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RestaurantDetailScreen(),
+            builder: (context) => RestaurantDetailScreen(
+              id: item['id']
+            ),
           ),
         );
       },

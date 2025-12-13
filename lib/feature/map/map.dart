@@ -461,79 +461,79 @@ class _MapAreaState extends State<MapArea> {
     );
   }
 
-  Widget _customDialog(
-      BuildContext context,
-      Map<String, dynamic> restaurantInfo,
-      double lat,
-      double lng,
-      ) {
-    return AlertDialog(
-      backgroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-      contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      title: Text(
-        restaurantInfo['placeName'] ?? '-',
-        style: AppTextStyles.pretendard_medium.copyWith(
-          fontSize: 18,
-          color: AppColors.main,
-        ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _infoText(
-            '카테고리: ${restaurantInfo['categoryName'] ?? '-'}',
-          ),
-          const SizedBox(height: 6),
-          _infoText(
-            '거리: ${restaurantInfo['distance']}m',
-          ),
-        ],
-      ),
-      actions: [
-        Row(
-          children: [
-            Expanded(
-              child: _dialogButton(
-                text: '상세 정보',
-                isPrimary: false,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const RestaurantDetailScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _dialogButton(
-                text: '길찾기',
-                isPrimary: true,
-                onTap: () {
-                  Navigator.pop(context);
-                  _openNaverMap(
-                    _myLocation!.latitude!,
-                    _myLocation!.longitude!,
-                    lat,
-                    lng,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  // Widget _customDialog(
+  //     BuildContext context,
+  //     Map<String, dynamic> restaurantInfo,
+  //     double lat,
+  //     double lng,
+  //     ) {
+  //   return AlertDialog(
+  //     backgroundColor: AppColors.white,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+  //     contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+  //     actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+  //     title: Text(
+  //       restaurantInfo['placeName'] ?? '-',
+  //       style: AppTextStyles.pretendard_medium.copyWith(
+  //         fontSize: 18,
+  //         color: AppColors.main,
+  //       ),
+  //     ),
+  //     content: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         _infoText(
+  //           '카테고리: ${restaurantInfo['categoryName'] ?? '-'}',
+  //         ),
+  //         const SizedBox(height: 6),
+  //         _infoText(
+  //           '거리: ${restaurantInfo['distance']}m',
+  //         ),
+  //       ],
+  //     ),
+  //     actions: [
+  //       Row(
+  //         children: [
+  //           Expanded(
+  //             child: _dialogButton(
+  //               text: '상세 정보',
+  //               isPrimary: false,
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                     builder: (_) => const RestaurantDetailScreen(),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //           const SizedBox(width: 8),
+  //           Expanded(
+  //             child: _dialogButton(
+  //               text: '길찾기',
+  //               isPrimary: true,
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _openNaverMap(
+  //                   _myLocation!.latitude!,
+  //                   _myLocation!.longitude!,
+  //                   lat,
+  //                   lng,
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _infoText(String text) {
     return Text(

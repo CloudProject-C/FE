@@ -8,7 +8,11 @@ import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:location/location.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
-  const RestaurantDetailScreen({super.key});
+  final int id;
+  const RestaurantDetailScreen({
+    super.key,
+    required this.id,
+  });
 
   @override
   State<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
@@ -29,6 +33,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               const _TopBar(),
               const SizedBox(height: 12),
               const _MatchCard(),
+              Text("식당 id: ${widget.id.toString()}"),
               const SizedBox(height: 20),
               const _TitleSection(),
               const SizedBox(height: 16),
