@@ -85,7 +85,7 @@ class _MapScreenState extends State<MapScreen> {
                   },
                   children: [
                     MapArea(category: Kor_Eng_Dictionary[selectedCategory]),
-                    ListScreen(),
+                    ListScreen(category: Kor_Eng_Dictionary[selectedCategory],),
                   ],
                 ),
               ),

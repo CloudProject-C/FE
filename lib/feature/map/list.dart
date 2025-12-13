@@ -7,7 +7,12 @@ import 'dart:math';
 import 'package:geolocator/geolocator.dart';
 
 class ListScreen extends StatefulWidget {
-  const ListScreen({super.key});
+  final String? category;
+
+  const ListScreen({
+    super.key,
+    required this.category,
+  });
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -16,15 +21,23 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   bool _loading = true;
   List<Map<String, dynamic>> _restaurants = [];
-  //
-  // // 목데이터: 장르, 좋아요, 리뷰, 거리, 매칭률(퍼센트)
-  // final List<String> genres = ["양식", "치킨", "디저트", "한식", "분식"];
-  // final Random _random = Random();
 
   @override
   void initState() {
     super.initState();
     _loadRestaurants();
+  }
+
+  // [추가] 부모 위젯에서 전달받은 category가 바뀌면 호출됨
+  @override
+  void didUpdateWidget(covariant ListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.category != oldWidget.category) {
+      print("리스트 화면 카테고리 변경: ${oldWidget.category} -> ${widget.category}");
+      _loadRestaurants();
+    }
   }
 
   Future<void> _loadRestaurants() async {
@@ -59,7 +72,7 @@ class _ListScreenState extends State<ListScreen> {
     final data = await MapService.fetchRestaurants(
       position.latitude,
       position.longitude,
-      category: "KOREAN",
+      category: widget.category, // 전달받은 카테고리 적용
     );
 
     print(data);

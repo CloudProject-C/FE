@@ -51,22 +51,6 @@ class _MapAreaState extends State<MapArea> {
 
       _prevLocation = current;
 
-      // 파란 점 위치 갱신
-      // if (_myDot != null &&
-      //     current.latitude != null &&
-      //     current.longitude != null) {
-      //   _myDot!.setPosition(
-      //     NLatLng(current.latitude!, current.longitude!),
-      //   );
-      // }
-
-      // if (_followOn && _mapController != null) {
-      //   _mapController!.updateCamera(
-      //     NCameraUpdate.withParams(
-      //       target: NLatLng(current.latitude!, current.longitude!),
-      //     ),
-      //   );
-      // }
     });
   }
 
