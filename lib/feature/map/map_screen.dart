@@ -207,34 +207,6 @@ class _MapScreenState extends State<MapScreen> {
 }
 
 // ------------------------------
-// 필터 Chip
-// ------------------------------
-// class _FilterChip extends StatelessWidget {
-//   final String label;
-//
-//   const _FilterChip({required this.label});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 40,
-//       decoration: BoxDecoration(
-//         color: AppColors.grey_4.withOpacity(0.12),
-//         borderRadius: BorderRadius.circular(10),
-//       ),
-//       alignment: Alignment.center,
-//       child: Text(
-//         label,
-//         style: AppTextStyles.pretendard_regular.copyWith(
-//           color: AppColors.grey_4,
-//           fontSize: 14,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// ------------------------------
 // 상단 탭 버튼 (지도 / 리스트)
 // ------------------------------
 class _MapTabButton extends StatelessWidget {
