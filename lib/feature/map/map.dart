@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
+import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:location/location.dart';
@@ -154,7 +155,7 @@ class _MapAreaState extends State<MapArea> {
 
         showDialog(
           context: context,
-          builder: (_) => _customDialog(r, lat, lng),
+          builder: (_) => _customDialog(context, r, lat, lng),
         );
       });
 
@@ -437,46 +438,121 @@ class _MapAreaState extends State<MapArea> {
     );
   }
 
-  Widget _customDialog(Map<String, dynamic> restaurantInfo, double lat, double lng) {
+  Widget _customDialog(
+      BuildContext context,
+      Map<String, dynamic> restaurantInfo,
+      double lat,
+      double lng,
+      ) {
     return AlertDialog(
-      title: Text(restaurantInfo['placeName']),
+      backgroundColor: AppColors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+      contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      title: Text(
+        restaurantInfo['placeName'] ?? '-',
+        style: AppTextStyles.pretendard_medium.copyWith(
+          fontSize: 18,
+          color: AppColors.main,
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("카테고리: ${restaurantInfo['categoryName'] ?? '-'}"),
-          const SizedBox(height: 8),
-          Text("거리: ${restaurantInfo['distance']}m"),
-          const SizedBox(height: 8),
-          // Text(info ?? '상세 정보 없음'), // 상세 정보 API가 있다면 사용
+          _infoText(
+            '카테고리: ${restaurantInfo['categoryName'] ?? '-'}',
+          ),
+          const SizedBox(height: 6),
+          _infoText(
+            '거리: ${restaurantInfo['distance']}m',
+          ),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context); // 다이얼로그 닫기
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const RestaurantDetailScreen(),
+        Row(
+          children: [
+            Expanded(
+              child: _dialogButton(
+                text: '상세 정보',
+                isPrimary: false,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RestaurantDetailScreen(),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-          child: const Text('상세 정보'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            _openNaverMap(
-              _myLocation!.latitude!,
-              _myLocation!.longitude!,
-              lat, // 파싱해둔 lat 사용
-              lng, // 파싱해둔 lng 사용
-            );
-          },
-          child: const Text('길찾기'),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _dialogButton(
+                text: '길찾기',
+                isPrimary: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  _openNaverMap(
+                    _myLocation!.latitude!,
+                    _myLocation!.longitude!,
+                    lat,
+                    lng,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
+
+  Widget _infoText(String text) {
+    return Text(
+      text,
+      style: AppTextStyles.pretendard_medium.copyWith(
+        fontSize: 14,
+        color: AppColors.main,
+      ),
+    );
+  }
+
+  Widget _dialogButton({
+    required String text,
+    required bool isPrimary,
+    required VoidCallback onTap,
+  }) {
+    return SizedBox(
+      height: 44,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+          isPrimary ? AppColors.main : AppColors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: isPrimary
+                ? BorderSide.none
+                : BorderSide(color: AppColors.main),
+          ),
+        ),
+        onPressed: onTap,
+        child: Text(
+          text,
+          style: AppTextStyles.pretendard_medium.copyWith(
+            fontSize: 14,
+            color: isPrimary ? AppColors.white : AppColors.main,
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
 }
