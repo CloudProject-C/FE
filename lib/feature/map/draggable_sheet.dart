@@ -45,7 +45,7 @@ class RestaurantBottomSheet extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: AppColors.main,
+          color: AppColors.grey_3,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -57,7 +57,7 @@ class RestaurantBottomSheet extends StatelessWidget {
       info['placeName'] ?? '-',
       style: AppTextStyles.pretendard_medium.copyWith(
         fontSize: 20,
-        color: AppColors.main,
+        color: AppColors.grey_6,
       ),
     );
   }
@@ -71,7 +71,7 @@ class RestaurantBottomSheet extends StatelessWidget {
           '카테고리: ${info['categoryName'] ?? '-'}',
           style: AppTextStyles.pretendard_medium.copyWith(
             fontSize: 14,
-            color: AppColors.main,
+            color: AppColors.grey_4,
           ),
         ),
         const SizedBox(height: 8),
@@ -79,7 +79,7 @@ class RestaurantBottomSheet extends StatelessWidget {
           '거리: ${info['distance']}m',
           style: AppTextStyles.pretendard_medium.copyWith(
             fontSize: 14,
-            color: AppColors.main,
+            color: AppColors.grey_4,
           ),
         ),
       ],

@@ -155,11 +155,12 @@ class _MapAreaState extends State<MapArea> {
         if (!mounted) return true;
 
         final restaurantInfo = {
+          'id': r['placeId'],
           'placeName': r['placeName'],
           'categoryName': r['categoryName'],
           'distance': r['distance'],
-          'lat': r['lat'],
-          'lng': r['lng'],
+          'myLat': _myLocation!.latitude,
+          'myLng': _myLocation!.longitude,
         };
 
         showModalBottomSheet(
@@ -179,12 +180,6 @@ class _MapAreaState extends State<MapArea> {
         );
 
         return true; // 중요: 기본 지도 동작 막기
-
-
-        // showDialog(
-        //   context: context,
-        //   builder: (_) => _customDialog(context, r, lat, lng),
-        // );
       });
 
       // 지도에 마커 추가
