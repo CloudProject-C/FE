@@ -1,8 +1,12 @@
+import 'package:campit_frontend/services/storage_service.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
+import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class OnboardFoodPreferenceScreen extends StatefulWidget {
   final nickname;
@@ -17,30 +21,88 @@ class OnboardFoodPreferenceScreen extends StatefulWidget {
 
 class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScreen> {
   final List<String> items = [
-    "spicy",
-    "한식",
-    "양식",
-    "중식",
-    "일식",
-    "아시안",
-    "분위기",
-    "건강식(저칼로리)",
-    "고칼로리/단백질",
+    "매움",              // spicy
+    "한식",              // korean
+    "양식",              // western
+    "중식",              // chinese
+    "일식",              // japanese
+    "아시안",            // asian
+    "분위기",            // mood
+    "건강식", // healthy
+    "고칼로리/단백질",     // protain
   ];
 
-  final Map<String, String> Eng_Kor_Dictionary = {
-    "spicy" : "매움",
-    "korean" : "한식",
-    "western" : "양식",
-    "chinese" : "중식",
-    "japanese" : "일식",
-    "asian" : "아시안",
-    "mood" : "분위기",
-    "healthy" : "건강식(저칼로리)",
-    "protain" : "고칼로리/단백질",
+  final Map<String, String> Kor_Eng_Dictionary = {
+    "매움": "spicy",
+    "한식": "korean",
+    "양식": "western",
+    "중식": "chinese",
+    "일식": "japanese",
+    "아시안": "asian",
+    "분위기": "mood",
+    "건강식(저탄수, 저칼로리)": "healthy",
+    "고칼로리/단백질": "protain",
   };
 
   final Set<String> selected = {};
+
+  Future<void> _sendPreference() async {
+    // 1. 선택된 취향이 없으면 아무것도 하지 않음
+    if (selected.isEmpty) {
+      print("선택된 취향이 없습니다.");
+      return;
+    }
+
+    final _accessToken = await StorageService.getAccessToken();
+
+    final url = Uri.parse('$baseUrl/v1/preference/onboarding');
+
+    try {
+
+      print("selected list is: ${selected.toList()}");
+      print(jsonEncode({
+        "features": selected.toList(), // Set을 List로 변환하여 전송
+      }));
+      // 2. 서버 요청 (POST)
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_accessToken',
+        },
+        body: jsonEncode({
+          "features": selected.toList(), // Set을 List로 변환하여 전송
+        }),
+      );
+
+      // 3. 응답 처리
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("취향 전송 성공: ${response.body}");
+
+        if (!mounted) return;
+
+        // 성공 시 다음 화면(메인 등)으로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const DaliyFoodPreferenceScreen(),
+          ),
+        );
+      } else {
+        print("취향 전송 실패: ${response.statusCode} - ${response.body}");
+        // 필요하다면 에러 스낵바 표시
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('전송 실패: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      print("네트워크 오류 발생: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('네트워크 오류가 발생했습니다.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +195,10 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                Eng_Kor_Dictionary[e] ?? '',
+                                e,
                                 style: AppTextStyles.pretendard_regular.copyWith(
                                   color: AppColors.grey_4,
-                                  fontSize: 15,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -155,12 +217,7 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
                   onPressed: selected.isEmpty
                       ? null // 선택된 게 없으면 null (버튼 비활성화)
                       : () { // 선택된 게 있으면 함수 실행
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const DaliyFoodPreferenceScreen(),
-                      ),
-                    );
+                    _sendPreference();
                   },
                   child: Container(
                     height: 52,
