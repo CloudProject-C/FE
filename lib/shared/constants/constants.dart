@@ -1,2 +1,2 @@
 /// API 주소 등등
-final baseUrl = 'http://18.212.144.164:8080';
+final baseUrl = 'http://54.208.212.248:8080';
