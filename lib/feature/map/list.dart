@@ -40,6 +40,12 @@ class _ListScreenState extends State<ListScreen> {
       print("리스트 화면 카테고리 변경: ${oldWidget.category} -> ${widget.category}");
       _loadRestaurants();
     }
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.sort != oldWidget.sort) {
+      print("리스트 화면 정렬방식 변경: ${oldWidget.sort} -> ${widget.sort}");
+      _loadRestaurants();
+    }
   }
 
   Future<void> _loadRestaurants() async {
@@ -140,7 +146,7 @@ class _ListScreenState extends State<ListScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey_4.withOpacity(0.1),
+              color: AppColors.grey_4.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -159,7 +165,7 @@ class _ListScreenState extends State<ListScreen> {
                     style: AppTextStyles.pretendard_regular.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.grey_4,
+                      color: AppColors.grey_5,
                     ),
                   ),
                 ),
@@ -167,7 +173,7 @@ class _ListScreenState extends State<ListScreen> {
                   padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.main,
+                    color: AppColors.main_50per,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -187,7 +193,7 @@ class _ListScreenState extends State<ListScreen> {
             Text(
               item["genre"],
               style: AppTextStyles.pretendard_regular.copyWith(
-                color: AppColors.grey_4.withOpacity(0.8),
+                color: AppColors.grey_4,
                 fontSize: 14,
               ),
             ),
@@ -199,14 +205,14 @@ class _ListScreenState extends State<ListScreen> {
               children: [
                 Icon(
                   Icons.location_on_outlined,
-                  color: AppColors.grey_4.withOpacity(0.6),
+                  color: AppColors.grey_4,
                   size: 18,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   item["distance"],
                   style: AppTextStyles.pretendard_regular.copyWith(
-                    color: AppColors.grey_4.withOpacity(0.8),
+                    color: AppColors.grey_4,
                     fontSize: 13,
                   ),
                 ),
