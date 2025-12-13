@@ -17,19 +17,28 @@ class OnboardFoodPreferenceScreen extends StatefulWidget {
 
 class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScreen> {
   final List<String> items = [
-    "면",
-    "밥",
-    "빵",
-    "치킨",
-    "피자",
-    "떡볶이",
-    "햄버거",
-    "초밥",
-    "디저트",
+    "spicy",
     "한식",
+    "양식",
     "중식",
     "일식",
+    "아시안",
+    "분위기",
+    "건강식(저칼로리)",
+    "고칼로리/단백질",
   ];
+
+  final Map<String, String> Eng_Kor_Dictionary = {
+    "spicy" : "매움",
+    "korean" : "한식",
+    "western" : "양식",
+    "chinese" : "중식",
+    "japanese" : "일식",
+    "asian" : "아시안",
+    "mood" : "분위기",
+    "healthy" : "건강식(저칼로리)",
+    "protain" : "고칼로리/단백질",
+  };
 
   final Set<String> selected = {};
 
@@ -118,13 +127,13 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
                               SizedBox(
                                 height: 40,
                                 child: Image.asset(
-                                  'assets/foods/$e.png',
+                                  AppAssets.map_icon,
                                   fit: BoxFit.contain,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                e,
+                                Eng_Kor_Dictionary[e] ?? '',
                                 style: AppTextStyles.pretendard_regular.copyWith(
                                   color: AppColors.grey_4,
                                   fontSize: 15,
@@ -184,3 +193,5 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
     );
   }
 }
+
+
