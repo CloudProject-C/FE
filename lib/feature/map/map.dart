@@ -63,7 +63,7 @@ class _MapAreaState extends State<MapArea> {
     await _location.changeSettings(
       accuracy: LocationAccuracy.high, // 중요
       interval: 1000,                  // 1초마다
-      //distanceFilter: 1,               // 1m 이동 시
+      distanceFilter: 1,               /// 1m 이동 시. 이거 지우면 배터리 폭탄.
     );
 
     _location.onLocationChanged.listen((current) {
@@ -436,6 +436,19 @@ class _MapAreaState extends State<MapArea> {
                     setState(() {
                       _followOn = !_followOn;
                     });
+
+                    if (_myLocation?.latitude != null &&
+                        _myLocation?.longitude != null) {
+                      _mapController?.updateCamera(
+                        NCameraUpdate.withParams(
+                          target: NLatLng(
+                            _myLocation!.latitude!,
+                            _myLocation!.longitude!,
+                          ),
+                          zoom: 15,
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
