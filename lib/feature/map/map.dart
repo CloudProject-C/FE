@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:campit_frontend/feature/map/draggable_sheet.dart';
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
@@ -151,12 +152,39 @@ class _MapAreaState extends State<MapArea> {
         // 상세 정보 가져오기 (필요하다면)
         // final info = await MapService.fetchRestaurantInfo(r['id']);
 
-        if (!mounted) return;
+        if (!mounted) return true;
 
-        showDialog(
+        final restaurantInfo = {
+          'placeName': r['placeName'],
+          'categoryName': r['categoryName'],
+          'distance': r['distance'],
+          'lat': r['lat'],
+          'lng': r['lng'],
+        };
+
+        showModalBottomSheet(
           context: context,
-          builder: (_) => _customDialog(context, r, lat, lng),
+          isScrollControlled: true,
+          backgroundColor: AppColors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          builder: (_) {
+            return RestaurantBottomSheet(
+              restaurantInfo: restaurantInfo,
+            );
+          },
         );
+
+        return true; // 중요: 기본 지도 동작 막기
+
+
+        // showDialog(
+        //   context: context,
+        //   builder: (_) => _customDialog(context, r, lat, lng),
+        // );
       });
 
       // 지도에 마커 추가
