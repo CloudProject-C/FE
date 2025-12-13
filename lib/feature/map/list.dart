@@ -7,7 +7,14 @@ import 'dart:math';
 import 'package:geolocator/geolocator.dart';
 
 class ListScreen extends StatefulWidget {
-  const ListScreen({super.key});
+  final String? category;
+  final String sort;
+
+  const ListScreen({
+    super.key,
+    required this.category,
+    required this.sort,
+  });
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -16,15 +23,29 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   bool _loading = true;
   List<Map<String, dynamic>> _restaurants = [];
-  //
-  // // 목데이터: 장르, 좋아요, 리뷰, 거리, 매칭률(퍼센트)
-  // final List<String> genres = ["양식", "치킨", "디저트", "한식", "분식"];
-  // final Random _random = Random();
 
   @override
   void initState() {
     super.initState();
     _loadRestaurants();
+  }
+
+  // [추가] 부모 위젯에서 전달받은 category가 바뀌면 호출됨
+  @override
+  void didUpdateWidget(covariant ListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.category != oldWidget.category) {
+      print("리스트 화면 카테고리 변경: ${oldWidget.category} -> ${widget.category}");
+      _loadRestaurants();
+    }
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.sort != oldWidget.sort) {
+      print("리스트 화면 정렬방식 변경: ${oldWidget.sort} -> ${widget.sort}");
+      _loadRestaurants();
+    }
   }
 
   Future<void> _loadRestaurants() async {
@@ -56,7 +77,12 @@ class _ListScreenState extends State<ListScreen> {
     print("현재 위치: ${position.latitude}, ${position.longitude}");
     // 현재 위치 없이 임의 좌표로 테스트
 
-    final data = await MapService.fetchRestaurants(position.latitude, position.longitude);
+    final data = await MapService.fetchRestaurants(
+      position.latitude,
+      position.longitude,
+      category: widget.category, // 전달받은 카테고리 적용
+      sort: widget.sort
+    );
 
     print(data);
 
@@ -120,7 +146,7 @@ class _ListScreenState extends State<ListScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey_4.withOpacity(0.1),
+              color: AppColors.grey_4.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -139,7 +165,7 @@ class _ListScreenState extends State<ListScreen> {
                     style: AppTextStyles.pretendard_regular.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.grey_4,
+                      color: AppColors.grey_5,
                     ),
                   ),
                 ),
@@ -147,7 +173,7 @@ class _ListScreenState extends State<ListScreen> {
                   padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.main,
+                    color: AppColors.main_50per,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -167,7 +193,7 @@ class _ListScreenState extends State<ListScreen> {
             Text(
               item["genre"],
               style: AppTextStyles.pretendard_regular.copyWith(
-                color: AppColors.grey_4.withOpacity(0.8),
+                color: AppColors.grey_4,
                 fontSize: 14,
               ),
             ),
@@ -179,14 +205,14 @@ class _ListScreenState extends State<ListScreen> {
               children: [
                 Icon(
                   Icons.location_on_outlined,
-                  color: AppColors.grey_4.withOpacity(0.6),
+                  color: AppColors.grey_4,
                   size: 18,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   item["distance"],
                   style: AppTextStyles.pretendard_regular.copyWith(
-                    color: AppColors.grey_4.withOpacity(0.8),
+                    color: AppColors.grey_4,
                     fontSize: 13,
                   ),
                 ),

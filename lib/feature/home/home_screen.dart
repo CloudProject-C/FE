@@ -1,3 +1,4 @@
+import 'package:campit_frontend/feature/account/onboard_preference_screen.dart';
 import 'package:campit_frontend/services/home/home_service.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
@@ -180,6 +181,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     const SizedBox(height: 12),
+
+                    TextButton(
+                      child: Text('온보딩 음식 선호도 다시 선택하기', style: AppTextStyles.pretendard_bold,),
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const OnboardFoodPreferenceScreen(nickname: '123',),
+                          ),
+                        );
+                      },
+                    ),
 
                     // 화면 나머지 공간
                     Expanded(

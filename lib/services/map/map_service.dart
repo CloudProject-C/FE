@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class MapService {
   static Future<List<Map<String, dynamic>>?> fetchRestaurants(
-      double lat, double lng) async {
+      double lat, double lng, {String? category, String? sort}) async {
     await Future.delayed(const Duration(seconds: 1));
 
     try {
@@ -16,8 +16,8 @@ class MapService {
             "?latitude=$lat"
             "&longitude=$lng"
             "&radius=150"
-            "&sort=DISTANCE"
-            "&category=KOREAN",
+            "&sort=$sort"
+            "&category=$category",
       );
       final _accessToken = await StorageService.getAccessToken();
       final response = await http.get(

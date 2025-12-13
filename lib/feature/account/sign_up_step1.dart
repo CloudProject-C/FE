@@ -24,43 +24,6 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
           codeController.text.isNotEmpty;
 
   void sendEmail() async {
-    // try{
-    //   final email = emailController.text.trim();
-    //   final verifyEmailUri = Uri.parse('$baseUrl/email/send-email');
-    //   final response = await http.post(
-    //     verifyEmailUri,
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: jsonEncode({
-    //       'email': email
-    //     })
-    //   );
-    //
-    //   if (response.statusCode == 200) {
-    //     final verifyEmailResponse = jsonDecode(response.body);
-    //     final code = verifyEmailResponse['code'].toString();
-    //     debugPrint('----- response is: $verifyEmailResponse-----');
-    //   } else {
-    //     //throw Exception('verifyEmail failed: ${response.statusCode}');
-    //     ///throw Exception 대신 인증 중 오류가 발생했다는 ui바를 호출
-    //     debugPrint(jsonDecode(response.body).toString());
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text('인증 중 서버에서 오류가 발생했습니다.'),
-    //         duration: Duration(seconds: 2),
-    //       ),
-    //     );
-    //   }
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('이메일 인증 중 클라이언트에서 오류가 발생했습니다: $e'),
-    //       duration: const Duration(seconds: 2),
-    //     ),
-    //   );
-    //   debugPrint('Login Error: $e');
-    // }
     try {
       final email = emailController.text.trim();
 
@@ -417,6 +380,7 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        const SizedBox(width: 40),
         Icon(Icons.circle,
             color: current >= 1 ? AppColors.main : AppColors.grey_4),
         Expanded(
@@ -427,6 +391,7 @@ class _StepIndicator extends StatelessWidget {
         ),
         Icon(Icons.circle_outlined,
             color: current >= 2 ? AppColors.main : AppColors.grey_4),
+        const SizedBox(width: 40),
       ],
     );
   }
