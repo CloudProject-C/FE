@@ -37,8 +37,35 @@ class _MapAreaState extends State<MapArea> {
   void initState() {
     super.initState();
     _initLocation();
+    _startLocationListening();
 
     // 위치 변화 실시간 감지
+    // _location.onLocationChanged.listen((current) {
+    //   if (!mounted) return;
+    //
+    //   if (_followOn && _mapController != null) {
+    //     _animateCamera(_prevLocation, current);
+    //   }
+    //
+    //   _animateMyDot(_prevLocation, current);
+    //
+    //   if (!mounted) return;
+    //   setState(() {
+    //     _myLocation = current;
+    //   });
+    //
+    //   _prevLocation = current;
+    //
+    // });
+  }
+
+  Future<void> _startLocationListening() async {
+    await _location.changeSettings(
+      accuracy: LocationAccuracy.high, // 중요
+      interval: 1000,                  // 1초마다
+      //distanceFilter: 1,               // 1m 이동 시
+    );
+
     _location.onLocationChanged.listen((current) {
       if (!mounted) return;
 
@@ -48,13 +75,11 @@ class _MapAreaState extends State<MapArea> {
         _animateCamera(_prevLocation, current);
       }
 
-      if (!mounted) return;
       setState(() {
         _myLocation = current;
       });
 
       _prevLocation = current;
-
     });
   }
 
@@ -111,6 +136,7 @@ class _MapAreaState extends State<MapArea> {
 
 
   Future<void> _loadNearbyRestaurants() async {
+    print("_loadNearbyRestaurants 함수 실행!!!!!!");
     if (_myLocation == null) return;
 
     // 1. 서버에서 데이터 가져오기
@@ -328,6 +354,8 @@ class _MapAreaState extends State<MapArea> {
                       zoom: 15,
                     ),
                   ),
+
+                  ///onMapReady는 setState로 인한 bulid함수의 재호출과 상관없이 최초 1회만 호출됨.
                   onMapReady: (controller) async {
                     _mapController = controller;
 
@@ -361,16 +389,15 @@ class _MapAreaState extends State<MapArea> {
                   },
                   onCameraChange: (reason, animated) {
                     if (_followOn && reason == NCameraUpdateReason.gesture) {
-                      // 사용자가 카메라 움직이려고 시도함 → 바로 되돌림
+                      // 사용자가 카메라 움직이면 카메라 고정 해제
                       if (_myLocation?.latitude != null && _myLocation?.longitude != null) {
-                        _mapController?.updateCamera(
-                          NCameraUpdate.withParams(
-                            target: NLatLng(
-                              _myLocation!.latitude!,
-                              _myLocation!.longitude!,
-                            ),
-                          ),
-                        );
+                        setState(() {
+                          _followOn = false;
+                        });
+
+                        // (중요) 현재 코드로 카메라를 강제 이동시키는 타이머가 돌고 있다면 즉시 취소해야
+                        // 사용자가 스크롤할 때 버벅거리지 않습니다.
+                        _cameraLerpTimer?.cancel();
                       }
                     }
                   },
