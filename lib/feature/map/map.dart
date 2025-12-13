@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
+import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:location/location.dart';
@@ -132,8 +134,15 @@ class _MapAreaState extends State<MapArea> {
       final marker = NMarker(
         id: id,
         position: NLatLng(lat, lng),
-        caption: NOverlayCaption(text: name),
-        size: const Size(30, 40), // 마커 크기 조절 (선택)
+        icon: const NOverlayImage.fromAssetImage(
+          AppAssets.marker_white_hole,
+        ),
+        // caption: NOverlayCaption(
+        //   text: name,
+        //   textSize: 10,
+        //   color: AppColors.grey_5,
+        // ),
+        size: const Size(30, 30), // 마커 크기 조절 (선택)
       );
 
       // 3. 마커 클릭 이벤트 (다이얼로그 표시)

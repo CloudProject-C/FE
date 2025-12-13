@@ -1,4 +1,5 @@
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
