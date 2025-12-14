@@ -66,8 +66,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
           width: double.infinity,
           height: 54,
           text: '변경하기',
-          height: 52,
-          width: double.infinity,
           onTap: () {
             // TODO: 비밀번호 변경 로직
             Navigator.of(context).pop();
