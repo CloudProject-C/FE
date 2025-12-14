@@ -137,7 +137,8 @@ class _ListScreenState extends State<ListScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => RestaurantDetailScreen(
-              id: item['id']
+              id: item['id'],
+              distance: item['distance'],
             ),
           ),
         );

@@ -11,9 +11,12 @@ import 'package:location/location.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final int id;
+  final int distance;
+
   const RestaurantDetailScreen({
     super.key,
     required this.id,
+    required this.distance,
   });
 
   @override
@@ -42,36 +45,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   // 1. 초기 진입 시: 식당 정보 + 리뷰 정보 동시 호출
   Future<void> _fetchAllData() async {
     // 기본 위치 설정
-    double lat = 37.5665;
-    double lng = 126.9780;
+    double lat = 37.2479;
+    double lng = 127.0776;
 
     try {
-      // --- 위치 가져오기 로직 (이전과 동일) ---
-      final location = Location();
-      try {
-        bool serviceEnabled = await location.serviceEnabled();
-        if (!serviceEnabled) serviceEnabled = await location.requestService();
-
-        if (serviceEnabled) {
-          PermissionStatus permission = await location.hasPermission();
-          if (permission == PermissionStatus.denied) permission = await location.requestPermission();
-
-          if (permission == PermissionStatus.granted) {
-            final locData = await location.getLocation().timeout(
-              const Duration(seconds: 3),
-              onTimeout: () => LocationData.fromMap({'latitude': lat, 'longitude': lng}),
-            );
-            lat = locData.latitude ?? lat;
-            lng = locData.longitude ?? lng;
-          }
-        }
-      } catch (e) {
-        print("위치 에러(기본값 사용): $e");
-      }
-      // ------------------------------------
-
-      print("데이터 로딩 시작...");
-
       // [중요] 두 API를 병렬로 호출하여 속도 향상
       final results = await Future.wait([
         // 0번 인덱스: 식당 정보
@@ -246,7 +223,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               const SizedBox(height: 16),
 
               // 정보 섹션에 데이터 전달
-              _InfoSection(info: _restaurantInfo!),
+              _InfoSection(info: _restaurantInfo!, distance: widget.distance),
 
               const SizedBox(height: 30),
               const _ActionButtons(),
@@ -444,7 +421,11 @@ class _TitleSection extends StatelessWidget {
 
 class _InfoSection extends StatelessWidget {
   final Map<String, dynamic> info;
-  const _InfoSection({required this.info}); // 식당 정보를 받는 생성자
+  final int distance;
+  const _InfoSection({
+    required this.info,
+    required this.distance,
+  }); // 식당 정보를 받는 생성자
 
   @override
   Widget build(BuildContext context) {
@@ -472,7 +453,7 @@ class _InfoSection extends StatelessWidget {
               Icon(Icons.location_on_outlined, color: AppColors.grey_4, size: 20),
               const SizedBox(width: 6),
               Expanded(
-                child: Text("${info['roadAddressName']} • ${info['distance']}m",
+                child: Text("${info['roadAddressName']} • ${distance.toString()}m",
                     style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
               ),
             ],

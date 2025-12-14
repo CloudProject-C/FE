@@ -59,6 +59,7 @@ class RestaurantBottomSheet extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => RestaurantDetailScreen(
                               id: restaurantInfo['id'],
+                              distance: restaurantInfo['distance'],
                             ),
                           ),
                         );
