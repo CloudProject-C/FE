@@ -31,14 +31,30 @@ class RestaurantBottomSheet extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _restaurantHeader(restaurantInfo),
-                      const SizedBox(height: 16),
-                      _restaurantInfo(restaurantInfo),
-                    ],
-                  ),
+                      Container(
+                        height: 100,
+                        width: 100,
+                        child: Image.network(
+                          restaurantInfo['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _restaurantHeader(restaurantInfo),
+                            const SizedBox(height: 16),
+                            _restaurantInfo(restaurantInfo),
+                          ],
+                        ),
+                      ),
+                    ]
+                  )
                 ),
               ),
 

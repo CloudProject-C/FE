@@ -189,6 +189,7 @@ class _MapAreaState extends State<MapArea> {
           'id': r['placeId'],
           'placeName': r['placeName'],
           'categoryName': r['categoryName'],
+          'imageUrl': r['imageUrl'],
           'distance': r['distance'],
           'myLat': _myLocation!.latitude,
           'myLng': _myLocation!.longitude,
