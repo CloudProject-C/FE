@@ -40,6 +40,14 @@ class RestaurantBottomSheet extends StatelessWidget {
                         child: Image.network(
                           restaurantInfo['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 100,
+                              width: 100,
+                              color: AppColors.grey_1,
+                              child: const Icon(Icons.restaurant, color: Colors.grey),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -76,6 +84,7 @@ class RestaurantBottomSheet extends StatelessWidget {
                             builder: (_) => RestaurantDetailScreen(
                               id: restaurantInfo['id'],
                               distance: restaurantInfo['distance'],
+                              imageUrl: restaurantInfo['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
                             ),
                           ),
                         );

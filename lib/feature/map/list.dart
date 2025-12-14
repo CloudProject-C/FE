@@ -140,6 +140,7 @@ class _ListScreenState extends State<ListScreen> {
             builder: (context) => RestaurantDetailScreen(
               id: item['id'],
               distance: item['distance'],
+              imageUrl: item['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
             ),
           ),
         );
@@ -197,6 +198,7 @@ class _ListScreenState extends State<ListScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(width: 3),
                       Container(
                         padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

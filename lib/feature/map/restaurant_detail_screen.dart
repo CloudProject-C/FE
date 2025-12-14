@@ -12,11 +12,13 @@ import 'package:location/location.dart';
 class RestaurantDetailScreen extends StatefulWidget {
   final int id;
   final int distance;
+  final String imageUrl;
 
   const RestaurantDetailScreen({
     super.key,
     required this.id,
     required this.distance,
+    required this.imageUrl,
   });
 
   @override
@@ -166,7 +168,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
 
               // 정보 섹션에 데이터 전달
-              _InfoSection(info: _restaurantInfo!, distance: widget.distance),
+              _InfoSection(info: _restaurantInfo!, distance: widget.distance, imageUrl: widget.imageUrl),
 
               const SizedBox(height: 30),
               _ActionButtons(
@@ -376,9 +378,12 @@ class _TitleSection extends StatelessWidget {
 class _InfoSection extends StatelessWidget {
   final Map<String, dynamic> info;
   final int distance;
+  final String imageUrl;
+
   const _InfoSection({
     required this.info,
     required this.distance,
+    required this.imageUrl,
   }); // 식당 정보를 받는 생성자
 
   @override
@@ -388,6 +393,22 @@ class _InfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Image.network(
+            imageUrl,
+            height: 200,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 200,
+                width: double.infinity,
+                color: AppColors.grey_1,
+                child: const Icon(Icons.restaurant, color: Colors.grey),
+              );
+            },
+          ),
+
+          const SizedBox(height: 8),
           Text(info['categoryName'] ?? "카테고리 없음",
               style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
           const SizedBox(height: 8),
