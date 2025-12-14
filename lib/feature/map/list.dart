@@ -97,7 +97,7 @@ class _ListScreenState extends State<ListScreen> {
           "id": r["placeId"],
           "placeName": r["placeName"],
           "genre": r["categoryName"],
-          "distance": "${r["distance"]}m",
+          "distance": r["distance"],
           "likes": r["placeLikeCount"],
           "reviews": r["reviewCount"],
           "match": r["preferencePercent"], // 80~99%
@@ -215,7 +215,7 @@ class _ListScreenState extends State<ListScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  item["distance"],
+                  item["distance"].toString(),
                   style: AppTextStyles.pretendard_regular.copyWith(
                     color: AppColors.grey_4,
                     fontSize: 13,

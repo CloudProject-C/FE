@@ -270,6 +270,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       separatorBuilder: (_, __) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final review = _reviews[index];
+        print(review.toString());
         return _ReviewItem(data: review); // _ReviewItem 위젯에 데이터 전달
       },
     );
@@ -616,9 +617,9 @@ class _ReviewItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data["nickname"],
+                  Text(data["nickname"] ?? "nonick",
                       style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
-                  Text(data["createdAt"],
+                  Text(data["createdAt"] ?? "nocrea",
                       style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4))
                 ],
               )
@@ -628,7 +629,7 @@ class _ReviewItem extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            data["contents"],
+            data["content"],
             style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
           ),
 
@@ -651,7 +652,7 @@ class _ReviewItem extends StatelessWidget {
             children: [
               Icon(Icons.favorite_border, size: 20, color: AppColors.grey_4),
               const SizedBox(width: 4),
-              Text(data["likeCount"], style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+              Text(data["likeCount"].toString(), style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
             ],
           ),
         ],
