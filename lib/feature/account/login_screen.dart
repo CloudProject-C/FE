@@ -1,4 +1,4 @@
-import 'package:campit_frontend/feature/home/preference_screen.dart';
+import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
 import 'package:campit_frontend/services/storage_service.dart';
 import 'package:campit_frontend/shared/constants/constants.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
@@ -54,8 +54,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
-        final accessToken = response.body;
-        //final accessToken = loginResponse.data['token'].toString();
+        final data = jsonDecode(response.body);
+        print("data is ${data.toString()}");
+        final accessToken = data['result'].toString();
         //debugPrint('-----login response is: $loginResponse-----');
 
         // 2. 토큰 저장

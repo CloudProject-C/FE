@@ -96,7 +96,13 @@ class _CustomDropdownFilterState extends State<CustomDropdownFilter> {
                   fontSize: 14,
                 ),
               ),
-              const SizedBox(width: 20, height: 20, child: Placeholder()),
+              Icon(
+                isOpen
+                    ? Icons.keyboard_arrow_up_rounded   // 열렸을 때
+                    : Icons.keyboard_arrow_down_rounded, // 닫혔을 때
+                color: AppColors.grey_4,
+                size: 20,
+              ),
             ],
           ),
         ),

@@ -63,6 +63,8 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
+          width: double.infinity,
+          height: 54,
           text: '변경하기',
           height: 52,
           width: double.infinity,

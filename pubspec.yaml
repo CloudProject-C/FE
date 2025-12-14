@@ -44,6 +44,7 @@ dependencies:
   flutter_naver_map: ^1.4.1+1
   location: ^8.0.1
   url_launcher: ^6.3.2
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +84,7 @@ flutter:
     - assets/logo/onboarding/
     - assets/logo/home/
     - assets/icon/bottom_bar_icon/
+    - assets/images/onboard_preference/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

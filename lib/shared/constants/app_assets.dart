@@ -17,4 +17,9 @@ class AppAssets {
   static const home_icon = 'assets/icon/bottom_bar_icon/home_icon.png';
   static const map_icon = 'assets/icon/bottom_bar_icon/map_icon.png';
   static const profile_icon = 'assets/icon/bottom_bar_icon/profile_icon.png';
+
+  ///images
+
+  //onboard_preference
+  static const spicy = 'assets/images/onboard_preference/매운맛';
 }

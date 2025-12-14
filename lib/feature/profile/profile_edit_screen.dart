@@ -71,6 +71,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
         child: PrimaryButton(
+          width: double.infinity,
+          height: 54,
           text: '저장',
           height: 52,
           width: double.infinity,

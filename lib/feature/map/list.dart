@@ -4,9 +4,17 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/services/map/map_service.dart';
 import 'dart:math';
+import 'package:geolocator/geolocator.dart';
 
 class ListScreen extends StatefulWidget {
-  const ListScreen({super.key});
+  final String? category;
+  final String sort;
+
+  const ListScreen({
+    super.key,
+    required this.category,
+    required this.sort,
+  });
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -16,32 +24,83 @@ class _ListScreenState extends State<ListScreen> {
   bool _loading = true;
   List<Map<String, dynamic>> _restaurants = [];
 
-  // 목데이터: 장르, 좋아요, 리뷰, 거리, 매칭률(퍼센트)
-  final List<String> genres = ["양식", "치킨", "디저트", "한식", "분식"];
-  final Random _random = Random();
-
   @override
   void initState() {
     super.initState();
     _loadRestaurants();
   }
 
+  // [추가] 부모 위젯에서 전달받은 category가 바뀌면 호출됨
+  @override
+  void didUpdateWidget(covariant ListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.category != oldWidget.category) {
+      print("리스트 화면 카테고리 변경: ${oldWidget.category} -> ${widget.category}");
+      _loadRestaurants();
+    }
+
+    // 카테고리가 변경되었다면 다시 로드
+    if (widget.sort != oldWidget.sort) {
+      print("리스트 화면 정렬방식 변경: ${oldWidget.sort} -> ${widget.sort}");
+      _loadRestaurants();
+    }
+  }
+
   Future<void> _loadRestaurants() async {
+
+    // 1. 위치 권한 확인 및 요청
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // 권한 거부됨 -> 기본 위치(예: 서울역)나 에러 처리
+        print('위치 권한이 거부되었습니다.');
+        setState(() => _loading = false);
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // 권한 영구 거부됨 -> 설정으로 유도하거나 에러 처리
+      print('위치 권한이 영구적으로 거부되었습니다.');
+      setState(() => _loading = false);
+      return;
+    }
+
+    // 2. 현재 위치 가져오기
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    print("현재 위치: ${position.latitude}, ${position.longitude}");
     // 현재 위치 없이 임의 좌표로 테스트
-    const double fakeLat = 37.12345;
-    const double fakeLng = 127.12345;
 
-    final data = await MapService.fetchRestaurants(fakeLat, fakeLng);
+    final data = await MapService.fetchRestaurants(
+      position.latitude,
+      position.longitude,
+      category: widget.category, // 전달받은 카테고리 적용
+      sort: widget.sort
+    );
 
+    print(data);
+
+    if(data == null) return;
+
+    if (!mounted) return;
     setState(() {
       _restaurants = data.map((r) {
         return {
           ...r,
-          "genre": genres[_random.nextInt(genres.length)],
-          "distance": "${100 + _random.nextInt(200)}m",
-          "likes": 30 + _random.nextInt(150),
-          "reviews": 5 + _random.nextInt(50),
-          "match": 80 + _random.nextInt(20), // 80~99%
+          "placeName": r["placeName"],
+          "genre": r["categoryName"],
+          "distance": "${r["distance"]}m",
+          "likes": r["placeLikeCount"],
+          "reviews": r["reviewCount"],
+          "match": r["preferencePercent"], // 80~99%
+          //"isLiked": r["isLiked"],
+          "rating": r["rating"],
         };
       }).toList();
 
@@ -51,6 +110,7 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(" length of restaurant is: ${_restaurants.length}");
     return Container(
       color: AppColors.white,
       child: _loading
@@ -86,7 +146,7 @@ class _ListScreenState extends State<ListScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey_4.withOpacity(0.1),
+              color: AppColors.grey_4.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -101,11 +161,11 @@ class _ListScreenState extends State<ListScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    item["name"],
+                    item["placeName"],
                     style: AppTextStyles.pretendard_regular.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.grey_4,
+                      color: AppColors.grey_5,
                     ),
                   ),
                 ),
@@ -113,7 +173,7 @@ class _ListScreenState extends State<ListScreen> {
                   padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.main,
+                    color: AppColors.main_50per,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -133,7 +193,7 @@ class _ListScreenState extends State<ListScreen> {
             Text(
               item["genre"],
               style: AppTextStyles.pretendard_regular.copyWith(
-                color: AppColors.grey_4.withOpacity(0.8),
+                color: AppColors.grey_4,
                 fontSize: 14,
               ),
             ),
@@ -145,14 +205,14 @@ class _ListScreenState extends State<ListScreen> {
               children: [
                 Icon(
                   Icons.location_on_outlined,
-                  color: AppColors.grey_4.withOpacity(0.6),
+                  color: AppColors.grey_4,
                   size: 18,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   item["distance"],
                   style: AppTextStyles.pretendard_regular.copyWith(
-                    color: AppColors.grey_4.withOpacity(0.8),
+                    color: AppColors.grey_4,
                     fontSize: 13,
                   ),
                 ),
@@ -161,7 +221,7 @@ class _ListScreenState extends State<ListScreen> {
 
             const SizedBox(height: 12),
 
-            /// 좋아요 + 리뷰
+            /// 좋아요 + 리뷰 + 별점
             Row(
               children: [
                 Icon(Icons.favorite_border,
@@ -180,6 +240,18 @@ class _ListScreenState extends State<ListScreen> {
                 const SizedBox(width: 4),
                 Text(
                   "${item['reviews']}",
+                  style: AppTextStyles.pretendard_regular.copyWith(
+                    fontSize: 13,
+                    color: AppColors.grey_4,
+                  ),
+                ),
+                const SizedBox(width: 16), // 간격
+
+                // 3. 별점 (Rating)
+                const Icon(Icons.star, color: Colors.amber, size: 18), // 노란색 별
+                const SizedBox(width: 4),
+                Text(
+                  "${item['rating']}", // 점수 표시 (예: 4.5)
                   style: AppTextStyles.pretendard_regular.copyWith(
                     fontSize: 13,
                     color: AppColors.grey_4,

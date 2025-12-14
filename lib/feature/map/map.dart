@@ -7,14 +7,19 @@ import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campit_frontend/services/map/map_service.dart';
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+class MapArea extends StatefulWidget {
+  final String? category;
+
+  const MapArea({
+    super.key,
+    required this.category,
+  });
 
   @override
-  State<Map> createState() => _MapState();
+  State<MapArea> createState() => _MapAreaState();
 }
 
-class _MapState extends State<Map> {
+class _MapAreaState extends State<MapArea> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
@@ -39,29 +44,47 @@ class _MapState extends State<Map> {
         _animateCamera(_prevLocation, current);
       }
 
+      if (!mounted) return;
       setState(() {
         _myLocation = current;
       });
 
       _prevLocation = current;
 
-      // 파란 점 위치 갱신
-      // if (_myDot != null &&
-      //     current.latitude != null &&
-      //     current.longitude != null) {
-      //   _myDot!.setPosition(
-      //     NLatLng(current.latitude!, current.longitude!),
-      //   );
-      // }
-
-      // if (_followOn && _mapController != null) {
-      //   _mapController!.updateCamera(
-      //     NCameraUpdate.withParams(
-      //       target: NLatLng(current.latitude!, current.longitude!),
-      //     ),
-      //   );
-      // }
     });
+  }
+
+  // [추가] 부모 위젯(MapScreen)의 상태가 변해서 이 위젯이 다시 빌드될 때 호출됨
+  @override
+  void didUpdateWidget(covariant MapArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 카테고리가 변경되었다면 식당 목록 다시 불러오기
+    if (widget.category != oldWidget.category) {
+      print("카테고리 변경 감지: ${oldWidget.category} -> ${widget.category}");
+
+      // 기존 마커 지우기 (선택 사항)
+      _mapController?.clearOverlays();
+
+      // 변경된 카테고리로 다시 로드
+      _loadNearbyRestaurants();
+    }
+
+    if (_myDot != null) {
+      _mapController?.addOverlay(_myDot!);
+    }
+  }
+
+  @override
+  void dispose() {
+    // 1. 타이머 정지 (가장 중요)
+    _lerpTimer?.cancel();
+    _cameraLerpTimer?.cancel();
+
+    // 2. 지도 컨트롤러 해제 (선택 사항이지만 권장)
+    _mapController = null;
+
+    super.dispose();
   }
 
   Future<void> _initLocation() async {
@@ -78,6 +101,7 @@ class _MapState extends State<Map> {
     }
 
     _myLocation = await _location.getLocation();
+    if (!mounted) return;
     setState(() {});
   }
 
@@ -85,55 +109,86 @@ class _MapState extends State<Map> {
   Future<void> _loadNearbyRestaurants() async {
     if (_myLocation == null) return;
 
+    // 1. 서버에서 데이터 가져오기
     final restaurants = await MapService.fetchRestaurants(
       _myLocation!.latitude!,
       _myLocation!.longitude!,
+      category: widget.category,
     );
 
+    if (restaurants == null || restaurants.isEmpty) return;
+
+    // 2. 마커 생성 및 지도에 추가
     for (final r in restaurants) {
+      // 데이터 안전하게 파싱 (String으로 올 수도 있으므로 toString 후 parse)
+      final lat = double.tryParse(r['latitude'].toString()) ?? 0.0;
+      final lng = double.tryParse(r['longitude'].toString()) ?? 0.0;
+      final id = r['placeId'].toString();
+      final name = r['placeName'] ?? '이름 없음';
+
+      // 좌표가 0.0이면 마커 생성 스킵
+      if (lat == 0.0 || lng == 0.0) continue;
+
       final marker = NMarker(
-        id: r['id'].toString(),
-        position: NLatLng(r['lat'], r['lng']),
-        caption: NOverlayCaption(text: r['name']),
+        id: id,
+        position: NLatLng(lat, lng),
+        caption: NOverlayCaption(text: name),
+        size: const Size(30, 40), // 마커 크기 조절 (선택)
       );
 
+      // 3. 마커 클릭 이벤트 (다이얼로그 표시)
       marker.setOnTapListener((overlay) async {
-        final info = await MapService.fetchRestaurantInfo(r['id']);
-        if (context.mounted) {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: Text(r['name']),
-              content: Text(info ?? '정보를 불러오지 못했습니다.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const RestaurantDetailScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text('정보 보기'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    _openNaverMap(
-                      _myLocation!.latitude!,
-                      _myLocation!.longitude!,
-                      r['lat'],
-                      r['lng'],
-                    );
-                  },
-                  child: const Text('길찾기'),
-                ),
+        // 상세 정보 가져오기 (필요하다면)
+        // final info = await MapService.fetchRestaurantInfo(r['id']);
+
+        if (!mounted) return;
+
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(name),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("카테고리: ${r['categoryName'] ?? '-'}"),
+                const SizedBox(height: 8),
+                Text("거리: ${r['distance']}m"),
+                const SizedBox(height: 8),
+                // Text(info ?? '상세 정보 없음'), // 상세 정보 API가 있다면 사용
               ],
             ),
-          );
-        }
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // 다이얼로그 닫기
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RestaurantDetailScreen(),
+                    ),
+                  );
+                },
+                child: const Text('상세 정보'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _openNaverMap(
+                    _myLocation!.latitude!,
+                    _myLocation!.longitude!,
+                    lat, // 파싱해둔 lat 사용
+                    lng, // 파싱해둔 lng 사용
+                  );
+                },
+                child: const Text('길찾기'),
+              ),
+            ],
+          ),
+        );
       });
 
+      // 지도에 마커 추가
       _mapController?.addOverlay(marker);
     }
   }
