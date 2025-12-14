@@ -105,6 +105,38 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     }
   }
 
+  Future<void> _toggleLike() async {
+    if (_restaurantInfo == null) return;
+
+    final int placeId = _restaurantInfo!['placeId'];
+    final bool currentStatus = _restaurantInfo!['isLiked'] ?? false;
+    final int currentCount = _restaurantInfo!['placeLikeCount'] ?? 0;
+
+    // 1. UI 선반영 (Optimistic Update)
+    setState(() {
+      _restaurantInfo!['isLiked'] = !currentStatus;
+      // 좋아요를 눌렀으면 +1, 취소했으면 -1
+      _restaurantInfo!['placeLikeCount'] = currentStatus
+          ? currentCount - 1
+          : currentCount + 1;
+    });
+
+    // 2. API 호출
+    final success = await MapService.toggleLike(placeId);
+
+    // 3. 실패 시 롤백
+    if (!success) {
+      if (!mounted) return;
+      setState(() {
+        _restaurantInfo!['isLiked'] = currentStatus; // 원래대로 복구
+        _restaurantInfo!['placeLikeCount'] = currentCount;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('좋아요 처리에 실패했습니다.')),
+      );
+    }
+  }
+
   // UI 정렬 텍스트를 API 파라미터로 변환하는 헬퍼 함수
   void _updateSort(String uiSort) {
     String apiSort = "LATEST";
@@ -155,7 +187,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               const SizedBox(height: 12),
 
               // 타이틀 섹션에 데이터 전달
-              _TitleSection(info: _restaurantInfo!),
+              _TitleSection(
+                info: _restaurantInfo!,
+                onLikeToggle: _toggleLike,
+              ),
 
               const SizedBox(height: 4),
               _RatingSection(
@@ -353,7 +388,12 @@ class _MatchCard extends StatelessWidget {
 
 class _TitleSection extends StatelessWidget {
   final Map<String, dynamic> info;
-  const _TitleSection({required this.info}); // 식당 정보를 받는 생성자
+  final VoidCallback onLikeToggle;
+
+  const _TitleSection({
+    required this.info,
+    required this.onLikeToggle,
+  }); // 식당 정보를 받는 생성자
 
   @override
   Widget build(BuildContext context) {
@@ -371,10 +411,13 @@ class _TitleSection extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Spacer(),
-          Icon(
-            info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
-            size: 24,
-            color: info['isLiked'] == true ? AppColors.main : AppColors.grey_5, // grey_4 -> grey_5
+          GestureDetector(
+            onTap: onLikeToggle,
+            child: Icon(
+              info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
+              size: 24,
+              color: info['isLiked'] == true ? AppColors.main : AppColors.grey_5, // grey_4 -> grey_5
+            ),
           ),
           const SizedBox(width: 4),
         ],
