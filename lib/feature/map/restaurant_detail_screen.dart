@@ -213,7 +213,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               _MatchCard(info: _restaurantInfo!),
 
               // 디버깅용 텍스트 (삭제 가능)
-              // Text("식당 id: ${widget.id.toString()}"),
+              Text("식당 id: ${widget.id.toString()}"),
 
               const SizedBox(height: 20),
 
@@ -226,7 +226,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               _InfoSection(info: _restaurantInfo!, distance: widget.distance),
 
               const SizedBox(height: 30),
-              const _ActionButtons(),
+              _ActionButtons(
+                id: _restaurantInfo!['placeId'],
+                placeName: _restaurantInfo!['placeName'],
+              ),
               const SizedBox(height: 32),
 
               // 리뷰 섹션 (API 응답에 리뷰 리스트가 있다면 여기에 연결)
@@ -487,7 +490,12 @@ class _InfoSection extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons();
+  final int id;
+  final String placeName;
+  const _ActionButtons({
+    required this.id,
+    required this.placeName
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -503,7 +511,10 @@ class _ActionButtons extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ReviewWriteScreen(),
+                    builder: (_) => ReviewWriteScreen(
+                      placeId: id, // 현재 상세 페이지의 식당 ID
+                      placeName: placeName,// 식당 이름
+                    ),
                   ),
                 );
               },

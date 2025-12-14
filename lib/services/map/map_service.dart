@@ -137,6 +137,71 @@ class MapService {
     }
   }
 
+  // [추가] 리뷰 작성 (Multipart/form-data)
+  static Future<bool> postReview({
+    required int placeId,
+    required int rating,
+    required String content,
+    List<String> imagePaths = const [], // 파일 경로 리스트
+  }) async {
+    final accessToken = await StorageService.getAccessToken();
+    final url = Uri.parse('$baseUrl/v1/reviews');
+
+    try {
+      // 1. MultipartRequest 생성
+      final request = http.MultipartRequest('POST', url);
+
+      // 2. 헤더 설정 (Content-Type은 자동으로 설정됨)
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // 3. JSON 데이터 추가 (request 파트)
+      // 서버 명세에 따라 'request'라는 키로 JSON 문자열을 보냅니다.
+      final jsonBody = jsonEncode({
+        'placeId': placeId,
+        'rating': rating,
+        'content': content,
+      });
+
+      // application/json 타입임을 명시하여 필드 추가
+      request.files.add(http.MultipartFile.fromString(
+        'request',
+        jsonBody,
+        contentType: http.MediaType('application', 'json'),
+      ));
+
+      // 4. 이미지 파일 추가 (images 파트)
+      for (String path in imagePaths) {
+        // 파일이 실제로 존재하는지 체크하거나, mimeType을 명시할 수 있습니다.
+        final file = await http.MultipartFile.fromPath(
+          'images', // 서버에서 받는 키 이름 (List<MultipartFile>)
+          path,
+          contentType: http.MediaType('image', 'jpeg'), // 필요시 확장자에 맞춰 수정
+        );
+        request.files.add(file);
+      }
+
+      // 5. 전송
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+        if (decodedBody['isSuccess'] == true) {
+          return true;
+        } else {
+          print("리뷰 작성 실패: ${decodedBody['message']}");
+          return false;
+        }
+      } else {
+        print("리뷰 서버 오류: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("리뷰 작성 네트워크 오류: $e");
+      return false;
+    }
+  }
+
   // 사용자가 글 작성 가능한 위치인지 검증
   static Future<bool> canWritePost(double lat, double lng) async {
     await Future.delayed(const Duration(milliseconds: 500));

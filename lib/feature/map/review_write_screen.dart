@@ -6,7 +6,13 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 
 class ReviewWriteScreen extends StatefulWidget {
-  const ReviewWriteScreen({super.key});
+  final int placeId;
+  final String placeName;
+  const ReviewWriteScreen({
+    super.key,
+    required this.placeId,
+    required this.placeName,
+  });
 
   @override
   State<ReviewWriteScreen> createState() => _ReviewWriteScreenState();
