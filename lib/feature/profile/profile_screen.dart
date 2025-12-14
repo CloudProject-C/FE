@@ -6,6 +6,7 @@ import 'package:campit_frontend/feature/account/login_screen.dart';
 import 'package:campit_frontend/feature/profile/settings_screen.dart';
 import 'package:campit_frontend/feature/profile/my_reviews_screen.dart';
 import 'package:campit_frontend/feature/profile/liked_restaurants_screen.dart';
+import 'package:campit_frontend/services/profile/profile_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,6 +18,69 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String nickname = '캠퍼스 미식가';
+  String schoolName = '경희대학교';
+  String email = 'student@khu.ac.kr';
+
+  int myReviewCount = 0;
+  int myPlaceLikeCount = 0;
+  List<String> foodPreferences = [];
+  String? profileImage;
+
+  bool _loading = true;
+  bool _error = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMyPage();
+  }
+
+  Future<void> _loadMyPage() async {
+    setState(() {
+      _loading = true;
+      _error = false;
+    });
+
+    try {
+      final data = await ProfileService.fetchMyPage();
+      final tokenEmail = await ProfileService.getMyEmailFromToken();
+
+      if (data == null || data['isSuccess'] != true) {
+        setState(() {
+          _loading = false;
+          _error = true;
+          if (tokenEmail != null) email = tokenEmail;
+        });
+        return;
+      }
+
+      final result = data['result'] as Map<String, dynamic>?;
+
+      setState(() {
+        nickname = (result?['nickname'] ?? nickname).toString();
+        profileImage = result?['profileImage']?.toString();
+        schoolName = (result?['schoolName'] ?? schoolName).toString();
+        myReviewCount = (result?['myReviewCount'] ?? 0) as int;
+        myPlaceLikeCount = (result?['myPlaceLikeCount'] ?? 0) as int;
+        foodPreferences =
+            (result?['foodPreferences'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+                [];
+
+        if (tokenEmail != null && tokenEmail.isNotEmpty) {
+          email = tokenEmail;
+        }
+
+        _loading = false;
+      });
+    } catch (_) {
+      setState(() {
+        _loading = false;
+        _error = true;
+      });
+    }
+  }
 
   Future<void> _openSettings() async {
     final updatedNickname = await Navigator.of(context).push<String>(
@@ -42,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppColors.white,
           elevation: 0,
           centerTitle: false,
-          titleSpacing: 16, // 24 -> 16으로 살짝 줄임
+          titleSpacing: 16,
           title: Text(
             '프로필',
             style: AppTextStyles.pretendard_bold.copyWith(
@@ -59,16 +123,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
+          child: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error
+              ? Center(
+            child: Text(
+              '프로필 정보를 불러오지 못했습니다.',
+              style: AppTextStyles.pretendard_regular.copyWith(
+                color: AppColors.grey_5,
+              ),
+            ),
+          )
+              : SingleChildScrollView(
             child: Padding(
-              // 가로 패딩 24 -> 16
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ProfileHeaderCard(nickname: nickname),
+                  _ProfileHeaderCard(
+                    nickname: nickname,
+                    email: email,
+                    schoolName: schoolName,
+                    myReviewCount: myReviewCount,
+                    myPlaceLikeCount: myPlaceLikeCount,
+                    profileImage: profileImage,
+                  ),
                   const SizedBox(height: 24),
-                  const _PreferenceSection(),
+                  _PreferenceSection(foodPreferences: foodPreferences),
                   const SizedBox(height: 24),
                   _SettingsSection(onSettingsTap: _openSettings),
                 ],
@@ -87,9 +171,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 /// 상단 프로필 카드 + 통계
 class _ProfileHeaderCard extends StatelessWidget {
   final String nickname;
+  final String email;
+  final String schoolName;
+  final int myReviewCount;
+  final int myPlaceLikeCount;
+  final String? profileImage;
 
   const _ProfileHeaderCard({
     required this.nickname,
+    required this.email,
+    required this.schoolName,
+    required this.myReviewCount,
+    required this.myPlaceLikeCount,
+    required this.profileImage,
   });
 
   @override
@@ -115,10 +209,22 @@ class _ProfileHeaderCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.main_30per,
                 ),
-                child: const Icon(
-                  Icons.person,
-                  color: AppColors.main,
-                  size: 36,
+                child: ClipOval(
+                  child: (profileImage != null && profileImage!.isNotEmpty)
+                      ? Image.network(
+                    profileImage!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(
+                      Icons.person,
+                      color: AppColors.main,
+                      size: 36,
+                    ),
+                  )
+                      : const Icon(
+                    Icons.person,
+                    color: AppColors.main,
+                    size: 36,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -143,7 +249,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'student@khu.ac.kr',
+                          email,
                           style: AppTextStyles.pretendard_regular.copyWith(
                             fontSize: 12,
                             color: AppColors.grey_5,
@@ -161,7 +267,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '경희대학교',
+                          schoolName,
                           style: AppTextStyles.pretendard_regular.copyWith(
                             fontSize: 12,
                             color: AppColors.grey_5,
@@ -175,13 +281,14 @@ class _ProfileHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          // 통계 카드 (작성한 리뷰 / 좋아요한 식당)
+
+          // 통계 카드
           Row(
             children: [
               Expanded(
                 child: _StatCard(
                   label: '작성한 리뷰',
-                  value: '12', // TODO: 백엔드 연동 후 실제 리뷰 개수로 교체
+                  value: myReviewCount.toString(),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -195,7 +302,7 @@ class _ProfileHeaderCard extends StatelessWidget {
               Expanded(
                 child: _StatCard(
                   label: '좋아요한 식당',
-                  value: '3', // TODO: 백엔드 연동 후 실제 좋아요한 식당 개수로 교체
+                  value: myPlaceLikeCount.toString(),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -265,17 +372,44 @@ class _StatCard extends StatelessWidget {
 
 /// 선호 음식 영역
 class _PreferenceSection extends StatelessWidget {
-  const _PreferenceSection();
+  final List<String> foodPreferences;
+
+  const _PreferenceSection({
+    required this.foodPreferences,
+  });
+
+  String _toKoreanLabel(String code) {
+    switch (code) {
+      case 'KOREAN':
+        return '한식';
+      case 'WESTERN':
+        return '양식';
+      case 'CHINESE':
+        return '중식';
+      case 'JAPANESE':
+        return '일식';
+      case 'ASIAN':
+        return '아시안';
+      case 'CAFE':
+        return '카페';
+      case 'FASTFOOD':
+        return '패스트푸드';
+      default:
+        return code;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final prefs = foodPreferences.map(_toKoreanLabel).toList();
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24), // 20->16로 줄임
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -287,20 +421,32 @@ class _PreferenceSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Row(
-            children: [
-              _PreferenceTile(),
-            ],
-          ),
+          if (prefs.isEmpty)
+            Text(
+              '선호 음식이 아직 설정되지 않았습니다.',
+              style: AppTextStyles.pretendard_regular.copyWith(
+                fontSize: 12,
+                color: AppColors.grey_5,
+              ),
+            )
+          else
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: prefs.map((label) => _PreferenceTile(label: label)).toList(),
+            ),
         ],
       ),
     );
   }
 }
 
-/// 선호 음식 카드 (예시로 '중식')
 class _PreferenceTile extends StatelessWidget {
-  const _PreferenceTile();
+  final String label;
+
+  const _PreferenceTile({
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +464,6 @@ class _PreferenceTile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // TODO: 나중에 이미지 교체
           Container(
             width: 40,
             height: 40,
@@ -335,7 +480,7 @@ class _PreferenceTile extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '중식',
+            label,
             style: AppTextStyles.pretendard_medium.copyWith(
               fontSize: 13,
               color: AppColors.main,
@@ -505,8 +650,7 @@ Future<void> _showLogoutDialog(BuildContext context) async {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          padding:
-                          const EdgeInsets.symmetric(vertical: 11),
+                          padding: const EdgeInsets.symmetric(vertical: 11),
                         ),
                         child: Text(
                           '취소',
@@ -529,8 +673,7 @@ Future<void> _showLogoutDialog(BuildContext context) async {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          padding:
-                          const EdgeInsets.symmetric(vertical: 11),
+                          padding: const EdgeInsets.symmetric(vertical: 11),
                         ),
                         child: Text(
                           '로그아웃',

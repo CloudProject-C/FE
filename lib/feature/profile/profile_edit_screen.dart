@@ -74,6 +74,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           width: double.infinity,
           height: 54,
           text: '저장',
+          height: 52,
+          width: double.infinity,
           onTap: () {
             Navigator.of(context).pop(nicknameController.text.trim());
           },
