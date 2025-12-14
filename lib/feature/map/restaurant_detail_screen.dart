@@ -4,10 +4,12 @@ import 'package:campit_frontend/services/storage_service.dart';
 import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
 import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
+import 'package:campit_frontend/utils/current_position_getter.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:location/location.dart';
+import 'package:campit_frontend/utils/location_validator.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final int id;
@@ -37,6 +39,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Map<String, dynamic>? _reviewResult; // 리뷰 전체 응답 (content, totalElements 등)
   List<dynamic> _reviews = []; // 실제 리뷰 리스트
 
+  LocationData? _currentLoc;//현재 위치(리뷰 작성 검증용)
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +50,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   // 1. 초기 진입 시: 식당 정보 + 리뷰 정보 동시 호출
   Future<void> _fetchAllData() async {
+    //현재 위치 받아와서 변수에 저장
+    _currentLoc = await CurrentPositionGetter.getCurrentPosition();
+
     // 기본 위치 설정
     double lat = 37.2479;
     double lng = 127.0776;
@@ -174,6 +181,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               _ActionButtons(
                 id: _restaurantInfo!['placeId'],
                 placeName: _restaurantInfo!['placeName'],
+                currentLoc: _currentLoc,
               ),
               const SizedBox(height: 32),
 
@@ -462,17 +470,53 @@ class _InfoSection extends StatelessWidget {
   }
 }
 
-class _ActionButtons extends StatelessWidget {
+class _ActionButtons extends StatefulWidget {
   final int id;
   final String placeName;
+  final LocationData? currentLoc;
+
   const _ActionButtons({
     required this.id,
-    required this.placeName
+    required this.placeName,
+    required this.currentLoc,
   });
 
   @override
+  State<_ActionButtons> createState() => _ActionButtonsState();
+}
+
+class _ActionButtonsState extends State<_ActionButtons> {
+  bool _canWrite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCanWrite();
+  }
+
+  Future<void> _checkCanWrite() async {
+    final lat = widget.currentLoc?.latitude;
+    final lng = widget.currentLoc?.longitude;
+
+    if (lat == null || lng == null) {
+      setState(() {
+        _canWrite = false;
+      });
+      return;
+    }
+
+    final result = await LocationValidator.canWritePost(lat, lng);
+
+    if (!mounted) return;
+
+    setState(() {
+      _canWrite = result;
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    LocationData? myLocation;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -481,12 +525,22 @@ class _ActionButtons extends StatelessWidget {
             child: PrimaryButton(
               text: "리뷰 작성",
               onTap: () {
+
+                ///실기기 배포 시 글쓰기 주석 해제하기(에뮬레이터에선 location 문제가 있음)
+                // if (!_canWrite) {
+                //   // 글쓰기 차단
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(content: Text('학교 근처에서만 글 작성이 가능합니다')),
+                //   );
+                //   return;
+                // }
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ReviewWriteScreen(
-                      placeId: id, // 현재 상세 페이지의 식당 ID
-                      placeName: placeName,// 식당 이름
+                      placeId: widget.id, // 현재 상세 페이지의 식당 ID
+                      placeName: widget.placeName,// 식당 이름
                     ),
                   ),
                 );

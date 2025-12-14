@@ -137,7 +137,7 @@ class MapService {
     }
   }
 
-  // [추가] 리뷰 작성 (Multipart/form-data)
+  // 리뷰 작성 (Multipart/form-data)
   static Future<bool> postReview({
     required int placeId,
     required int rating,
@@ -206,7 +206,7 @@ class MapService {
   static Future<bool> canWritePost(double lat, double lng) async {
     await Future.delayed(const Duration(milliseconds: 500));
     // 간단한 조건: 좌표가 특정 범위 내면 "대학교 근처"
-    return (Random().nextBool()); // 임시: 50% 확률로 가능
+    return (Random().nextBool());
   }
 
   static void logCurl({
