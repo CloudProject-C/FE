@@ -358,6 +358,9 @@ class _MapAreaState extends State<MapArea> {
                       target: NLatLng(lat, lng),
                       zoom: 15,
                     ),
+
+                    //틸트(기울기) 제스처 비활성화
+                    tiltGesturesEnable: false,
                   ),
 
                   ///onMapReady는 setState로 인한 bulid함수의 재호출과 상관없이 최초 1회만 호출됨.
@@ -442,7 +445,7 @@ class _MapAreaState extends State<MapArea> {
                       _followOn = !_followOn;
                     });
 
-                    if (_myLocation?.latitude != null &&
+                    if (_followOn && _myLocation?.latitude != null &&
                         _myLocation?.longitude != null) {
                       _mapController?.updateCamera(
                         NCameraUpdate.withParams(
@@ -450,7 +453,9 @@ class _MapAreaState extends State<MapArea> {
                             _myLocation!.latitude!,
                             _myLocation!.longitude!,
                           ),
-                          zoom: 15,
+                          bearing: 0.0, //회전을 0(북쪽)으로 초기화
+                          tilt: 0.0,
+                          // zoom: 15,
                         ),
                       );
                     }
