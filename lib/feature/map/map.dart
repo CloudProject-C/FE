@@ -27,6 +27,7 @@ class _MapAreaState extends State<MapArea> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
+  LocationData? _initialLocation; // [추가] 지도 초기 로딩용 위치 (고정)
   NMarker? _myDot;
   LocationData? _prevLocation;
   Timer? _lerpTimer;
@@ -129,9 +130,13 @@ class _MapAreaState extends State<MapArea> {
       if (permission != PermissionStatus.granted) return;
     }
 
-    _myLocation = await _location.getLocation();
+    final location = await _location.getLocation(); // 임시 변수에 받음
+
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _myLocation = location;      // 현재 위치 저장
+      _initialLocation = location; // [수정] 초기 위치 고정값 저장
+    });
   }
 
 
@@ -332,8 +337,8 @@ class _MapAreaState extends State<MapArea> {
 
   @override
   Widget build(BuildContext context) {
-    final lat = _myLocation?.latitude;
-    final lng = _myLocation?.longitude;
+    final lat = _initialLocation?.latitude;
+    final lng = _initialLocation?.longitude;
     // 위치 데이터를 아직 못 가져온 경우 로딩 표시
     if (lat == null || lng == null) {
       return Center(child: CircularProgressIndicator());
