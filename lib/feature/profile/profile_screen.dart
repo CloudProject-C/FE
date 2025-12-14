@@ -49,24 +49,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _loading = false;
           _error = true;
-          if (tokenEmail != null) email = tokenEmail;
+          if (tokenEmail != null) {
+            email = tokenEmail;
+          }
         });
         return;
       }
 
       final result = data['result'] as Map<String, dynamic>?;
 
+      final rawProfileImage = result?['profileImage']?.toString();
+      String? safeProfileImage;
+      if (rawProfileImage != null &&
+          rawProfileImage.isNotEmpty &&
+          rawProfileImage != 'exampleImageUrl') {
+        safeProfileImage = rawProfileImage;
+      } else {
+        safeProfileImage = null;
+      }
+
       setState(() {
         nickname = (result?['nickname'] ?? nickname).toString();
-        profileImage = result?['profileImage']?.toString();
         schoolName = (result?['schoolName'] ?? schoolName).toString();
         myReviewCount = (result?['myReviewCount'] ?? 0) as int;
         myPlaceLikeCount = (result?['myPlaceLikeCount'] ?? 0) as int;
+
         foodPreferences =
             (result?['foodPreferences'] as List<dynamic>?)
                 ?.map((e) => e.toString())
                 .toList() ??
                 [];
+
+        profileImage = safeProfileImage;
 
         if (tokenEmail != null && tokenEmail.isNotEmpty) {
           email = tokenEmail;
@@ -103,9 +117,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Scaffold(
         backgroundColor: AppColors.grey_1,
         appBar: AppBar(
-          backgroundColor: AppColors.white,
+          backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
+          automaticallyImplyLeading: false,
           titleSpacing: 16,
           title: Text(
             '프로필',
@@ -135,28 +150,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           )
               : SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _ProfileHeaderCard(
-                    nickname: nickname,
-                    email: email,
-                    schoolName: schoolName,
-                    myReviewCount: myReviewCount,
-                    myPlaceLikeCount: myPlaceLikeCount,
-                    profileImage: profileImage,
-                  ),
-                  const SizedBox(height: 24),
-                  _PreferenceSection(foodPreferences: foodPreferences),
-                  const SizedBox(height: 24),
-                  _SettingsSection(onSettingsTap: _openSettings),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ProfileHeaderCard(
+                  nickname: nickname,
+                  email: email,
+                  schoolName: schoolName,
+                  myReviewCount: myReviewCount,
+                  myPlaceLikeCount: myPlaceLikeCount,
+                  profileImage: profileImage,
+                ),
+                const SizedBox(height: 24),
+                _PreferenceSection(foodPreferences: foodPreferences),
+                const SizedBox(height: 24),
+                _SettingsSection(onSettingsTap: _openSettings),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
         ),
@@ -188,13 +198,13 @@ class _ProfileHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasProfileImage =
+        profileImage != null && profileImage!.isNotEmpty;
+
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,7 +220,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                   color: AppColors.main_30per,
                 ),
                 child: ClipOval(
-                  child: (profileImage != null && profileImage!.isNotEmpty)
+                  child: hasProfileImage
                       ? Image.network(
                     profileImage!,
                     fit: BoxFit.cover,
@@ -405,11 +415,8 @@ class _PreferenceSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -433,7 +440,9 @@ class _PreferenceSection extends StatelessWidget {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: prefs.map((label) => _PreferenceTile(label: label)).toList(),
+              children: prefs
+                  .map((label) => _PreferenceTile(label: label))
+                  .toList(),
             ),
         ],
       ),
@@ -454,7 +463,7 @@ class _PreferenceTile extends StatelessWidget {
       width: 84,
       height: 96,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: AppColors.main,
@@ -504,10 +513,7 @@ class _SettingsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      color: Colors.white,
       child: Column(
         children: [
           _SettingsItem(
@@ -563,9 +569,8 @@ class _SettingsItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         child: Row(
           children: [
             Icon(
@@ -650,11 +655,13 @@ Future<void> _showLogoutDialog(BuildContext context) async {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 11),
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 11),
                         ),
                         child: Text(
                           '취소',
-                          style: AppTextStyles.pretendard_medium.copyWith(
+                          style:
+                          AppTextStyles.pretendard_medium.copyWith(
                             fontSize: 14,
                             color: AppColors.grey_7,
                           ),
@@ -673,11 +680,13 @@ Future<void> _showLogoutDialog(BuildContext context) async {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 11),
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 11),
                         ),
                         child: Text(
                           '로그아웃',
-                          style: AppTextStyles.pretendard_bold.copyWith(
+                          style:
+                          AppTextStyles.pretendard_bold.copyWith(
                             fontSize: 14,
                             color: Colors.white,
                           ),

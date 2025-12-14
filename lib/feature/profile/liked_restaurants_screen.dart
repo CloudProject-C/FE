@@ -50,9 +50,20 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
       final list = content.map((e) {
         final m = e as Map<String, dynamic>;
         final avg = m['averageRating'];
+
         double avgRating = 0.0;
         if (avg is int) avgRating = avg.toDouble();
         if (avg is double) avgRating = avg;
+
+        final rawImage = m['recentImageUrl']?.toString();
+        String? imageUrl;
+        if (rawImage != null &&
+            rawImage.isNotEmpty &&
+            rawImage != 'exampleImageUrl') {
+          imageUrl = rawImage;
+        } else {
+          imageUrl = null;
+        }
 
         return _LikedRestaurantVM(
           id: (m['placeId'] ?? 0) as int,
@@ -60,7 +71,7 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
           category: (m['categoryName'] ?? '').toString(),
           averageRating: avgRating,
           likeCount: (m['placeLikeCount'] ?? 0) as int,
-          imageUrl: m['recentImageUrl']?.toString(),
+          imageUrl: imageUrl,
         );
       }).toList();
 
@@ -78,10 +89,8 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final count = _restaurants.length;
-
     return Scaffold(
-      backgroundColor: AppColors.grey_1,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -97,15 +106,20 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
         title: Text(
           '좋아요한 식당',
           style: AppTextStyles.pretendard_bold.copyWith(
-            fontSize: 18,
+            fontSize: 24,
             color: AppColors.grey_8,
           ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(
-            height: 1,
-            color: AppColors.grey_2,
+          child: Column(
+            children: [
+              const SizedBox(height: 28),
+              Container(
+                height: 1,
+                color: AppColors.grey_2,
+              ),
+            ],
           ),
         ),
       ),
@@ -114,75 +128,47 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 상단 "좋아요한 식당 / 총 n개"
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '좋아요한 식당',
-                      style: AppTextStyles.pretendard_bold.copyWith(
-                        fontSize: 15,
-                        color: AppColors.grey_8,
-                      ),
+          padding: const EdgeInsets.fromLTRB(24, 40, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error
+                    ? Center(
+                  child: Text(
+                    '좋아요한 식당을 불러오지 못했습니다.',
+                    style: AppTextStyles.pretendard_regular.copyWith(
+                      color: AppColors.grey_5,
+                      fontSize: 14,
                     ),
-                    Text(
-                      '총 $count개',
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        fontSize: 13,
-                        color: AppColors.grey_5,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                Expanded(
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error
-                      ? Center(
-                    child: Text(
-                      '좋아요한 식당을 불러오지 못했습니다.',
-                      style:
-                      AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_5,
-                      ),
-                    ),
-                  )
-                      : _restaurants.isEmpty
-                      ? Center(
-                    child: Text(
-                      '좋아요한 식당이 없습니다.',
-                      style: AppTextStyles.pretendard_regular
-                          .copyWith(
-                        color: AppColors.grey_5,
-                      ),
-                    ),
-                  )
-                      : ListView.separated(
-                    itemCount: _restaurants.length,
-                    separatorBuilder: (_, __) =>
-                    const SizedBox(height: 20),
-                    itemBuilder: (context, index) {
-                      final restaurant = _restaurants[index];
-                      return _LikedRestaurantCard(
-                        restaurant: restaurant,
-                      );
-                    },
                   ),
+                )
+                    : _restaurants.isEmpty
+                    ? Center(
+                  child: Text(
+                    '좋아요한 식당이 없습니다.',
+                    style: AppTextStyles.pretendard_regular
+                        .copyWith(
+                      color: AppColors.grey_5,
+                      fontSize: 14,
+                    ),
+                  ),
+                )
+                    : ListView.separated(
+                  itemCount: _restaurants.length,
+                  separatorBuilder: (_, __) =>
+                  const SizedBox(height: 40),
+                  itemBuilder: (context, index) {
+                    final restaurant = _restaurants[index];
+                    return _LikedRestaurantCard(
+                      restaurant: restaurant,
+                    );
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -215,87 +201,115 @@ class _LikedRestaurantCard extends StatelessWidget {
     required this.restaurant,
   });
 
+  bool _isValidNetworkUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
     final ratingInt = restaurant.averageRating.floor().clamp(0, 5);
+    final imageUrl = restaurant.imageUrl;
+    final hasValidImage = _isValidNetworkUrl(imageUrl);
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: AppColors.grey_1,
-            borderRadius: BorderRadius.circular(12),
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 96,
+                height: 96,
+                color: AppColors.grey_2,
+                child: hasValidImage
+                    ? Image.network(
+                  imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(),
+                )
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            const SizedBox(width: 18),
+            Expanded(
+              child: SizedBox(
+                height: 96,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              restaurant.name,
+                              style: AppTextStyles.pretendard_medium.copyWith(
+                                fontSize: 16,
+                                color: AppColors.grey_8,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            restaurant.category,
+                            style: AppTextStyles.pretendard_regular.copyWith(
+                              fontSize: 14,
+                              color: AppColors.grey_5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _StarRow(rating: ratingInt),
+                          const SizedBox(width: 8),
+                          Text(
+                            restaurant.averageRating
+                                .toStringAsFixed(1)
+                                .replaceFirst(RegExp(r'\.0$'), ''),
+                            style: AppTextStyles.pretendard_regular.copyWith(
+                              fontSize: 14,
+                              color: AppColors.grey_7,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 이름
-              Text(
-                restaurant.name,
-                style: AppTextStyles.pretendard_medium.copyWith(
-                  fontSize: 15,
-                  color: AppColors.grey_8,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            const Icon(
+              Icons.favorite,
+              size: 20,
+              color: AppColors.main,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              restaurant.likeCount.toString(),
+              style: AppTextStyles.pretendard_regular.copyWith(
+                fontSize: 14,
+                color: AppColors.grey_5,
               ),
-
-              // 별점
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  _StarRow(rating: ratingInt),
-                  const SizedBox(width: 6),
-                  Text(
-                    restaurant.averageRating.toStringAsFixed(1),
-                    style: AppTextStyles.pretendard_regular.copyWith(
-                      fontSize: 13,
-                      color: AppColors.grey_7,
-                    ),
-                  ),
-                ],
-              ),
-
-              // 카테고리
-              const SizedBox(height: 6),
-              Text(
-                restaurant.category,
-                style: AppTextStyles.pretendard_regular.copyWith(
-                  fontSize: 13,
-                  color: AppColors.grey_6,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              // 좋아요 수
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.favorite,
-                    size: 14,
-                    color: AppColors.main,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    restaurant.likeCount.toString(),
-                    style: AppTextStyles.pretendard_regular.copyWith(
-                      fontSize: 12,
-                      color: AppColors.grey_5,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
@@ -317,7 +331,7 @@ class _StarRow extends StatelessWidget {
         final filled = index < safe;
         return Icon(
           filled ? Icons.star : Icons.star_border,
-          size: 14,
+          size: 22,
           color: filled ? Colors.amber : AppColors.grey_3,
         );
       }),

@@ -18,7 +18,6 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   bool _loading = true;
   bool _error = false;
 
-  /// 드롭다운 선택값(한글 라벨)
   String _selectedSort = '최신순';
 
   final List<String> _sortItems = const [
@@ -80,7 +79,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
         final m = e as Map<String, dynamic>;
 
         DateTime? createdAt;
-        final rawCreatedAt = m['createdAt'] ?? m['createdDate'] ?? m['createdTime'];
+        final rawCreatedAt =
+            m['createdAt'] ?? m['createdDate'] ?? m['createdTime'];
         if (rawCreatedAt is String && rawCreatedAt.isNotEmpty) {
           try {
             createdAt = DateTime.parse(rawCreatedAt);
@@ -161,66 +161,63 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
         currentRoute: '/profile',
       ),
       body: SafeArea(
-        child: Padding(
+        child: Container(
+          width: double.infinity,
+          color: Colors.white,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    width: 140,
-                    child: CustomDropdownFilter(
-                      selected: _selectedSort,
-                      items: _sortItems,
-                      onSelected: _changeSort,
-                    ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: 140,
+                  child: CustomDropdownFilter(
+                    selected: _selectedSort,
+                    items: _sortItems,
+                    onSelected: _changeSort,
                   ),
                 ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
 
-                Expanded(
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error
-                      ? Center(
-                    child: Text(
-                      '작성한 리뷰를 불러오지 못했습니다.',
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_5,
-                      ),
+              Expanded(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error
+                    ? Center(
+                  child: Text(
+                    '작성한 리뷰를 불러오지 못했습니다.',
+                    style: AppTextStyles.pretendard_regular.copyWith(
+                      color: AppColors.grey_5,
                     ),
-                  )
-                      : _reviews.isEmpty
-                      ? Center(
-                    child: Text(
-                      '작성한 리뷰가 없습니다.',
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_5,
-                      ),
-                    ),
-                  )
-                      : ListView.separated(
-                    itemCount: _reviews.length,
-                    separatorBuilder: (_, __) =>
-                    const SizedBox(height: 24),
-                    itemBuilder: (context, index) {
-                      final review = _reviews[index];
-                      return _ReviewTile(
-                        review: review,
-                        daysAgoText: _formatDaysAgo(review.createdAt),
-                      );
-                    },
                   ),
+                )
+                    : _reviews.isEmpty
+                    ? Center(
+                  child: Text(
+                    '작성한 리뷰가 없습니다.',
+                    style:
+                    AppTextStyles.pretendard_regular.copyWith(
+                      color: AppColors.grey_5,
+                    ),
+                  ),
+                )
+                    : ListView.separated(
+                  itemCount: _reviews.length,
+                  separatorBuilder: (_, __) =>
+                  const SizedBox(height: 24),
+                  itemBuilder: (context, index) {
+                    final review = _reviews[index];
+                    return _ReviewTile(
+                      review: review,
+                      daysAgoText:
+                      _formatDaysAgo(review.createdAt),
+                    );
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -287,11 +284,13 @@ class _ReviewTile extends StatelessWidget {
                 width: 80,
                 height: 80,
                 color: AppColors.grey_2,
-                child: (review.imageUrl != null && review.imageUrl!.isNotEmpty)
+                child: (review.imageUrl != null &&
+                    review.imageUrl!.isNotEmpty)
                     ? Image.network(
                   review.imageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(),
                 )
                     : const SizedBox.shrink(),
               ),
