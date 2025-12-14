@@ -643,7 +643,7 @@ class _ReviewHeader extends StatelessWidget {
   }
 }
 
-class _ReviewItem extends StatelessWidget {
+class _ReviewItem extends StatefulWidget {
   final Map<String, dynamic> data;
   //      {
   //         "reviewId": 1,
@@ -658,7 +658,50 @@ class _ReviewItem extends StatelessWidget {
   //         "isMyReview": true,
   //         "isLiked": true
   //       }
-  const _ReviewItem({required this.data}); // 리뷰 데이터를 받는 생성자
+  const _ReviewItem({required this.data});
+  @override
+  State<_ReviewItem> createState() => _ReviewItemState();
+}
+
+class _ReviewItemState extends State<_ReviewItem> {
+  late bool isLiked;
+  late int likeCount;
+
+  @override
+  void initState() {
+    super.initState();
+    // 초기 데이터 설정
+    isLiked = widget.data['isLiked'] ?? false;
+    likeCount = widget.data['likeCount'] ?? 0;
+  }
+
+  // 리뷰 좋아요 토글 로직
+  Future<void> _toggleReviewLike() async {
+    final int reviewId = widget.data['reviewId'];
+    final bool prevLiked = isLiked;
+    final int prevCount = likeCount;
+
+    // 1. UI 선반영 (Optimistic Update)
+    setState(() {
+      isLiked = !isLiked;
+      likeCount = isLiked ? likeCount + 1 : likeCount - 1;
+    });
+
+    // 2. API 호출
+    final success = await MapService.toggleReviewLike(reviewId);
+
+    // 3. 실패 시 롤백
+    if (!success) {
+      if (!mounted) return;
+      setState(() {
+        isLiked = prevLiked;
+        likeCount = prevCount;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('좋아요 처리에 실패했습니다.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -686,9 +729,9 @@ class _ReviewItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data["nickname"] ?? "nonick",
+                  Text(widget.data["nickname"] ?? "nonick",
                       style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
-                  Text(data["createdAt"] ?? "nocrea",
+                  Text(widget.data["createdAt"] ?? "nocrea",
                       style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)) // grey_4 -> grey_5
                 ],
               )
@@ -698,22 +741,22 @@ class _ReviewItem extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            data["content"],
+            widget.data["content"],
             style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
           ),
 
           const SizedBox(height: 12),
 
-          // [수정] 이미지 리스트 처리 로직
-          if (data['imageUrls'] != null && (data['imageUrls'] as List).isNotEmpty) ...[
+          // 이미지 리스트 처리 로직
+          if (widget.data['imageUrls'] != null && (widget.data['imageUrls'] as List).isNotEmpty) ...[
             SizedBox(
               height: 110,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: (data['imageUrls'] as List).length,
+                itemCount: (widget.data['imageUrls'] as List).length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, imgIndex) {
-                  final imageUrl = data['imageUrls'][imgIndex];
+                  final imageUrl = widget.data['imageUrls'][imgIndex];
                   return Container(
                     width: 110,
                     height: 110,
@@ -751,12 +794,26 @@ class _ReviewItem extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          Row(
-            children: [
-              Icon(Icons.favorite_border, size: 20, color: AppColors.grey_5), // grey_4 -> grey_5
-              const SizedBox(width: 4),
-              Text(data["likeCount"].toString(), style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
-            ],
+          GestureDetector(
+            onTap: _toggleReviewLike, // 클릭 시 함수 실행
+            behavior: HitTestBehavior.opaque, // 터치 영역 확보
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // 내용물 크기만큼만 차지
+              children: [
+                Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  size: 20,
+                  color: isLiked ? AppColors.main : AppColors.grey_5,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  likeCount.toString(),
+                  style: AppTextStyles.pretendard_regular.copyWith(
+                    color: isLiked ? AppColors.main : AppColors.grey_5,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

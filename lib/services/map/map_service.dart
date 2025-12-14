@@ -235,6 +235,32 @@ class MapService {
     }
   }
 
+  //리뷰 좋아요 토글
+  static Future<bool> toggleReviewLike(int reviewId) async {
+    final accessToken = await StorageService.getAccessToken();
+    final url = Uri.parse('$baseUrl/v1/reviews/$reviewId/like');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("리뷰 좋아요 실패: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("리뷰 좋아요 네트워크 오류: $e");
+      return false;
+    }
+  }
+
   static void logCurl({
     required String method,
     required Uri uri,
