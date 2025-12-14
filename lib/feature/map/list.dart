@@ -215,7 +215,7 @@ class _ListScreenState extends State<ListScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  item["distance"].toString(),
+                  "${item["distance"].toString()}m",
                   style: AppTextStyles.pretendard_regular.copyWith(
                     color: AppColors.grey_4,
                     fontSize: 13,
