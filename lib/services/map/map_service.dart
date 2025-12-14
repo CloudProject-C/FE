@@ -51,9 +51,90 @@ class MapService {
   }
 
   // 음식점 세부정보 요청
-  static Future<String?> fetchRestaurantInfo(int id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return '이곳은 신선한 재료로 유명한 맛집 $id 입니다!';
+  static Future<Map<String, dynamic>?> fetchRestaurantInfo(
+      int id, {
+        required double latitude,
+        required double longitude,
+      }) async {
+    final accessToken = await StorageService.getAccessToken();
+
+    final url = Uri.parse('$baseUrl/v1/places/$id').replace(queryParameters: {
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+    });
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+
+        if (decodedBody['isSuccess'] == true) {
+          // "result" 객체만 반환
+          return decodedBody['result'] as Map<String, dynamic>;
+        } else {
+          print("API 오류: ${decodedBody['message']}");
+          return null;
+        }
+      } else {
+        print("서버 오류: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("네트워크 오류: $e");
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> fetchReviews(
+      int placeId, {
+        String sort = 'LATEST', // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
+        int page = 0,
+        int size = 10,
+      }) async {
+    final accessToken = await StorageService.getAccessToken();
+
+    // 엔드포인트: /v1/reviews/{id}
+    // 쿼리 파라미터: sort, page, size
+    final url = Uri.parse('$baseUrl/v1/reviews/$placeId').replace(queryParameters: {
+      'sort': sort,
+      'page': page.toString(),
+      'size': size.toString(),
+    });
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+
+        if (decodedBody['isSuccess'] == true) {
+          // result 객체 전체 반환 (totalElements, content 등 포함)
+          return decodedBody['result'] as Map<String, dynamic>;
+        } else {
+          print("리뷰 API 오류: ${decodedBody['message']}");
+          return null;
+        }
+      } else {
+        print("리뷰 서버 오류: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("리뷰 네트워크 오류: $e");
+      return null;
+    }
   }
 
   // 사용자가 글 작성 가능한 위치인지 검증
