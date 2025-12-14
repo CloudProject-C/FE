@@ -231,7 +231,7 @@ class _TopBar extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.grey_4,
+            color: AppColors.grey_5, // grey_4 -> grey_5
             size: 20,
           ),
         ),
@@ -258,7 +258,7 @@ class _RatingSection extends StatelessWidget {
             style: AppTextStyles.pretendard_regular.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: AppColors.grey_4,
+              color: AppColors.grey_5, // grey_4 -> grey_5
             ),
           ),
           const SizedBox(width: 6),
@@ -326,7 +326,7 @@ class _MatchCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       "매칭",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
                     ),
                   ],
                 ),
@@ -364,7 +364,7 @@ class _TitleSection extends StatelessWidget {
           Icon(
             info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
             size: 24,
-            color: info['isLiked'] == true ? AppColors.main : AppColors.grey_4,
+            color: info['isLiked'] == true ? AppColors.main : AppColors.grey_5, // grey_4 -> grey_5
           ),
           const SizedBox(width: 4),
         ],
@@ -389,7 +389,7 @@ class _InfoSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(info['categoryName'] ?? "카테고리 없음",
-              style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+              style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
           const SizedBox(height: 8),
 
           Row(
@@ -397,18 +397,19 @@ class _InfoSection extends StatelessWidget {
               Icon(Icons.favorite, color: AppColors.main, size: 20),
               const SizedBox(width: 6),
               Text("${info['placeLikeCount']}",
-                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),            ],
+                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
+            ],
           ),
 
           const SizedBox(height: 12),
 
           Row(
             children: [
-              Icon(Icons.location_on_outlined, color: AppColors.grey_4, size: 20),
+              Icon(Icons.location_on_outlined, color: AppColors.grey_5, size: 20), // grey_4 -> grey_5
               const SizedBox(width: 6),
               Expanded(
                 child: Text("${info['roadAddressName']} • ${distance.toString()}m",
-                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
               ),
             ],
           ),
@@ -417,10 +418,10 @@ class _InfoSection extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.phone, color: AppColors.grey_4, size: 20),
+              Icon(Icons.phone, color: AppColors.grey_5, size: 20), // grey_4 -> grey_5
               const SizedBox(width: 6),
               Text(info['phone'] ?? "전화번호 없음",
-                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
             ],
           ),
 
@@ -428,10 +429,10 @@ class _InfoSection extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.access_time, color: AppColors.grey_4, size: 20),
+              Icon(Icons.access_time, color: AppColors.grey_5, size: 20), // grey_4 -> grey_5
               const SizedBox(width: 6),
               Text("11:00 - 21:00",
-                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+                  style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
             ],
           ),
         ],
@@ -476,10 +477,10 @@ class _ActionButtons extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(
             child: SecondaryButton(
-                text: '길찾기',
-                onTap: (){return null;},
-                width: double.infinity,
-                height: 46,
+              text: '길찾기',
+              onTap: (){return null;},
+              width: double.infinity,
+              height: 46,
             ),
           ),
         ],
@@ -509,7 +510,7 @@ class _ReviewHeader extends StatelessWidget {
           Text(
             "리뷰 $count",
             style: AppTextStyles.pretendard_regular.copyWith(
-              color: AppColors.grey_4,
+              color: AppColors.grey_5, // grey_4 -> grey_5
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -568,9 +569,9 @@ class _ReviewItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(data["nickname"] ?? "nonick",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
                   Text(data["createdAt"] ?? "nocrea",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4))
+                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)) // grey_4 -> grey_5
                 ],
               )
             ],
@@ -580,7 +581,7 @@ class _ReviewItem extends StatelessWidget {
 
           Text(
             data["content"],
-            style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
+            style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
           ),
 
           const SizedBox(height: 12),
@@ -634,9 +635,9 @@ class _ReviewItem extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.favorite_border, size: 20, color: AppColors.grey_4),
+              Icon(Icons.favorite_border, size: 20, color: AppColors.grey_5), // grey_4 -> grey_5
               const SizedBox(width: 4),
-              Text(data["likeCount"].toString(), style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4)),
+              Text(data["likeCount"].toString(), style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
             ],
           ),
         ],
@@ -644,4 +645,3 @@ class _ReviewItem extends StatelessWidget {
     );
   }
 }
-
