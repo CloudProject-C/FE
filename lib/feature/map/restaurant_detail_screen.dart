@@ -116,70 +116,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     _fetchReviewsOnly();
   }
 
-  // Future<void> fetchRestaurantInfo() async {
-  //   // 기본값 설정 (서울시청) - 위치 실패 시 이 값으로 API 호출
-  //   double lat = 37.251;
-  //   double lng = 127.078;
-  //
-  //   try {
-  //     // 1. 위치 로직 (실패해도 API 호출은 진행하도록 별도 try-catch로 감쌈)
-  //     try {
-  //       final location = Location();
-  //
-  //       // 타임아웃을 짧게(3초) 설정하여 무한 로딩 방지
-  //       bool serviceEnabled = await location.serviceEnabled();
-  //       if (!serviceEnabled) {
-  //         serviceEnabled = await location.requestService();
-  //       }
-  //
-  //       if (serviceEnabled) {
-  //         PermissionStatus permissionGranted = await location.hasPermission();
-  //         if (permissionGranted == PermissionStatus.denied) {
-  //           permissionGranted = await location.requestPermission();
-  //         }
-  //
-  //         if (permissionGranted == PermissionStatus.granted) {
-  //           // [중요] 타임아웃 추가: 5초 안에 위치 못 가져오면 포기하고 기본값 사용
-  //           final locationData = await location.getLocation().timeout(
-  //             const Duration(seconds: 5),
-  //             onTimeout: () {
-  //               print("위치 가져오기 시간 초과 -> 기본 위치 사용");
-  //               return LocationData.fromMap({'latitude': lat, 'longitude': lng});
-  //             },
-  //           );
-  //           lat = locationData.latitude ?? lat;
-  //           lng = locationData.longitude ?? lng;
-  //         }
-  //       }
-  //     } catch (e) {
-  //       print("위치 가져오기 실패 (기본 위치 사용): $e");
-  //       // 위치 에러가 나도 무시하고 아래 API 호출로 넘어감
-  //     }
-  //
-  //     print("API 호출 시작: ID=${widget.id}, Lat=$lat, Lng=$lng");
-  //
-  //     // 2. API 호출
-  //     final info = await MapService.fetchRestaurantInfo(
-  //       widget.id,
-  //       latitude: lat,
-  //       longitude: lng,
-  //     );
-  //
-  //     // 3. 상태 업데이트
-  //     if (mounted) {
-  //       setState(() {
-  //         _restaurantInfo = info; // 데이터가 null이어도 로딩은 끝내야 함
-  //         _isLoading = false;     // [중요] 로딩 해제
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("전체 로직 에러 발생: $e");
-  //     if (mounted) {
-  //       setState(() => _isLoading = false); // 에러 발생 시에도 로딩 해제
-  //     }
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     // 로딩 중일 때 표시
@@ -209,18 +145,25 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               const _TopBar(),
               const SizedBox(height: 12),
 
-              // 매칭 정보에 데이터 전달 (필요시 수정)
-              _MatchCard(info: _restaurantInfo!),
-
-              // 디버깅용 텍스트 (삭제 가능)
-              Text("식당 id: ${widget.id.toString()}"),
-
-              const SizedBox(height: 20),
-
               // 타이틀 섹션에 데이터 전달
               _TitleSection(info: _restaurantInfo!),
 
+              const SizedBox(height: 4),
+              _RatingSection(
+                rating: (_restaurantInfo!['averageRating'] ?? 0).toDouble(),
+              ),
+
               const SizedBox(height: 16),
+
+              // 매칭 정보에 데이터 전달 (필요시 수정)
+              _MatchCard(info: _restaurantInfo!),
+
+              // 디버깅용 텍스트
+              //Text("식당 id: ${widget.id.toString()}"),
+
+              const SizedBox(height: 20),
+
+
 
               // 정보 섹션에 데이터 전달
               _InfoSection(info: _restaurantInfo!, distance: widget.distance),
@@ -297,6 +240,48 @@ class _TopBar extends StatelessWidget {
   }
 }
 
+class _RatingSection extends StatelessWidget {
+  final double rating;
+
+  const _RatingSection({required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // 1. 점수 텍스트 (예: 5.0)
+          Text(
+            rating.toStringAsFixed(1), // 소수점 첫째 자리까지 표시
+            style: AppTextStyles.pretendard_regular.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grey_4,
+            ),
+          ),
+          const SizedBox(width: 6),
+
+          // 2. 별 아이콘 5개
+          Row(
+            children: List.generate(5, (index) {
+              // index는 0,1,2,3,4
+              // 예: rating이 3.5면 -> 0,1,2는 채워짐 / 3,4는 비워짐
+              // (반올림해서 보여주고 싶다면 index < rating.round() 사용)
+              return Icon(
+                rating.round() >= index + 1 ? Icons.star : Icons.star_border,
+                color: AppColors.main, // 메인 컬러 (노란색 계열 예상)
+                size: 18,
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MatchCard extends StatelessWidget {
   final Map<String, dynamic> info;
 
@@ -321,31 +306,7 @@ class _MatchCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 등급 박스 (Asset 예정)
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.main,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "S",
-                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.white),
-                  ),
-                  Text(
-                    "등급",
-                    style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 4),
 
           // 오른쪽 매칭 정보
           Expanded(
@@ -371,12 +332,6 @@ class _MatchCard extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-
-                // 게이지(나중에 실제 이미지로 대체)
-                SizedBox(
-                  height: 40,
-                  child: Placeholder(), // 네가 이미지로 교체
-                ),
               ],
             ),
           )
@@ -395,28 +350,23 @@ class _TitleSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                info['placeName'] ?? "이름 없음",
-                style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                "(${info['reviewCount']}개 리뷰)",
-                style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_4),
-              ),
-            ],
+          Text(
+            info['placeName'] ?? "이름 없음",
+            style: AppTextStyles.pretendard_bold.copyWith(
+              color: AppColors.grey_6,
+              fontSize: 24,
+            ),
           ),
+          const SizedBox(width: 4),
+          Spacer(),
           Icon(
             info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
-            size: 20,
+            size: 24,
             color: info['isLiked'] == true ? AppColors.main : AppColors.grey_4,
-          )
+          ),
+          const SizedBox(width: 4),
         ],
       ),
     );
@@ -635,16 +585,50 @@ class _ReviewItem extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppColors.grey_1,
+          // [수정] 이미지 리스트 처리 로직
+          if (data['imageUrls'] != null && (data['imageUrls'] as List).isNotEmpty) ...[
+            SizedBox(
+              height: 110,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: (data['imageUrls'] as List).length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, imgIndex) {
+                  final imageUrl = data['imageUrls'][imgIndex];
+                  return Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.grey_1,
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-            clipBehavior: Clip.hardEdge,
-            child: Placeholder(), // 여기 사진 넣으면 됨
-          ),
+            const SizedBox(height: 12), // 이미지와 좋아요 버튼 사이 간격
+          ],
 
           const SizedBox(height: 10),
 
