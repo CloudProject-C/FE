@@ -49,24 +49,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _loading = false;
           _error = true;
-          if (tokenEmail != null) email = tokenEmail;
+          if (tokenEmail != null) {
+            email = tokenEmail;
+          }
         });
         return;
       }
 
       final result = data['result'] as Map<String, dynamic>?;
 
+      final rawProfileImage = result?['profileImage']?.toString();
+      String? safeProfileImage;
+      if (rawProfileImage != null &&
+          rawProfileImage.isNotEmpty &&
+          rawProfileImage != 'exampleImageUrl') {
+        safeProfileImage = rawProfileImage;
+      } else {
+        safeProfileImage = null;
+      }
+
       setState(() {
         nickname = (result?['nickname'] ?? nickname).toString();
-        profileImage = result?['profileImage']?.toString();
         schoolName = (result?['schoolName'] ?? schoolName).toString();
         myReviewCount = (result?['myReviewCount'] ?? 0) as int;
         myPlaceLikeCount = (result?['myPlaceLikeCount'] ?? 0) as int;
+
         foodPreferences =
             (result?['foodPreferences'] as List<dynamic>?)
                 ?.map((e) => e.toString())
                 .toList() ??
                 [];
+
+        profileImage = safeProfileImage;
 
         if (tokenEmail != null && tokenEmail.isNotEmpty) {
           email = tokenEmail;
@@ -147,15 +161,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   myPlaceLikeCount: myPlaceLikeCount,
                   profileImage: profileImage,
                 ),
-
                 const SizedBox(height: 24),
-
                 _PreferenceSection(foodPreferences: foodPreferences),
-
                 const SizedBox(height: 24),
-
                 _SettingsSection(onSettingsTap: _openSettings),
-
                 const SizedBox(height: 24),
               ],
             ),
@@ -189,6 +198,9 @@ class _ProfileHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasProfileImage =
+        profileImage != null && profileImage!.isNotEmpty;
+
     return Container(
       width: double.infinity,
       color: Colors.white,
@@ -208,7 +220,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                   color: AppColors.main_30per,
                 ),
                 child: ClipOval(
-                  child: (profileImage != null && profileImage!.isNotEmpty)
+                  child: hasProfileImage
                       ? Image.network(
                     profileImage!,
                     fit: BoxFit.cover,
