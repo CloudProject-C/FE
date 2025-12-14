@@ -49,7 +49,7 @@ class CurrentPositionGetter {
       print('[3] Calling getLocation()...');
       final locationData = await location
           .getLocation()
-          .timeout(const Duration(seconds: 10), onTimeout: () {
+          .timeout(const Duration(seconds: 1), onTimeout: () {
         print('[TIMEOUT] getLocation timeout');
         return LocationData.fromMap({});
       });
