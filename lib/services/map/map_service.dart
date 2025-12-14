@@ -51,9 +51,155 @@ class MapService {
   }
 
   // 음식점 세부정보 요청
-  static Future<String?> fetchRestaurantInfo(int id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return '이곳은 신선한 재료로 유명한 맛집 $id 입니다!';
+  static Future<Map<String, dynamic>?> fetchRestaurantInfo(
+      int id, {
+        required double latitude,
+        required double longitude,
+      }) async {
+    final accessToken = await StorageService.getAccessToken();
+
+    final url = Uri.parse('$baseUrl/v1/places/$id').replace(queryParameters: {
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+    });
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+
+        if (decodedBody['isSuccess'] == true) {
+          // "result" 객체만 반환
+          return decodedBody['result'] as Map<String, dynamic>;
+        } else {
+          print("API 오류: ${decodedBody['message']}");
+          return null;
+        }
+      } else {
+        print("서버 오류: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("네트워크 오류: $e");
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> fetchReviews(
+      int placeId, {
+        String sort = 'LATEST', // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
+        int page = 0,
+        int size = 10,
+      }) async {
+    final accessToken = await StorageService.getAccessToken();
+
+    // 엔드포인트: /v1/reviews/{id}
+    // 쿼리 파라미터: sort, page, size
+    final url = Uri.parse('$baseUrl/v1/reviews/$placeId').replace(queryParameters: {
+      'sort': sort,
+      'page': page.toString(),
+      'size': size.toString(),
+    });
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+
+        if (decodedBody['isSuccess'] == true) {
+          // result 객체 전체 반환 (totalElements, content 등 포함)
+          return decodedBody['result'] as Map<String, dynamic>;
+        } else {
+          print("리뷰 API 오류: ${decodedBody['message']}");
+          return null;
+        }
+      } else {
+        print("리뷰 서버 오류: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("리뷰 네트워크 오류: $e");
+      return null;
+    }
+  }
+
+  // [추가] 리뷰 작성 (Multipart/form-data)
+  static Future<bool> postReview({
+    required int placeId,
+    required int rating,
+    required String content,
+    List<String> imagePaths = const [], // 파일 경로 리스트
+  }) async {
+    final accessToken = await StorageService.getAccessToken();
+    final url = Uri.parse('$baseUrl/v1/reviews');
+
+    try {
+      // 1. MultipartRequest 생성
+      final request = http.MultipartRequest('POST', url);
+
+      // 2. 헤더 설정 (Content-Type은 자동으로 설정됨)
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // 3. JSON 데이터 추가 (request 파트)
+      // 서버 명세에 따라 'request'라는 키로 JSON 문자열을 보냅니다.
+      final jsonBody = jsonEncode({
+        'placeId': placeId,
+        'rating': rating,
+        'content': content,
+      });
+
+      // application/json 타입임을 명시하여 필드 추가
+      request.files.add(http.MultipartFile.fromString(
+        'request',
+        jsonBody,
+        contentType: http.MediaType('application', 'json'),
+      ));
+
+      // 4. 이미지 파일 추가 (images 파트)
+      for (String path in imagePaths) {
+        // 파일이 실제로 존재하는지 체크하거나, mimeType을 명시할 수 있습니다.
+        final file = await http.MultipartFile.fromPath(
+          'images', // 서버에서 받는 키 이름 (List<MultipartFile>)
+          path,
+          contentType: http.MediaType('image', 'jpeg'), // 필요시 확장자에 맞춰 수정
+        );
+        request.files.add(file);
+      }
+
+      // 5. 전송
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
+        if (decodedBody['isSuccess'] == true) {
+          return true;
+        } else {
+          print("리뷰 작성 실패: ${decodedBody['message']}");
+          return false;
+        }
+      } else {
+        print("리뷰 서버 오류: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("리뷰 작성 네트워크 오류: $e");
+      return false;
+    }
   }
 
   // 사용자가 글 작성 가능한 위치인지 검증

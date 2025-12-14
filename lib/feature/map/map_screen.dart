@@ -69,7 +69,9 @@ class _MapScreenState extends State<MapScreen> {
       
               const SizedBox(height: 12),
       
-              _buildFilterArea(),
+              _buildFilterArea(
+                currentTab == MapTab.map,
+              ),
       
               const SizedBox(height: 16),
       
@@ -147,12 +149,12 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildFilterArea() {
+  Widget _buildFilterArea(bool isMap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          Expanded(
+          isMap ? Container() : Expanded(
             child: CustomDropdownFilter(
               selected: selectedSort,
               items: const ["추천순(유사도)", "거리순", "리뷰 많은 순", "평점순"],
@@ -205,34 +207,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-
-// ------------------------------
-// 필터 Chip
-// ------------------------------
-// class _FilterChip extends StatelessWidget {
-//   final String label;
-//
-//   const _FilterChip({required this.label});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 40,
-//       decoration: BoxDecoration(
-//         color: AppColors.grey_4.withOpacity(0.12),
-//         borderRadius: BorderRadius.circular(10),
-//       ),
-//       alignment: Alignment.center,
-//       child: Text(
-//         label,
-//         style: AppTextStyles.pretendard_regular.copyWith(
-//           color: AppColors.grey_4,
-//           fontSize: 14,
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 // ------------------------------
 // 상단 탭 버튼 (지도 / 리스트)

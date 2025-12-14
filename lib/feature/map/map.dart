@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:campit_frontend/feature/map/draggable_sheet.dart';
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
+import 'package:campit_frontend/shared/constants/app_colors.dart';
+import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:location/location.dart';
@@ -23,6 +27,7 @@ class _MapAreaState extends State<MapArea> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
+  LocationData? _initialLocation; // [추가] 지도 초기 로딩용 위치 (고정)
   NMarker? _myDot;
   LocationData? _prevLocation;
   Timer? _lerpTimer;
@@ -33,8 +38,35 @@ class _MapAreaState extends State<MapArea> {
   void initState() {
     super.initState();
     _initLocation();
+    _startLocationListening();
 
     // 위치 변화 실시간 감지
+    // _location.onLocationChanged.listen((current) {
+    //   if (!mounted) return;
+    //
+    //   if (_followOn && _mapController != null) {
+    //     _animateCamera(_prevLocation, current);
+    //   }
+    //
+    //   _animateMyDot(_prevLocation, current);
+    //
+    //   if (!mounted) return;
+    //   setState(() {
+    //     _myLocation = current;
+    //   });
+    //
+    //   _prevLocation = current;
+    //
+    // });
+  }
+
+  Future<void> _startLocationListening() async {
+    await _location.changeSettings(
+      accuracy: LocationAccuracy.high, // 중요
+      interval: 1000,                  // 1초마다
+      distanceFilter: 1,               /// 1m 이동 시. 이거 지우면 배터리 폭탄.
+    );
+
     _location.onLocationChanged.listen((current) {
       if (!mounted) return;
 
@@ -44,13 +76,11 @@ class _MapAreaState extends State<MapArea> {
         _animateCamera(_prevLocation, current);
       }
 
-      if (!mounted) return;
       setState(() {
         _myLocation = current;
       });
 
       _prevLocation = current;
-
     });
   }
 
@@ -100,13 +130,18 @@ class _MapAreaState extends State<MapArea> {
       if (permission != PermissionStatus.granted) return;
     }
 
-    _myLocation = await _location.getLocation();
+    final location = await _location.getLocation(); // 임시 변수에 받음
+
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _myLocation = location;      // 현재 위치 저장
+      _initialLocation = location; // [수정] 초기 위치 고정값 저장
+    });
   }
 
 
   Future<void> _loadNearbyRestaurants() async {
+    print("_loadNearbyRestaurants 함수 실행!!!!!!");
     if (_myLocation == null) return;
 
     // 1. 서버에서 데이터 가져오기
@@ -132,8 +167,15 @@ class _MapAreaState extends State<MapArea> {
       final marker = NMarker(
         id: id,
         position: NLatLng(lat, lng),
-        caption: NOverlayCaption(text: name),
-        size: const Size(30, 40), // 마커 크기 조절 (선택)
+        icon: const NOverlayImage.fromAssetImage(
+          AppAssets.marker_white_hole,
+        ),
+        // caption: NOverlayCaption(
+        //   text: name,
+        //   textSize: 10,
+        //   color: AppColors.grey_5,
+        // ),
+        size: const Size(30, 30), // 마커 크기 조절 (선택)
       );
 
       // 3. 마커 클릭 이벤트 (다이얼로그 표시)
@@ -141,51 +183,34 @@ class _MapAreaState extends State<MapArea> {
         // 상세 정보 가져오기 (필요하다면)
         // final info = await MapService.fetchRestaurantInfo(r['id']);
 
-        if (!mounted) return;
+        if (!mounted) return true;
 
-        showDialog(
+        final restaurantInfo = {
+          'id': r['placeId'],
+          'placeName': r['placeName'],
+          'categoryName': r['categoryName'],
+          'distance': r['distance'],
+          'myLat': _myLocation!.latitude,
+          'myLng': _myLocation!.longitude,
+        };
+
+        showModalBottomSheet(
           context: context,
-          builder: (_) => AlertDialog(
-            title: Text(name),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("카테고리: ${r['categoryName'] ?? '-'}"),
-                const SizedBox(height: 8),
-                Text("거리: ${r['distance']}m"),
-                const SizedBox(height: 8),
-                // Text(info ?? '상세 정보 없음'), // 상세 정보 API가 있다면 사용
-              ],
+          isScrollControlled: true,
+          backgroundColor: AppColors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // 다이얼로그 닫기
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const RestaurantDetailScreen(),
-                    ),
-                  );
-                },
-                child: const Text('상세 정보'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _openNaverMap(
-                    _myLocation!.latitude!,
-                    _myLocation!.longitude!,
-                    lat, // 파싱해둔 lat 사용
-                    lng, // 파싱해둔 lng 사용
-                  );
-                },
-                child: const Text('길찾기'),
-              ),
-            ],
           ),
+          builder: (_) {
+            return RestaurantBottomSheet(
+              restaurantInfo: restaurantInfo,
+            );
+          },
         );
+
+        return true; // 중요: 기본 지도 동작 막기
       });
 
       // 지도에 마커 추가
@@ -312,8 +337,8 @@ class _MapAreaState extends State<MapArea> {
 
   @override
   Widget build(BuildContext context) {
-    final lat = _myLocation?.latitude;
-    final lng = _myLocation?.longitude;
+    final lat = _initialLocation?.latitude;
+    final lng = _initialLocation?.longitude;
     // 위치 데이터를 아직 못 가져온 경우 로딩 표시
     if (lat == null || lng == null) {
       return Center(child: CircularProgressIndicator());
@@ -333,7 +358,12 @@ class _MapAreaState extends State<MapArea> {
                       target: NLatLng(lat, lng),
                       zoom: 15,
                     ),
+
+                    //틸트(기울기) 제스처 비활성화
+                    tiltGesturesEnable: false,
                   ),
+
+                  ///onMapReady는 setState로 인한 bulid함수의 재호출과 상관없이 최초 1회만 호출됨.
                   onMapReady: (controller) async {
                     _mapController = controller;
 
@@ -367,16 +397,15 @@ class _MapAreaState extends State<MapArea> {
                   },
                   onCameraChange: (reason, animated) {
                     if (_followOn && reason == NCameraUpdateReason.gesture) {
-                      // 사용자가 카메라 움직이려고 시도함 → 바로 되돌림
+                      // 사용자가 카메라 움직이면 카메라 고정 해제
                       if (_myLocation?.latitude != null && _myLocation?.longitude != null) {
-                        _mapController?.updateCamera(
-                          NCameraUpdate.withParams(
-                            target: NLatLng(
-                              _myLocation!.latitude!,
-                              _myLocation!.longitude!,
-                            ),
-                          ),
-                        );
+                        setState(() {
+                          _followOn = false;
+                        });
+
+                        // (중요) 현재 코드로 카메라를 강제 이동시키는 타이머가 돌고 있다면 즉시 취소해야
+                        // 사용자가 스크롤할 때 버벅거리지 않습니다.
+                        _cameraLerpTimer?.cancel();
                       }
                     }
                   },
@@ -415,6 +444,21 @@ class _MapAreaState extends State<MapArea> {
                     setState(() {
                       _followOn = !_followOn;
                     });
+
+                    if (_followOn && _myLocation?.latitude != null &&
+                        _myLocation?.longitude != null) {
+                      _mapController?.updateCamera(
+                        NCameraUpdate.withParams(
+                          target: NLatLng(
+                            _myLocation!.latitude!,
+                            _myLocation!.longitude!,
+                          ),
+                          bearing: 0.0, //회전을 0(북쪽)으로 초기화
+                          tilt: 0.0,
+                          // zoom: 15,
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -461,7 +505,7 @@ class _MapAreaState extends State<MapArea> {
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 20, color: Colors.black),
+          style: const TextStyle(fontSize: 25, color: Colors.black),
         ),
       ),
     );
