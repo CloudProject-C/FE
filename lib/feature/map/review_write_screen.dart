@@ -125,13 +125,13 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               title: Text(
                 '리뷰 작성',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
+                  color: AppColors.grey_5,
                 ),
               ),
               backgroundColor: AppColors.white,
               elevation: 0,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: AppColors.grey_4),
+                icon: Icon(Icons.arrow_back, color: AppColors.grey_5),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -148,12 +148,12 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.grey_4.withOpacity(0.2)),
+                        border: Border.all(color: AppColors.grey_5.withOpacity(0.2)),
                       ),
                       child: Text(
                         '${widget.placeName}\n작성 가능 (학교 500m 이내)', // [수정] 실제 식당 이름 표시
                         style: AppTextStyles.pretendard_regular
-                            .copyWith(color: AppColors.grey_4),
+                            .copyWith(color: AppColors.grey_5),
                       ),
                     ),
 
@@ -163,7 +163,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     Text(
                       '리뷰 작성 ($_contentLength/1000)',
                       style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.grey_4),
+                          .copyWith(color: AppColors.grey_5),
                     ),
                     const SizedBox(height: 8),
 
@@ -173,18 +173,18 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.grey_4.withOpacity(0.2)),
+                        border: Border.all(color: AppColors.grey_5.withOpacity(0.2)),
                       ),
                       child: TextField(
                         controller: _contentController,
                         maxLines: 8,
                         maxLength: 1000,
                         style: AppTextStyles.pretendard_regular
-                            .copyWith(color: AppColors.grey_4),
+                            .copyWith(color: AppColors.grey_5),
                         decoration: InputDecoration(
                           hintText: '음식점에 대한 솔직한 리뷰를 작성해주세요',
                           hintStyle: AppTextStyles.pretendard_regular
-                              .copyWith(color: AppColors.grey_4.withOpacity(0.5)),
+                              .copyWith(color: AppColors.grey_5.withOpacity(0.5)),
                           border: InputBorder.none,
                           counterText: '',
                         ),
@@ -197,7 +197,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     Text(
                       '별점',
                       style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.grey_4),
+                          .copyWith(color: AppColors.grey_5),
                     ),
                     const SizedBox(height: 8),
 
@@ -213,7 +213,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                               size: 28,
                               color: starValue <= _rating
                                   ? AppColors.main
-                                  : AppColors.grey_4.withOpacity(0.3), // 선택 안된 별 색상 조정
+                                  : AppColors.grey_5.withOpacity(0.3), // 선택 안된 별 색상 조정
                             ),
                           ),
                         );
@@ -224,7 +224,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     Text(
                       '$_rating점', // 점수 뒤에 '점' 추가
                       style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.grey_4),
+                          .copyWith(color: AppColors.grey_5),
                     ),
 
                     const SizedBox(height: 24),
@@ -233,7 +233,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     Text(
                       '사진 (${_images.length}/5)',
                       style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.grey_4),
+                          .copyWith(color: AppColors.grey_5),
                     ),
                     const SizedBox(height: 12),
 
@@ -250,19 +250,19 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                               color: AppColors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppColors.grey_4.withOpacity(0.3),
+                                color: AppColors.grey_5.withOpacity(0.3),
                               ),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.add_photo_alternate,
-                                    size: 32, color: AppColors.grey_4),
+                                    size: 32, color: AppColors.grey_5),
                                 const SizedBox(height: 4),
                                 Text(
                                   '추가',
                                   style: AppTextStyles.pretendard_regular
-                                      .copyWith(color: AppColors.grey_4),
+                                      .copyWith(color: AppColors.grey_5),
                                 ),
                               ],
                             ),
@@ -298,7 +298,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                                     child: Icon(
                                       Icons.close,
                                       size: 16,
-                                      color: AppColors.grey_4,
+                                      color: AppColors.grey_5,
                                     ),
                                   ),
                                 ),
@@ -314,7 +314,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     Text(
                       '최대 5장, 각 5MB 이하',
                       style: AppTextStyles.pretendard_regular
-                          .copyWith(color: AppColors.grey_4.withOpacity(0.5)),
+                          .copyWith(color: AppColors.grey_5.withOpacity(0.5)),
                     ),
 
                     const SizedBox(height: 40),
