@@ -37,7 +37,7 @@ class _DaliyFoodPreferenceScreenState extends State<DaliyFoodPreferenceScreen> {
     "아시안": "asian",
     "분위기": "mood",
     "건강식": "healthy",
-    "고칼로리/단백질": "protain",
+    "고칼로리/단백질": "protein",
   };
 
   final Set<String> selected = {};
