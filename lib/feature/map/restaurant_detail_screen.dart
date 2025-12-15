@@ -8,6 +8,7 @@ import 'package:campit_frontend/utils/current_position_getter.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
+import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:campit_frontend/utils/location_validator.dart';
 import 'package:square_progress_bar/square_progress_bar.dart';
@@ -390,10 +391,17 @@ class _MatchCard extends StatelessWidget {
             "사용자 선호도 반영",
             style: AppTextStyles.pretendard_bold.copyWith(
               color: AppColors.main,
-              fontSize: 20
+              shadows: [
+                Shadow(
+                  color: AppColors.main.withOpacity(0.15), // 그림자 색상 (반투명 검정)
+                  offset: const Offset(2, 2), // 그림자 위치 (오른쪽 아래로 2px)
+                  blurRadius: 4, // 그림자 번짐 정도
+                ),
+              ],
+              fontSize: 18,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SquareProgressBar(
             width: 60, // default: max available space
             height: 60, // default: max available space
@@ -643,7 +651,24 @@ class _ActionButtonsState extends State<_ActionButtons> {
           Expanded(
             child: SecondaryButton(
               text: '공유하기',
-              onTap: (){return null;},
+              onTap: () async {
+                // 1. 복사할 링크 생성 (임시 URL 포맷)
+                final String link = "https://campit.co.kr/place/${widget.id}";
+
+                // 2. 클립보드에 복사
+                await Clipboard.setData(ClipboardData(text: link));
+
+                // 3. 성공 메시지 (SnackBar) 띄우기
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('링크가 클립보드에 복사되었습니다.'),
+                      duration: Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating, // 하단에 띄우기
+                    ),
+                  );
+                }
+              },
               width: double.infinity,
               height: 46,
             ),
