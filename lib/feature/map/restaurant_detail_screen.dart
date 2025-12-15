@@ -789,10 +789,9 @@ class _ReviewItemState extends State<_ReviewItem> {
                 },
               ),
             ),
-            const SizedBox(height: 12), // 이미지와 좋아요 버튼 사이 간격
           ],
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 5), // 이미지와 좋아요 버튼 사이 간격
 
           GestureDetector(
             onTap: _toggleReviewLike, // 클릭 시 함수 실행
