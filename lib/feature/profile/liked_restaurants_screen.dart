@@ -106,22 +106,18 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
         title: Text(
           '좋아요한 식당',
           style: AppTextStyles.pretendard_bold.copyWith(
-            fontSize: 24,
+            fontSize: 18,
             color: AppColors.grey_8,
           ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Column(
-            children: [
-              const SizedBox(height: 28),
-              Container(
-                height: 1,
-                color: AppColors.grey_2,
-              ),
-            ],
+          child: Container(
+            height: 1,
+            color: AppColors.grey_2,
           ),
         ),
+
       ),
       bottomNavigationBar: const BottomNavBar(
         currentRoute: '/profile',

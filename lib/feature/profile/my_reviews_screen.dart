@@ -180,7 +180,6 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
               Expanded(
                 child: _loading
                     ? const Center(child: CircularProgressIndicator())
@@ -197,8 +196,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                     ? Center(
                   child: Text(
                     '작성한 리뷰가 없습니다.',
-                    style:
-                    AppTextStyles.pretendard_regular.copyWith(
+                    style: AppTextStyles.pretendard_regular
+                        .copyWith(
                       color: AppColors.grey_5,
                     ),
                   ),
@@ -211,8 +210,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                     final review = _reviews[index];
                     return _ReviewTile(
                       review: review,
-                      daysAgoText:
-                      _formatDaysAgo(review.createdAt),
+                      daysAgoText: _formatDaysAgo(
+                          review.createdAt),
                     );
                   },
                 ),
@@ -256,25 +255,20 @@ class _ReviewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safeRating = review.rating.clamp(0, 5);
+    final int roundedRating =
+    (review.rating.toDouble()).round().clamp(0, 5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              daysAgoText,
-              style: AppTextStyles.pretendard_regular.copyWith(
-                fontSize: 13,
-                color: AppColors.grey_5,
-              ),
-            ),
-          ],
+        Text(
+          daysAgoText,
+          style: AppTextStyles.pretendard_regular.copyWith(
+            fontSize: 13,
+            color: AppColors.grey_5,
+          ),
         ),
         const SizedBox(height: 8),
-
-        // 이미지 + 가게 이름 / 별점
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -296,7 +290,6 @@ class _ReviewTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,13 +304,12 @@ class _ReviewTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-
                   Row(
                     children: [
-                      _StarRow(rating: safeRating),
+                      _StarRow(rating: roundedRating),
                       const SizedBox(width: 6),
                       Text(
-                        review.rating.toString(),
+                        roundedRating.toString(),
                         style: AppTextStyles.pretendard_regular.copyWith(
                           fontSize: 13,
                           color: AppColors.grey_6,
@@ -330,10 +322,7 @@ class _ReviewTile extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 8),
-
-        // 리뷰 내용
         Text(
           review.content,
           style: AppTextStyles.pretendard_regular.copyWith(
@@ -343,10 +332,7 @@ class _ReviewTile extends StatelessWidget {
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-
         const SizedBox(height: 8),
-
-        // 좋아요 수
         Row(
           children: [
             const Icon(
