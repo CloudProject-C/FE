@@ -193,6 +193,11 @@ class _MapAreaState extends State<MapArea> {
           'distance': r['distance'],
           'myLat': _myLocation!.latitude,
           'myLng': _myLocation!.longitude,
+          "reviewCount": r['reviewCount'],
+          "rating": r['rating'],
+          "preferencePercent": r['preferencePercent'],
+          "placeLikeCount": r['placeLikeCount'],
+          "isLiked": r['isLiked'],
         };
 
         showModalBottomSheet(

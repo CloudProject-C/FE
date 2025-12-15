@@ -388,7 +388,7 @@ class _MatchCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "사용자 선호도 반영",
+            "내 취향과 일치도",
             style: AppTextStyles.pretendard_bold.copyWith(
               color: AppColors.main,
               shadows: [
