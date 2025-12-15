@@ -249,6 +249,7 @@ class _RestaurantBottomSheetState extends State<RestaurantBottomSheet> {
                               id: widget.restaurantInfo['id'],
                               distance: widget.restaurantInfo['distance'],
                               imageUrl: widget.restaurantInfo['imageUrl'] ?? "",
+                              restaurantInfo: widget.restaurantInfo,
                             ),
                           ),
                         );
