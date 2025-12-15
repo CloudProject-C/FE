@@ -27,7 +27,6 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
     try {
       final email = emailController.text.trim();
 
-      // email을 query parameter로 포함
       final verifyEmailUri = Uri.parse('$baseUrl/email/send-email')
           .replace(queryParameters: {
         'email': email,
@@ -36,7 +35,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
       final response = await http.post(
         verifyEmailUri,
         headers: {
-          'Content-Type': 'application/json', // 서버가 요구하면 유지, 아니면 삭제 가능
+          'Content-Type': 'application/json',
         },
       );
 
@@ -72,17 +71,17 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
   void verifyCode() async {
     try{
       final _email = emailController.text.trim();
-      final _code = codeController.text.trim(); //int인데 괜찮을지?
+      final _code = codeController.text.trim();
       final verifyCodeUri = Uri.parse('$baseUrl/email/verify');
       final response = await http.post(
-        verifyCodeUri,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'email': _email,
-          'code': _code
-        })
+          verifyCodeUri,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'email': _email,
+            'code': _code
+          })
       );
 
       if (response.statusCode == 200) {
@@ -98,8 +97,6 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
           ),
         );
       } else {
-        //throw Exception('verifyCode failed: ${response.statusCode}');
-        ///throw Exception 대신 코드 인증 중 오류가 발생했다는 ui바를 호출
         debugPrint(jsonDecode(response.body).toString());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -124,35 +121,31 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset: true, // 키보드 올라올 때 화면 줄이기 (필수)
+        resizeToAvoidBottomInset: true,
         backgroundColor: AppColors.white,
         appBar: AppBar(
           backgroundColor: AppColors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.grey_4),
+            icon: const Icon(Icons.arrow_back, color: AppColors.grey_5),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
             '회원가입',
             style: AppTextStyles.pretendard_regular.copyWith(
-              color: AppColors.grey_4,
+              color: AppColors.grey_5,
               fontSize: 18,
             ),
           ),
         ),
-        // [수정 시작] LayoutBuilder로 감싸서 화면 높이 계산
         body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              // [수정] 스크롤 가능하도록 감싸기
               child: ConstrainedBox(
-                // [수정] 최소 높이를 화면 전체 높이로 설정
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight,
                 ),
                 child: IntrinsicHeight(
-                  // [수정] 내부 위젯들의 높이를 계산하여 Spacer가 작동하도록 함
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
@@ -166,7 +159,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '학교 이메일 인증',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 18,
                           ),
                         ),
@@ -174,7 +167,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '학교 이메일 인증이 필요합니다',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 14,
                           ),
                         ),
@@ -183,7 +176,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '학교 선택',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 15,
                           ),
                         ),
@@ -195,14 +188,14 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                                color: AppColors.grey_4.withOpacity(0.2)),
+                                color: AppColors.grey_5.withOpacity(0.2)),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               hint: Text(
                                 '학교를 선택하세요',
                                 style: AppTextStyles.pretendard_regular
-                                    .copyWith(color: AppColors.grey_4),
+                                    .copyWith(color: AppColors.grey_5),
                               ),
                               value: selectedSchool,
                               items: const [
@@ -219,7 +212,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                                 });
                               },
                               style: AppTextStyles.pretendard_regular
-                                  .copyWith(color: AppColors.grey_4),
+                                  .copyWith(color: AppColors.grey_5),
                             ),
                           ),
                         ),
@@ -228,7 +221,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '학교 이메일',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 15,
                           ),
                         ),
@@ -271,7 +264,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '학교 도메인 이메일만 가능합니다',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 12,
                           ),
                         ),
@@ -280,7 +273,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                         Text(
                           '인증 코드',
                           style: AppTextStyles.pretendard_regular.copyWith(
-                            color: AppColors.grey_4,
+                            color: AppColors.grey_5,
                             fontSize: 15,
                           ),
                         ),
@@ -291,7 +284,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                           onChanged: (_) => setState(() {}),
                         ),
 
-                        const Spacer(), // 이제 에러 없이 작동하며, 키보드가 올라오면 위로 밀려 올라갑니다.
+                        const Spacer(),
 
                         GestureDetector(
                           onTap: isFormValid
@@ -349,21 +342,21 @@ class _InputField extends StatelessWidget {
       height: 50,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: AppColors.grey_4.withOpacity(0.1),
+        color: AppColors.grey_5.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        cursorColor: AppColors.grey_4,
+        cursorColor: AppColors.grey_5,
         style: AppTextStyles.pretendard_regular.copyWith(
-          color: AppColors.grey_4,
+          color: AppColors.grey_5,
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hint,
           hintStyle: AppTextStyles.pretendard_regular.copyWith(
-            color: AppColors.grey_4.withOpacity(0.5),
+            color: AppColors.grey_5.withOpacity(0.5),
           ),
         ),
       ),
@@ -382,15 +375,15 @@ class _StepIndicator extends StatelessWidget {
       children: [
         const SizedBox(width: 40),
         Icon(Icons.circle,
-            color: current >= 1 ? AppColors.main : AppColors.grey_4),
+            color: current >= 1 ? AppColors.main : AppColors.grey_5),
         Expanded(
           child: Container(
             height: 2,
-            color: current >= 2 ? AppColors.main : AppColors.grey_4,
+            color: current >= 2 ? AppColors.main : AppColors.grey_5,
           ),
         ),
         Icon(Icons.circle_outlined,
-            color: current >= 2 ? AppColors.main : AppColors.grey_4),
+            color: current >= 2 ? AppColors.main : AppColors.grey_5),
         const SizedBox(width: 40),
       ],
     );
