@@ -210,17 +210,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                   rating: (_restaurantInfo!['averageRating'] ?? 0).toDouble(),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 28),
 
                 // 매칭 정보에 데이터 전달 (필요시 수정)
                 _MatchCard(info: _restaurantInfo!),
 
                 // 디버깅용 텍스트
                 //Text("식당 id: ${widget.id.toString()}"),
-
                 const SizedBox(height: 20),
-
-
 
                 // 정보 섹션에 데이터 전달
                 _InfoSection(info: _restaurantInfo!, distance: widget.distance, imageUrl: widget.imageUrl),
@@ -381,29 +378,19 @@ class _MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      // decoration: BoxDecoration(
-      //   color: AppColors.white,
-      //   borderRadius: BorderRadius.circular(20),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black12,
-      //       blurRadius: 14,
-      //       offset: const Offset(0, 4),
-      //     ),
-      //   ],
-      // ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Text(
-          //   "매칭률",
-          //   style: AppTextStyles.pretendard_bold.copyWith(
-          //     color: AppColors.grey_4,
-          //     fontSize: 20
-          //   ), // grey_4 -> grey_5
-          // ),
-          // const SizedBox(width: 24),
+          Text(
+            "사용자 선호도 반영",
+            style: AppTextStyles.pretendard_bold.copyWith(
+              color: AppColors.main,
+              fontSize: 20
+            ),
+          ),
+          const SizedBox(height: 16),
           SquareProgressBar(
             width: 60, // default: max available space
             height: 60, // default: max available space
@@ -430,7 +417,6 @@ class _MatchCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 20),
         ],
       ),
     );
@@ -450,27 +436,38 @@ class _TitleSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                info['placeName'] ?? "이름 없음",
+                style: AppTextStyles.pretendard_bold.copyWith(
+                  color: AppColors.grey_6,
+                  fontSize: 24,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Spacer(),
+              GestureDetector(
+                onTap: onLikeToggle,
+                child: Icon(
+                  info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
+                  size: 24,
+                  color: info['isLiked'] == true ? AppColors.main : AppColors.grey_5, // grey_4 -> grey_5
+                ),
+              ),
+              const SizedBox(width: 4),
+            ],
+          ),
           Text(
-            info['placeName'] ?? "이름 없음",
-            style: AppTextStyles.pretendard_bold.copyWith(
-              color: AppColors.grey_6,
-              fontSize: 24,
+            info['categoryName'],
+            style: AppTextStyles.pretendard_medium.copyWith(
+              color: AppColors.grey_4,
             ),
           ),
-          const SizedBox(width: 4),
-          Spacer(),
-          GestureDetector(
-            onTap: onLikeToggle,
-            child: Icon(
-              info['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
-              size: 24,
-              color: info['isLiked'] == true ? AppColors.main : AppColors.grey_5, // grey_4 -> grey_5
-            ),
-          ),
-          const SizedBox(width: 4),
         ],
       ),
     );
@@ -509,10 +506,6 @@ class _InfoSection extends StatelessWidget {
           //     );
           //   },
           // ),
-
-          const SizedBox(height: 8),
-          Text(info['categoryName'] ?? "카테고리 없음",
-              style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
           const SizedBox(height: 8),
 
           Row(
