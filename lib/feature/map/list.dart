@@ -1,4 +1,5 @@
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
@@ -93,9 +94,10 @@ class _ListScreenState extends State<ListScreen> {
       _restaurants = data.map((r) {
         return {
           ...r,
+          "id": r["placeId"],
           "placeName": r["placeName"],
           "genre": r["categoryName"],
-          "distance": "${r["distance"]}m",
+          "distance": r["distance"],
           "likes": r["placeLikeCount"],
           "reviews": r["reviewCount"],
           "match": r["preferencePercent"], // 80~99%
@@ -134,7 +136,10 @@ class _ListScreenState extends State<ListScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RestaurantDetailScreen(),
+            builder: (context) => RestaurantDetailScreen(
+              id: item['id'],
+              distance: item['distance'],
+            ),
           ),
         );
       },
@@ -210,7 +215,7 @@ class _ListScreenState extends State<ListScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  item["distance"],
+                  "${item["distance"].toString()}m",
                   style: AppTextStyles.pretendard_regular.copyWith(
                     color: AppColors.grey_4,
                     fontSize: 13,
