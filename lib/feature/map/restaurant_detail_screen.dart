@@ -212,6 +212,15 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 const SizedBox(height: 4),
                 _RatingSection(
                   rating: (_restaurantInfo!['averageRating'] ?? 0).toDouble(),
+                  onShare: () {
+                    // [로직] 클립보드에 식당 이름 복사 (URL이 있다면 URL로 변경 가능)
+                    Clipboard.setData(ClipboardData(
+                        text: "${_restaurantInfo!['placeName']} 정보를 공유합니다."));
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('식당 정보가 복사되었습니다.')),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 28),
@@ -333,8 +342,12 @@ class _TopBar extends StatelessWidget {
 
 class _RatingSection extends StatelessWidget {
   final double rating;
+  final VoidCallback onShare; // [추가] 공유 버튼 클릭 시 실행할 함수
 
-  const _RatingSection({required this.rating});
+  const _RatingSection({
+    required this.rating,
+    required this.onShare, // [추가] 생성자 파라미터
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -343,29 +356,39 @@ class _RatingSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1. 점수 텍스트 (예: 5.0)
+          // 1. 점수 텍스트
           Text(
-            rating.toStringAsFixed(1), // 소수점 첫째 자리까지 표시
+            rating.toStringAsFixed(1),
             style: AppTextStyles.pretendard_regular.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: AppColors.grey_5, // grey_4 -> grey_5
+              color: AppColors.grey_5,
             ),
           ),
           const SizedBox(width: 6),
 
-          // 2. 별 아이콘 5개
+          // 2. 별 아이콘
           Row(
             children: List.generate(5, (index) {
-              // index는 0,1,2,3,4
-              // 예: rating이 3.5면 -> 0,1,2는 채워짐 / 3,4는 비워짐
-              // (반올림해서 보여주고 싶다면 index < rating.round() 사용)
               return Icon(
                 rating.round() >= index + 1 ? Icons.star : Icons.star_border,
-                color: AppColors.main, // 메인 컬러 (노란색 계열 예상)
+                color: AppColors.main,
                 size: 18,
               );
             }),
+          ),
+
+          const Spacer(), // [추가] 아이콘을 오른쪽 끝으로 밀어주는 위젯
+
+          // [추가] 3. 공유 아이콘
+          GestureDetector(
+            onTap: onShare,
+            behavior: HitTestBehavior.opaque, // 터치 영역 확보
+            child: const Icon(
+              Icons.share,
+              size: 20,
+              color: AppColors.grey_5,
+            ),
           ),
         ],
       ),
