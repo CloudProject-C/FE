@@ -3,6 +3,7 @@ import 'package:campit_frontend/services/map/map_service.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
+import 'package:campit_frontend/utils/navermap_opener.dart';
 import 'package:flutter/material.dart';
 import '../../shared/constants/app_colors.dart';
 
@@ -260,8 +261,33 @@ class _RestaurantBottomSheetState extends State<RestaurantBottomSheet> {
                       text: '길찾기',
                       height: 48,
                       width: double.infinity,
-                      onTap: () {
-                        // TODO: 길찾기 로직 연결
+                      onTap: () async {
+                        // 식당 좌표 및 이름
+                        final double endLat = widget.restaurantInfo['latitude'] ?? 0.0;
+                        final double endLng = widget.restaurantInfo['longitude'] ?? 0.0;
+                        final String endName = widget.restaurantInfo['placeName'] ?? "도착지";
+
+                        // 내 위치 (만약 부모로부터 받지 못했다면, 임시로 0.0 처리하거나
+                        // NaverMapOpener를 수정해서 도착지만 보내는 로직을 써야 함)
+                        // 여기서는 일단 하드코딩된 값을 피하기 위해
+                        // NaverMapOpener를 조금 유연하게 쓰는 것이 좋습니다.
+
+                        final opener = NaverMapOpener();
+
+                        print("myLat is: ${widget.restaurantInfo['myLat']}");
+                        print("myLng is: ${widget.restaurantInfo['myLng']}");
+                        print("endLat is: $endLat");
+                        print("endLng is: $endLng");
+
+                        // [중요] NaverMapOpener를 위 1번처럼 수정했다면 아래와 같이 호출
+                        await opener.openNaverMap(
+                          startLat: widget.restaurantInfo['myLat'],// ?? 37.2429362, // 경희대 국제캠퍼스 (임시 혹은 내 위치 변수)
+                          startLng: widget.restaurantInfo['myLng'],// ?? 127.081615,
+                          startName: "내 위치",
+                          endLat: endLat,
+                          endLng: endLng,
+                          endName: endName,
+                        );
                       },
                     ),
                   ),

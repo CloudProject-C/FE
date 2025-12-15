@@ -191,6 +191,8 @@ class _MapAreaState extends State<MapArea> {
           'categoryName': r['categoryName'],
           'imageUrl': r['imageUrl'],
           'distance': r['distance'],
+          'latitude': r['latitude'],
+          'longitude': r['longitude'],
           'myLat': _myLocation!.latitude,
           'myLng': _myLocation!.longitude,
           "reviewCount": r['reviewCount'],
@@ -221,20 +223,6 @@ class _MapAreaState extends State<MapArea> {
 
       // 지도에 마커 추가
       _mapController?.addOverlay(marker);
-    }
-  }
-
-  Future<void> _openNaverMap(
-      double startLat, double startLng, double endLat, double endLng) async {
-    final url =
-        'nmap://route/walk?slat=$startLat&slng=$startLng&sname=경희대학교 국제캠퍼스&dlat=$endLat&dlng=$endLng&dname=썬프란시스코마켓';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      // 앱이 없으면 웹으로 연결
-      final webUrl =
-          'https://map.naver.com/p/directions/${startLat},${startLng},경희대학교 국제캠퍼스/${endLat},${endLng},썬프란시스코마켓';
-      await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
     }
   }
 
