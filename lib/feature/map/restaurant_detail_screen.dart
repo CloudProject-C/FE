@@ -752,117 +752,134 @@ class _ReviewItemState extends State<_ReviewItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFFA17A), Color(0xFFFD6E6A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFFA17A), Color(0xFFFD6E6A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ),
-              const SizedBox(width: 10),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.data["nickname"] ?? "nonick",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
-                  Text(widget.data["createdAt"] ?? "nocrea",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)) // grey_4 -> grey_5
-                ],
-              )
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            widget.data["content"],
-            style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
-          ),
-
-          const SizedBox(height: 12),
-
-          // 이미지 리스트 처리 로직
-          if (widget.data['imageUrls'] != null && (widget.data['imageUrls'] as List).isNotEmpty) ...[
-            SizedBox(
-              height: 110,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: (widget.data['imageUrls'] as List).length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, imgIndex) {
-                  final imageUrl = widget.data['imageUrls'][imgIndex];
-                  return Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: AppColors.grey_1,
-                    ),
-                    clipBehavior: Clip.hardEdge,
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(Icons.broken_image, color: Colors.grey),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
               ),
             ),
-          ],
+            const SizedBox(width: 10),
 
-          const SizedBox(height: 5), // 이미지와 좋아요 버튼 사이 간격
-
-          GestureDetector(
-            onTap: _toggleReviewLike, // 클릭 시 함수 실행
-            behavior: HitTestBehavior.opaque, // 터치 영역 확보
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // 내용물 크기만큼만 차지
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  isLiked ? Icons.favorite : Icons.favorite_border,
-                  size: 20,
-                  color: isLiked ? AppColors.main : AppColors.grey_5,
+                Row(
+                  children: [
+                    Text(widget.data["nickname"] ?? "nonick",
+                        style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
+                    const SizedBox(width: 10),
+                    Text(widget.data["createdAt"] ?? "nocrea",
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          color: AppColors.grey_5,
+                          fontSize: 12,
+                        )) // grey_4 -> grey_5
+                  ],
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  likeCount.toString(),
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    color: isLiked ? AppColors.main : AppColors.grey_5,
-                  ),
+                const SizedBox(height: 4),
+                Row(
+                  children: List.generate(5, (index) {
+                    // data["rating"]은 1~5 사이의 int
+                    int rating = widget.data["rating"] ?? 0;
+                    return Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: AppColors.main, // 노란색/메인색
+                      size: 14, // 닉네임보다 작게 설정
+                    );
+                  }),
                 ),
               ],
+            )
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        Text(
+          widget.data["content"],
+          style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
+        ),
+
+        const SizedBox(height: 12),
+
+        // 이미지 리스트 처리 로직
+        if (widget.data['imageUrls'] != null && (widget.data['imageUrls'] as List).isNotEmpty) ...[
+          SizedBox(
+            height: 110,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: (widget.data['imageUrls'] as List).length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, imgIndex) {
+                final imageUrl = widget.data['imageUrls'][imgIndex];
+                return Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.grey_1,
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Icon(Icons.broken_image, color: Colors.grey),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ],
-      ),
+
+        const SizedBox(height: 5), // 이미지와 좋아요 버튼 사이 간격
+
+        GestureDetector(
+          onTap: _toggleReviewLike, // 클릭 시 함수 실행
+          behavior: HitTestBehavior.opaque, // 터치 영역 확보
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // 내용물 크기만큼만 차지
+            children: [
+              Icon(
+                isLiked ? Icons.favorite : Icons.favorite_border,
+                size: 20,
+                color: isLiked ? AppColors.main : AppColors.grey_5,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                likeCount.toString(),
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: isLiked ? AppColors.main : AppColors.grey_5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
