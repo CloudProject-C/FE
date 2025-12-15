@@ -117,7 +117,6 @@ class _LikedRestaurantsScreenState extends State<LikedRestaurantsScreen> {
             color: AppColors.grey_2,
           ),
         ),
-
       ),
       bottomNavigationBar: const BottomNavBar(
         currentRoute: '/profile',
@@ -204,7 +203,14 @@ class _LikedRestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ratingInt = restaurant.averageRating.floor().clamp(0, 5);
+    final int starRating =
+    restaurant.averageRating.round().clamp(0, 5);
+
+    final String ratingText =
+    restaurant.averageRating
+        .toStringAsFixed(1)
+        .replaceFirst(RegExp(r'\.0$'), '');
+
     final imageUrl = restaurant.imageUrl;
     final hasValidImage = _isValidNetworkUrl(imageUrl);
 
@@ -237,11 +243,9 @@ class _LikedRestaurantCard extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 18),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Flexible(
                             child: Text(
@@ -261,20 +265,16 @@ class _LikedRestaurantCard extends StatelessWidget {
                               fontSize: 14,
                               color: AppColors.grey_5,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          _StarRow(rating: ratingInt),
+                          _StarRow(rating: starRating),
                           const SizedBox(width: 8),
                           Text(
-                            restaurant.averageRating
-                                .toStringAsFixed(1)
-                                .replaceFirst(RegExp(r'\.0$'), ''),
+                            ratingText,
                             style: AppTextStyles.pretendard_regular.copyWith(
                               fontSize: 14,
                               color: AppColors.grey_7,
@@ -312,7 +312,7 @@ class _LikedRestaurantCard extends StatelessWidget {
   }
 }
 
-class _StarRow extends StatelessWidget {
+  class _StarRow extends StatelessWidget {
   final int rating;
 
   const _StarRow({required this.rating});
