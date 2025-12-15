@@ -255,8 +255,10 @@ class _ReviewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int roundedRating =
-    (review.rating.toDouble()).round().clamp(0, 5);
+    final int starRating =
+    review.rating.round().clamp(0, 5);
+
+    final String ratingText = review.rating.toString();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,10 +308,10 @@ class _ReviewTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      _StarRow(rating: roundedRating),
+                      _StarRow(rating: starRating),
                       const SizedBox(width: 6),
                       Text(
-                        roundedRating.toString(),
+                        ratingText,
                         style: AppTextStyles.pretendard_regular.copyWith(
                           fontSize: 13,
                           color: AppColors.grey_6,
