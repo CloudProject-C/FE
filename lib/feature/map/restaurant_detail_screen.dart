@@ -147,6 +147,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       case "별점 높은순": apiSort = "RATING_HIGH"; break;
       case "별점 낮은순": apiSort = "RATING_LOW"; break;
       case "좋아요순": apiSort = "LIKES"; break;
+      default:
+        print("매칭되는 정렬 없음, 기본값 LATEST 적용");
+        apiSort = "LATEST";
     }
 
     setState(() {
@@ -235,7 +238,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                   count: _restaurantInfo!['reviewCount'] ?? 0,
                   selected: selectedSortUI,
                   onSelected: (value) {
-                    setState(() => selectedSortUI = value);
+                    _updateSort(value);
                   },
                 ),
                 const SizedBox(height: 16),

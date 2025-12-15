@@ -94,7 +94,7 @@ class MapService {
 
   static Future<Map<String, dynamic>?> fetchReviews(
       int placeId, {
-        String sort = 'LATEST', // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
+        String? sort, // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
         int page = 0,
         int size = 10,
       }) async {
