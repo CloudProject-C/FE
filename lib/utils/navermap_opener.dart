@@ -13,8 +13,8 @@ class NaverMapOpener {
     final String sEndLng = endLng.toStringAsFixed(7);
     final encodedEndName = Uri.encodeComponent(endName);
 
-    // 1. 앱 실행 시도 (nmap 스키마 - 가이드 준수)
-    // 앱 스키마는 dlat, dlng, slat, slng를 사용합니다.
+    // 1. 앱 실행 시도 (nmap 스키마)
+    // route/walk : 도보 경로 (이미 적용됨)
     String url = 'nmap://route/walk?dlat=$sEndLat&dlng=$sEndLng&dname=$encodedEndName&appname=com.example.campit_frontend';
 
     if (startLat != null && startLng != null) {
@@ -44,15 +44,14 @@ class NaverMapOpener {
         final String sStartLng = startLng.toStringAsFixed(7);
         final encodedStartName = Uri.encodeComponent(startName ?? "내 위치");
 
-        // [수정 완료] 모바일 웹 전용 파라미터 적용
-        // sx: 출발 경도, sy: 출발 위도
-        // ex: 도착 경도, ey: 도착 위도
-        webUrl = 'https://m.map.naver.com/route.naver?menu=route&pubTransType=WALK'
+        // [수정] 도보 경로 파라미터 확실하게 적용
+        // pathType=1 (도보) 추가 (0: 추천, 1: 도보 등 상황에 따라 다를 수 있으나 pubTransType=WALK가 핵심)
+        webUrl = 'https://m.map.naver.com/route.naver?menu=route&pubTransType=WALK&pathType=3'
             '&sx=$sStartLng&sy=$sStartLat&sname=$encodedStartName'
-            '&ex=$sEndLng&ey=$sEndLat&ename=$encodedEndName'; // dname이 아니라 ename일 수 있음 (웹 기준)
+            '&ex=$sEndLng&ey=$sEndLat&ename=$encodedEndName';
 
       } else {
-        // 출발지 없을 때 (도착지 검색)
+        // 출발지 없을 때
         webUrl = 'https://m.map.naver.com/search2/search.naver?query=$encodedEndName&sm=hty&style=v5';
       }
 
