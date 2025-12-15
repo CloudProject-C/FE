@@ -5,6 +5,7 @@ import 'package:campit_frontend/shared/ui/buttons/primary_button.dart';
 import 'package:campit_frontend/shared/ui/buttons/secondary_button.dart';
 import 'package:campit_frontend/shared/ui/custom_dropdown_filter.dart';
 import 'package:campit_frontend/utils/current_position_getter.dart';
+import 'package:campit_frontend/utils/navermap_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
@@ -673,24 +674,34 @@ class _ActionButtonsState extends State<_ActionButtons> {
           const SizedBox(width: 14),
           Expanded(
             child: SecondaryButton(
-              text: '공유하기',
+              text: '길찾기',
               onTap: () async {
-                // 1. 복사할 링크 생성 (임시 URL 포맷)
-                final String link = "https://campit.co.kr/place/${widget.id}";
-
-                // 2. 클립보드에 복사
-                await Clipboard.setData(ClipboardData(text: link));
-
-                // 3. 성공 메시지 (SnackBar) 띄우기
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('링크가 클립보드에 복사되었습니다.'),
-                      duration: Duration(seconds: 2),
-                      behavior: SnackBarBehavior.floating, // 하단에 띄우기
-                    ),
-                  );
-                }
+                // // 식당 좌표 및 이름
+                // final double endLat = widget.restaurantInfo['latitude'] ?? 0.0;
+                // final double endLng = widget.restaurantInfo['longitude'] ?? 0.0;
+                // final String endName = widget.restaurantInfo['placeName'] ?? "도착지";
+                //
+                // // 내 위치 (만약 부모로부터 받지 못했다면, 임시로 0.0 처리하거나
+                // // NaverMapOpener를 수정해서 도착지만 보내는 로직을 써야 함)
+                // // 여기서는 일단 하드코딩된 값을 피하기 위해
+                // // NaverMapOpener를 조금 유연하게 쓰는 것이 좋습니다.
+                //
+                // final opener = NaverMapOpener();
+                //
+                // print("myLat is: ${widget.restaurantInfo['myLat']}");
+                // print("myLng is: ${widget.restaurantInfo['myLng']}");
+                // print("endLat is: $endLat");
+                // print("endLng is: $endLng");
+                //
+                // // [중요] NaverMapOpener를 위 1번처럼 수정했다면 아래와 같이 호출
+                // await opener.openNaverMap(
+                //   startLat: widget.restaurantInfo['myLat'],// ?? 37.2429362, // 경희대 국제캠퍼스 (임시 혹은 내 위치 변수)
+                //   startLng: widget.restaurantInfo['myLng'],// ?? 127.081615,
+                //   startName: "내 위치",
+                //   endLat: endLat,
+                //   endLng: endLng,
+                //   endName: endName,
+                // );
               },
               width: double.infinity,
               height: 46,
