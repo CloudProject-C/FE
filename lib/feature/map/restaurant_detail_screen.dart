@@ -642,7 +642,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
           const SizedBox(width: 14),
           Expanded(
             child: SecondaryButton(
-              text: '길찾기',
+              text: '공유하기',
               onTap: (){return null;},
               width: double.infinity,
               height: 46,
