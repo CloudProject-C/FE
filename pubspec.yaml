@@ -45,6 +45,7 @@ dependencies:
   location: ^8.0.1
   url_launcher: ^6.3.2
   geolocator: ^14.0.2
+  square_progress_bar: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,8 @@ flutter:
     - assets/icon/bottom_bar_icon/
     - assets/icon/map/
     - assets/images/onboard_preference/
+    - assets/images/food_category/onboarding/
+    - assets/images/food_category/daily/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

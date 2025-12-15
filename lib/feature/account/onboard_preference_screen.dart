@@ -29,7 +29,7 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
     "아시안",            // asian
     "분위기",            // mood
     "건강식", // healthy
-    "고칼로리/단백질",     // protain
+    "고칼로리/단백질",     // protein
   ];
 
   final Map<String, String> Kor_Eng_Dictionary = {
@@ -40,8 +40,8 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
     "일식": "japanese",
     "아시안": "asian",
     "분위기": "mood",
-    "건강식(저탄수, 저칼로리)": "healthy",
-    "고칼로리/단백질": "protain",
+    "건강식": "healthy",
+    "고칼로리/단백질": "protein",
   };
 
   final Set<String> selected = {};
@@ -189,7 +189,7 @@ class _OnboardFoodPreferenceScreenState extends State<OnboardFoodPreferenceScree
                               SizedBox(
                                 height: 40,
                                 child: Image.asset(
-                                  AppAssets.map_icon,
+                                  'assets/images/food_category/onboarding/${Kor_Eng_Dictionary[e]}.png',
                                   fit: BoxFit.contain,
                                 ),
                               ),

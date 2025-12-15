@@ -94,7 +94,7 @@ class MapService {
 
   static Future<Map<String, dynamic>?> fetchReviews(
       int placeId, {
-        String sort = 'LATEST', // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
+        String? sort, // LATEST, OLDEST, RATING_HIGH, RATING_LOW, LIKES
         int page = 0,
         int size = 10,
       }) async {
@@ -137,7 +137,7 @@ class MapService {
     }
   }
 
-  // [추가] 리뷰 작성 (Multipart/form-data)
+  // 리뷰 작성 (Multipart/form-data)
   static Future<bool> postReview({
     required int placeId,
     required int rating,
@@ -206,7 +206,59 @@ class MapService {
   static Future<bool> canWritePost(double lat, double lng) async {
     await Future.delayed(const Duration(milliseconds: 500));
     // 간단한 조건: 좌표가 특정 범위 내면 "대학교 근처"
-    return (Random().nextBool()); // 임시: 50% 확률로 가능
+    return (Random().nextBool());
+  }
+
+  // 좋아요 토글 (찜하기/취소)
+  static Future<bool> toggleLike(int placeId) async {
+    final accessToken = await StorageService.getAccessToken();
+    final url = Uri.parse('$baseUrl/v1/places/$placeId/like');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true; // 성공
+      } else {
+        print("좋아요 실패: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("좋아요 네트워크 오류: $e");
+      return false;
+    }
+  }
+
+  //리뷰 좋아요 토글
+  static Future<bool> toggleReviewLike(int reviewId) async {
+    final accessToken = await StorageService.getAccessToken();
+    final url = Uri.parse('$baseUrl/v1/reviews/$reviewId/like');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("리뷰 좋아요 실패: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("리뷰 좋아요 네트워크 오류: $e");
+      return false;
+    }
   }
 
   static void logCurl({

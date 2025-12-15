@@ -27,12 +27,14 @@ class _MapAreaState extends State<MapArea> {
   final Location _location = Location();
   NaverMapController? _mapController;
   LocationData? _myLocation;
-  LocationData? _initialLocation; // [추가] 지도 초기 로딩용 위치 (고정)
+  LocationData? _initialLocation; // 지도 초기 로딩용 위치 (고정)
   NMarker? _myDot;
   LocationData? _prevLocation;
   Timer? _lerpTimer;
   Timer? _cameraLerpTimer;
   bool _followOn = true;
+
+  final NLatLng _schoolLocation = const NLatLng(37.2479, 127.0772);
 
   @override
   void initState() {
@@ -84,7 +86,7 @@ class _MapAreaState extends State<MapArea> {
     });
   }
 
-  // [추가] 부모 위젯(MapScreen)의 상태가 변해서 이 위젯이 다시 빌드될 때 호출됨
+  //부모 위젯(MapScreen)의 상태가 변해서 이 위젯이 다시 빌드될 때 호출됨
   @override
   void didUpdateWidget(covariant MapArea oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -144,6 +146,19 @@ class _MapAreaState extends State<MapArea> {
     print("_loadNearbyRestaurants 함수 실행!!!!!!");
     if (_myLocation == null) return;
 
+    //1. 반경 500m 원 그리기 (자기장)
+    final circleOverlay = NCircleOverlay(
+    id: 'school_zone',
+    center: _schoolLocation,
+    radius: 500, // 미터 단위
+    color: AppColors.main.withOpacity(0.05), // 내부 색상 (반투명)
+    outlineColor: AppColors.main, // 테두리 색상
+    outlineWidth: 1, // 테두리 두께
+    );
+
+    // 지도에 원 추가
+    _mapController?.addOverlay(circleOverlay);
+
     // 1. 서버에서 데이터 가져오기
     final restaurants = await MapService.fetchRestaurants(
       _myLocation!.latitude!,
@@ -189,9 +204,17 @@ class _MapAreaState extends State<MapArea> {
           'id': r['placeId'],
           'placeName': r['placeName'],
           'categoryName': r['categoryName'],
+          'imageUrl': r['imageUrl'],
           'distance': r['distance'],
+          'latitude': r['latitude'],
+          'longitude': r['longitude'],
           'myLat': _myLocation!.latitude,
           'myLng': _myLocation!.longitude,
+          "reviewCount": r['reviewCount'],
+          "rating": r['rating'],
+          "preferencePercent": r['preferencePercent'],
+          "placeLikeCount": r['placeLikeCount'],
+          "isLiked": r['isLiked'],
         };
 
         showModalBottomSheet(
@@ -215,20 +238,6 @@ class _MapAreaState extends State<MapArea> {
 
       // 지도에 마커 추가
       _mapController?.addOverlay(marker);
-    }
-  }
-
-  Future<void> _openNaverMap(
-      double startLat, double startLng, double endLat, double endLng) async {
-    final url =
-        'nmap://route/walk?slat=$startLat&slng=$startLng&sname=경희대학교 국제캠퍼스&dlat=$endLat&dlng=$endLng&dname=썬프란시스코마켓';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      // 앱이 없으면 웹으로 연결
-      final webUrl =
-          'https://map.naver.com/p/directions/${startLat},${startLng},경희대학교 국제캠퍼스/${endLat},${endLng},썬프란시스코마켓';
-      await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
     }
   }
 

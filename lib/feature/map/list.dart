@@ -99,6 +99,7 @@ class _ListScreenState extends State<ListScreen> {
           "genre": r["categoryName"],
           "distance": r["distance"],
           "likes": r["placeLikeCount"],
+          "imageUrl": r["imageUrl"],
           "reviews": r["reviewCount"],
           "match": r["preferencePercent"], // 80~99%
           //"isLiked": r["isLiked"],
@@ -139,6 +140,7 @@ class _ListScreenState extends State<ListScreen> {
             builder: (context) => RestaurantDetailScreen(
               id: item['id'],
               distance: item['distance'],
+              imageUrl: item['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
             ),
           ),
         );
@@ -157,115 +159,141 @@ class _ListScreenState extends State<ListScreen> {
             ),
           ],
         ),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 상단 (가게명 + 매칭률)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    item["placeName"],
-                    style: AppTextStyles.pretendard_regular.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.grey_5,
-                    ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12), // 원하는 둥글기 정도 조절
+              child: Image.network(
+                item["imageUrl"] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
+                height: 100,
+                width: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    color: AppColors.grey_1,
+                    child: const Icon(Icons.restaurant, color: Colors.grey),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 상단 (가게명 + 매칭률)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item["placeName"],
+                          style: AppTextStyles.pretendard_regular.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.grey_5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Container(
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.main,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "${item['match']}%",
+                          style: AppTextStyles.pretendard_regular.copyWith(
+                            color: AppColors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                ),
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.main_50per,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    "${item['match']}%",
+              
+                  const SizedBox(height: 6),
+              
+                  /// 음식 장르
+                  Text(
+                    item["genre"],
                     style: AppTextStyles.pretendard_regular.copyWith(
-                      color: AppColors.white,
+                      color: AppColors.grey_4,
                       fontSize: 14,
                     ),
                   ),
-                )
-              ],
-            ),
-
-            const SizedBox(height: 6),
-
-            /// 음식 장르
-            Text(
-              item["genre"],
-              style: AppTextStyles.pretendard_regular.copyWith(
-                color: AppColors.grey_4,
-                fontSize: 14,
+              
+                  const SizedBox(height: 8),
+              
+                  /// 위치 아이콘 + 거리
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: AppColors.grey_4,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "${item["distance"].toString()}m",
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          color: AppColors.grey_4,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+              
+                  const SizedBox(height: 12),
+              
+                  /// 좋아요 + 리뷰 + 별점
+                  Row(
+                    children: [
+                      Icon(Icons.favorite_border,
+                          color: AppColors.grey_4, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                        "${item['likes']}",
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          fontSize: 13,
+                          color: AppColors.grey_4,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(Icons.chat_bubble_outline,
+                          color: AppColors.grey_4, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                        "${item['reviews']}",
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          fontSize: 13,
+                          color: AppColors.grey_4,
+                        ),
+                      ),
+                      const SizedBox(width: 16), // 간격
+              
+                      // 3. 별점 (Rating)
+                      const Icon(Icons.star, color: Colors.amber, size: 18), // 노란색 별
+                      const SizedBox(width: 4),
+                      Text(
+                        item['rating'].toStringAsFixed(1), // 점수 표시 (예: 4.5)
+                        style: AppTextStyles.pretendard_regular.copyWith(
+                          fontSize: 13,
+                          color: AppColors.grey_4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-
-            const SizedBox(height: 8),
-
-            /// 위치 아이콘 + 거리
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  color: AppColors.grey_4,
-                  size: 18,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "${item["distance"].toString()}m",
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    color: AppColors.grey_4,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            /// 좋아요 + 리뷰 + 별점
-            Row(
-              children: [
-                Icon(Icons.favorite_border,
-                    color: AppColors.grey_4, size: 18),
-                const SizedBox(width: 4),
-                Text(
-                  "${item['likes']}",
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    fontSize: 13,
-                    color: AppColors.grey_4,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Icon(Icons.chat_bubble_outline,
-                    color: AppColors.grey_4, size: 18),
-                const SizedBox(width: 4),
-                Text(
-                  "${item['reviews']}",
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    fontSize: 13,
-                    color: AppColors.grey_4,
-                  ),
-                ),
-                const SizedBox(width: 16), // 간격
-
-                // 3. 별점 (Rating)
-                const Icon(Icons.star, color: Colors.amber, size: 18), // 노란색 별
-                const SizedBox(width: 4),
-                Text(
-                  "${item['rating']}", // 점수 표시 (예: 4.5)
-                  style: AppTextStyles.pretendard_regular.copyWith(
-                    fontSize: 13,
-                    color: AppColors.grey_4,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ]
+        )
       ),
     );
   }

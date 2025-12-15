@@ -28,16 +28,16 @@ class _DaliyFoodPreferenceScreenState extends State<DaliyFoodPreferenceScreen> {
     "건강식",          // healthy
   ];
 
-  final Map<String, String> Kor_Eng_Dictionary = {
-    "매움": "spicy",
-    "한식": "korean",
-    "양식": "western",
-    "중식": "chinese",
-    "일식": "japanese",
-    "아시안": "asian",
-    "분위기": "mood",
+  final Map<String, String> _Kor_Eng_Dictionary = {
+    "고기/고단백": "meat_protein",
+    "해산물": "seafood",
+    "국물/찌개류": "soup_stew",
+    "면 요리": "noodle",
+    "밥 요리": "rice",
+    "분식": "street_food",
+    "디저트/카페": "dessert_cafe",
+    "간편식/빠른": "quick",
     "건강식": "healthy",
-    "고칼로리/단백질": "protain",
   };
 
   final Set<String> selected = {};
@@ -183,7 +183,7 @@ class _DaliyFoodPreferenceScreenState extends State<DaliyFoodPreferenceScreen> {
                               SizedBox(
                                 height: 40,
                                 child: Image.asset(
-                                  AppAssets.map_icon,
+                                  'assets/images/food_category/daily/${_Kor_Eng_Dictionary[e]}.png',
                                   fit: BoxFit.contain,
                                 ),
                               ),

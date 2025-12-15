@@ -78,10 +78,6 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
         }),
       );
       if (response.statusCode == 200) {
-        //final registerResponse = jsonDecode(response.body);
-        //여기서 오류나는듯
-        //debugPrint('-----register response is: $registerResponse-----');
-
         Navigator.pushNamed(context, '/login');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -113,13 +109,13 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
           backgroundColor: AppColors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.grey_4),
+            icon: const Icon(Icons.arrow_back, color: AppColors.grey_5),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
             '회원가입',
             style: AppTextStyles.pretendard_regular.copyWith(
-              color: AppColors.grey_4,
+              color: AppColors.grey_5,
             ),
           ),
         ),
@@ -135,7 +131,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               Text(
                 '추가 정보 입력',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
+                  color: AppColors.grey_5,
                   fontSize: 18,
                 ),
               ),
@@ -143,7 +139,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               Text(
                 '거의 다 됐어요!',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4.withOpacity(0.7),
+                  color: AppColors.grey_5.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -153,7 +149,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               Text(
                 '닉네임',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
+                  color: AppColors.grey_5,
                 ),
               ),
               const SizedBox(height: 6),
@@ -168,7 +164,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               Text(
                 '비밀번호',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
+                  color: AppColors.grey_5,
                 ),
               ),
               const SizedBox(height: 6),
@@ -187,7 +183,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
               Text(
                 '비밀번호 확인',
                 style: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4,
+                  color: AppColors.grey_5,
                 ),
               ),
               const SizedBox(height: 6),
@@ -255,7 +251,7 @@ class _InputField extends StatelessWidget {
       height: 50,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: AppColors.grey_4.withOpacity(0.1),
+        color: AppColors.grey_5.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -265,15 +261,15 @@ class _InputField extends StatelessWidget {
               controller: controller,
               onChanged: onChanged,
               obscureText: obscure,
-              cursorColor: AppColors.grey_4,
+              cursorColor: AppColors.grey_5,
               style: AppTextStyles.pretendard_regular.copyWith(
-                color: AppColors.grey_4,
+                color: AppColors.grey_5,
               ),
               decoration: InputDecoration(
                 hintText: hint,
                 border: InputBorder.none,
                 hintStyle: AppTextStyles.pretendard_regular.copyWith(
-                  color: AppColors.grey_4.withOpacity(0.5),
+                  color: AppColors.grey_5.withOpacity(0.5),
                 ),
               ),
             ),
@@ -283,7 +279,7 @@ class _InputField extends StatelessWidget {
               onTap: onSuffixTap,
               child: Icon(
                 obscure ? Icons.visibility_off : Icons.visibility,
-                color: AppColors.grey_4,
+                color: AppColors.grey_5,
                 size: 20,
               ),
             ),
@@ -304,15 +300,15 @@ class _StepIndicator extends StatelessWidget {
       children: [
         const SizedBox(width: 40),
         Icon(Icons.check_circle,
-            color: current >= 1 ? AppColors.main : AppColors.grey_4),
+            color: current >= 1 ? AppColors.main : AppColors.grey_5),
         Expanded(
           child: Container(
             height: 2,
-            color: current >= 2 ? AppColors.main : AppColors.grey_4,
+            color: current >= 2 ? AppColors.main : AppColors.grey_5,
           ),
         ),
         Icon(Icons.circle,
-            color: current >= 2 ? AppColors.main : AppColors.grey_4),
+            color: current >= 2 ? AppColors.main : AppColors.grey_5),
         const SizedBox(width: 40),
       ],
     );
