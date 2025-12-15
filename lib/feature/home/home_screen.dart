@@ -78,45 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-
-                          const SizedBox(height: 20),
-
-                          // 검색창
-                          Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            child: Row(
-                              children: [
-                                // Image.asset(
-                                //   'assets/icons/search.png',
-                                //   height: 20,
-                                // ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: TextField(
-                                    cursorColor: AppColors.grey_4,
-                                    style: AppTextStyles.pretendard_regular.copyWith(
-                                      color: AppColors.grey_4,
-                                      fontSize: 15,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: '맛집을 검색해보세요',
-                                      hintStyle:
-                                      AppTextStyles.pretendard_regular.copyWith(
-                                        color: AppColors.grey_4.withOpacity(0.5),
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -182,17 +143,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const SizedBox(height: 12),
 
-                    TextButton(
-                      child: Text('온보딩 음식 선호도 다시 선택하기', style: AppTextStyles.pretendard_bold,),
-                      onPressed: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const OnboardFoodPreferenceScreen(nickname: '123',),
-                          ),
-                        );
-                      },
-                    ),
+                    // TextButton(
+                    //   child: Text('온보딩 음식 선호도 다시 선택하기', style: AppTextStyles.pretendard_bold,),
+                    //   onPressed: (){
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (_) => const OnboardFoodPreferenceScreen(nickname: '123',),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
 
                     // 화면 나머지 공간
                     Expanded(

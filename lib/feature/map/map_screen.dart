@@ -61,9 +61,24 @@ class _MapScreenState extends State<MapScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              Image.asset(
-                AppAssets.logo_orange,
-                width: 100,
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  SizedBox(width: 24),
+                  Image.asset(
+                    AppAssets.logo_orange,
+                    width: 100,
+                  ),
+                  Spacer(),
+                  Text(
+                    '경희대학교 국제캠퍼스',
+                    style: AppTextStyles.pretendard_bold.copyWith(
+                      color: AppColors.main,
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(width: 20,)
+                ],
               ),
               _buildHeader(),
       
@@ -114,36 +129,36 @@ class _MapScreenState extends State<MapScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 검색창
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.grey_4.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              children: [
-                const Icon(Icons.search, size: 22, color: AppColors.grey_4),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    cursorColor: AppColors.grey_4,
-                    style: AppTextStyles.pretendard_regular.copyWith(
-                      color: AppColors.grey_4,
-                      fontSize: 15,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "음식점 또는 카테고리 검색",
-                      hintStyle: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.grey_4.withOpacity(0.5),
-                      ),
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   height: 44,
+          //   decoration: BoxDecoration(
+          //     color: AppColors.grey_4.withOpacity(0.12),
+          //     borderRadius: BorderRadius.circular(12),
+          //   ),
+          //   padding: const EdgeInsets.symmetric(horizontal: 14),
+          //   child: Row(
+          //     children: [
+          //       const Icon(Icons.search, size: 22, color: AppColors.grey_4),
+          //       const SizedBox(width: 10),
+          //       Expanded(
+          //         child: TextField(
+          //           cursorColor: AppColors.grey_4,
+          //           style: AppTextStyles.pretendard_regular.copyWith(
+          //             color: AppColors.grey_4,
+          //             fontSize: 15,
+          //           ),
+          //           decoration: InputDecoration(
+          //             hintText: "음식점 또는 카테고리 검색",
+          //             hintStyle: AppTextStyles.pretendard_regular.copyWith(
+          //               color: AppColors.grey_4.withOpacity(0.5),
+          //             ),
+          //             border: InputBorder.none,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
