@@ -722,6 +722,31 @@ class _ReviewItemState extends State<_ReviewItem> {
     likeCount = widget.data['likeCount'] ?? 0;
   }
 
+  // 날짜 변환 헬퍼 함수
+  String _timeAgo(String? dateString) {
+    if (dateString == null) return "";
+    try {
+      DateTime date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+
+      if (difference.inMinutes < 1) {
+        return "방금 전";
+      } else if (difference.inMinutes < 60) {
+        return "${difference.inMinutes}분 전";
+      } else if (difference.inHours < 24) {
+        return "${difference.inHours}시간 전";
+      } else if (difference.inDays < 7) {
+        return "${difference.inDays}일 전";
+      } else {
+        // 7일 이상이면 날짜로 표시 (예: 2023.11.27)
+        return "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
+      }
+    } catch (e) {
+      return dateString; // 파싱 실패 시 원본 반환
+    }
+  }
+
   // 리뷰 좋아요 토글 로직
   Future<void> _toggleReviewLike() async {
     final int reviewId = widget.data['reviewId'];
@@ -779,7 +804,7 @@ class _ReviewItemState extends State<_ReviewItem> {
                     Text(widget.data["nickname"] ?? "nonick",
                         style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5)), // grey_4 -> grey_5
                     const SizedBox(width: 10),
-                    Text(widget.data["createdAt"] ?? "nocrea",
+                    Text(_timeAgo(widget.data["createdAt"]),
                         style: AppTextStyles.pretendard_regular.copyWith(
                           color: AppColors.grey_5,
                           fontSize: 12,

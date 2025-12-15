@@ -80,7 +80,7 @@ class _CustomDropdownFilterState extends State<CustomDropdownFilter> {
       child: GestureDetector(
         onTap: toggle,
         child: Container(
-          height: 40,
+          height: 30,
           decoration: BoxDecoration(
             color: AppColors.grey_4.withOpacity(0.12),
             borderRadius: BorderRadius.circular(10),
