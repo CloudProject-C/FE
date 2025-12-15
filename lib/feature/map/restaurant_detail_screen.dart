@@ -10,6 +10,7 @@ import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:location/location.dart';
 import 'package:campit_frontend/utils/location_validator.dart';
+import 'package:square_progress_bar/square_progress_bar.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final int id;
@@ -178,64 +179,108 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     // 데이터가 있으면 화면 그리기 (기존 코드 + 데이터 바인딩)
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _TopBar(),
-              const SizedBox(height: 12),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 250, // 원하는 이미지 높이 설정
+                  child: Image.network(
+                    widget.imageUrl, // 리스트에서 받아온 이미지 URL
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(color: AppColors.grey_1);
+                    },
+                  ),
+                ),
 
-              // 타이틀 섹션에 데이터 전달
-              _TitleSection(
-                info: _restaurantInfo!,
-                onLikeToggle: _toggleLike,
-              ),
+                const SizedBox(height: 8),
 
-              const SizedBox(height: 4),
-              _RatingSection(
-                rating: (_restaurantInfo!['averageRating'] ?? 0).toDouble(),
-              ),
+                // 타이틀 섹션에 데이터 전달
+                _TitleSection(
+                  info: _restaurantInfo!,
+                  onLikeToggle: _toggleLike,
+                ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 4),
+                _RatingSection(
+                  rating: (_restaurantInfo!['averageRating'] ?? 0).toDouble(),
+                ),
 
-              // 매칭 정보에 데이터 전달 (필요시 수정)
-              _MatchCard(info: _restaurantInfo!),
+                const SizedBox(height: 16),
 
-              // 디버깅용 텍스트
-              //Text("식당 id: ${widget.id.toString()}"),
+                // 매칭 정보에 데이터 전달 (필요시 수정)
+                _MatchCard(info: _restaurantInfo!),
 
-              const SizedBox(height: 20),
+                // 디버깅용 텍스트
+                //Text("식당 id: ${widget.id.toString()}"),
+
+                const SizedBox(height: 20),
 
 
 
-              // 정보 섹션에 데이터 전달
-              _InfoSection(info: _restaurantInfo!, distance: widget.distance, imageUrl: widget.imageUrl),
+                // 정보 섹션에 데이터 전달
+                _InfoSection(info: _restaurantInfo!, distance: widget.distance, imageUrl: widget.imageUrl),
 
-              const SizedBox(height: 30),
-              _ActionButtons(
-                id: _restaurantInfo!['placeId'],
-                placeName: _restaurantInfo!['placeName'],
-                currentLoc: _currentLoc,
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 30),
+                _ActionButtons(
+                  id: _restaurantInfo!['placeId'],
+                  placeName: _restaurantInfo!['placeName'],
+                  currentLoc: _currentLoc,
+                ),
+                const SizedBox(height: 32),
 
-              // 리뷰 섹션 (API 응답에 리뷰 리스트가 있다면 여기에 연결)
-              _ReviewHeader(
-                count: _restaurantInfo!['reviewCount'] ?? 0,
-                selected: selectedSortUI,
-                onSelected: (value) {
-                  setState(() => selectedSortUI = value);
-                },
-              ),
-              const SizedBox(height: 16),
-              _isReviewLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildReviewList(),
-              const SizedBox(height: 40),
-            ],
+                // 리뷰 섹션 (API 응답에 리뷰 리스트가 있다면 여기에 연결)
+                _ReviewHeader(
+                  count: _restaurantInfo!['reviewCount'] ?? 0,
+                  selected: selectedSortUI,
+                  onSelected: (value) {
+                    setState(() => selectedSortUI = value);
+                  },
+                ),
+                const SizedBox(height: 16),
+                _isReviewLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildReviewList(),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, top: 8), // 약간의 여백
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8), // 배경 반투명 흰색
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: AppColors.grey_6,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -337,49 +382,55 @@ class _MatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      // decoration: BoxDecoration(
+      //   color: AppColors.white,
+      //   borderRadius: BorderRadius.circular(20),
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: Colors.black12,
+      //       blurRadius: 14,
+      //       offset: const Offset(0, 4),
+      //     ),
+      //   ],
+      // ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(width: 4),
-
-          // 오른쪽 매칭 정보
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${info['preferencePercent']}%",
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        color: AppColors.main,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "매칭",
-                      style: AppTextStyles.pretendard_regular.copyWith(color: AppColors.grey_5), // grey_4 -> grey_5
-                    ),
-                  ],
+          // Text(
+          //   "매칭률",
+          //   style: AppTextStyles.pretendard_bold.copyWith(
+          //     color: AppColors.grey_4,
+          //     fontSize: 20
+          //   ), // grey_4 -> grey_5
+          // ),
+          // const SizedBox(width: 24),
+          SquareProgressBar(
+            width: 60, // default: max available space
+            height: 60, // default: max available space
+            progress: info['preferencePercent'] / 100, // provide the progress in a range from 0.0 to 1.0
+            isAnimation: true, // default: false, animate the progress of the bar
+            solidBarColor: Colors.amber, // default: blue, main bar color
+            emptyBarColor: Colors.orange.withOpacity(0.2), // default: gray, empty bar color
+            strokeWidth: 20, // default: 15, bar width
+            barStrokeCap: StrokeCap.round, // default: StrokeCap.round, bar cap shape
+            isRtl: false, // default: false, bar start point
+            gradientBarColor: const LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: <Color>[Colors.red, Colors.amber],
+              tileMode: TileMode.repeated,
+            ), // default: null, if you pass gradient color it will be used instead of solid color for the main bar
+            child: Center(
+              child: Text(
+                "${info['preferencePercent']}%",
+                style: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.main,
+                  fontWeight: FontWeight.w700,
                 ),
-
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          )
+          ),
+          const SizedBox(width: 20),
         ],
       ),
     );
@@ -444,20 +495,20 @@ class _InfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.network(
-            imageUrl,
-            height: 200,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 200,
-                width: double.infinity,
-                color: AppColors.grey_1,
-                child: const Icon(Icons.restaurant, color: Colors.grey),
-              );
-            },
-          ),
+          // Image.network(
+          //   imageUrl,
+          //   height: 200,
+          //   width: double.infinity,
+          //   fit: BoxFit.cover,
+          //   errorBuilder: (context, error, stackTrace) {
+          //     return Container(
+          //       height: 200,
+          //       width: double.infinity,
+          //       color: AppColors.grey_1,
+          //       child: const Icon(Icons.restaurant, color: Colors.grey),
+          //     );
+          //   },
+          // ),
 
           const SizedBox(height: 8),
           Text(info['categoryName'] ?? "카테고리 없음",
