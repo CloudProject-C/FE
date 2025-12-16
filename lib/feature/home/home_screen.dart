@@ -1,4 +1,5 @@
 import 'package:campit_frontend/feature/account/onboard_preference_screen.dart';
+import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:campit_frontend/services/home/home_service.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             // 추천 식당 리스트 (가로 스크롤)
                             SizedBox(
-                              height: 240, // 카드 높이 지정
+                              height: 220, // 카드 높이 지정
                               child: ListView.separated(
                                 padding: const EdgeInsets.symmetric(horizontal: 20),
                                 scrollDirection: Axis.horizontal,
@@ -193,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// [추가] 추천 식당 카드 위젯
+// 추천 식당 카드 위젯
 class _RecommendedPlaceCard extends StatelessWidget {
   final Map<String, dynamic> place;
 
@@ -201,115 +202,154 @@ class _RecommendedPlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = place['recentImageUrl'];
+    final placeId = place['placeId'];
+    final imageUrl = place['recentImageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg";
     final placeName = place['placeName'] ?? '이름 없음';
     final category = place['categoryName'] ?? '기타';
     final rating = place['averageRating'] ?? 0.0;
     final preference = place['preferencePercent'] ?? 0;
+    final likeCount = place['placeLikeCount'] ?? 0;
+    final isLiked = place['isLiked'] ?? false;
 
-    return Container(
-      width: 160,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.grey_4.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: AppColors.grey_2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 이미지 영역
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: imageUrl != null
-                ? Image.network(
-              imageUrl,
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 100,
-                  color: AppColors.grey_2,
-                  child: const Center(child: Icon(Icons.restaurant, color: AppColors.grey_4)),
-                );
-              },
-            )
-                : Container(
-              height: 100,
-              color: AppColors.grey_2,
-              child: const Center(child: Icon(Icons.restaurant, color: AppColors.grey_4)),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RestaurantDetailScreen(
+              id: placeId,
+              distance: 0, // 홈 화면에서는 거리를 알 수 없으므로 0 또는 적절한 기본값 전달
+              imageUrl: imageUrl,
             ),
           ),
+        );
+      },
+      child: Container(
+        width: 160,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.grey_4.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: AppColors.grey_2),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 이미지 영역
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: imageUrl != null
+                  ? Image.network(
+                imageUrl,
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 100,
+                    color: AppColors.grey_2,
+                    child: const Center(child: Icon(Icons.restaurant, color: AppColors.grey_4)),
+                  );
+                },
+              )
+                  : Container(
+                height: 100,
+                color: AppColors.grey_2,
+                child: const Center(child: Icon(Icons.restaurant, color: AppColors.grey_4)),
+              ),
+            ),
 
-          // 텍스트 정보 영역
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 카테고리 & 별점
-                Row(
-                  children: [
-                    Text(
-                      category,
-                      style: AppTextStyles.pretendard_regular.copyWith(
-                        fontSize: 11,
-                        color: AppColors.grey_4,
+            // 텍스트 정보 영역
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 카테고리 & 별점 & 좋아요
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          category,
+                          style: AppTextStyles.pretendard_regular.copyWith(
+                            fontSize: 11,
+                            color: AppColors.grey_4,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    const Icon(Icons.star, size: 14, color: Colors.amber),
-                    const SizedBox(width: 2),
-                    Text(
-                      rating.toString(),
-                      style: AppTextStyles.pretendard_bold.copyWith(
-                        fontSize: 12,
-                        color: AppColors.grey_6,
+
+                      // 별점
+                      const Icon(Icons.star, size: 13, color: Colors.amber),
+                      const SizedBox(width: 2),
+                      Text(
+                        rating.toString(),
+                        style: AppTextStyles.pretendard_bold.copyWith(
+                          fontSize: 12,
+                          color: AppColors.grey_6,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
 
-                // 식당 이름
-                Text(
-                  placeName,
-                  style: AppTextStyles.pretendard_bold.copyWith(
-                    fontSize: 15,
-                    color: AppColors.grey_6,
+                      const SizedBox(width: 6),
+
+                      // [추가] 좋아요 아이콘 및 수
+                      Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        size: 13,
+                        color: isLiked ? AppColors.main : AppColors.grey_4,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        likeCount.toString(),
+                        style: AppTextStyles.pretendard_bold.copyWith(
+                          fontSize: 12,
+                          color: AppColors.grey_6,
+                        ),
+                      ),
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  const SizedBox(height: 6),
 
-                const SizedBox(height: 12),
-
-                // 취향 일치도 배지
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.main.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '내 취향 $preference% 일치',
+                  // 식당 이름
+                  Text(
+                    placeName,
                     style: AppTextStyles.pretendard_bold.copyWith(
-                      fontSize: 11,
-                      color: AppColors.main,
+                      fontSize: 15,
+                      color: AppColors.grey_6,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // 취향 일치도 배지
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.main.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '내 취향 $preference% 일치',
+                      style: AppTextStyles.pretendard_bold.copyWith(
+                        fontSize: 11,
+                        color: AppColors.main,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
