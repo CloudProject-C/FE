@@ -5,6 +5,45 @@
           type="text/javascript"
           src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=vxsqc58u7x">
   </script>
+  <script>
+    window.initNaverMap = function (elementId) {
+      let retry = 0;
+
+      function tryInit() {
+        const el = document.getElementById(elementId);
+
+        if (!window.naver || !el) {
+          if (retry++ < 50) setTimeout(tryInit, 100);
+          return;
+        }
+
+        const width = el.offsetWidth;
+        const height = el.offsetHeight;
+
+        if (width === 0 || height === 0) {
+          if (retry++ < 50) setTimeout(tryInit, 100);
+          return;
+        }
+
+        if (el.__naverMap) return;
+
+        const map = new naver.maps.Map(el, {
+          center: new naver.maps.LatLng(37.5665, 126.9780),
+          zoom: 10
+        });
+
+        el.__naverMap = map;
+
+        // 🔑 강제 리사이즈
+        setTimeout(() => {
+          map.refresh();
+        }, 300);
+      }
+
+      tryInit();
+    };
+  </script>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -37,6 +76,6 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js"></script>
 </body>
 </html>
