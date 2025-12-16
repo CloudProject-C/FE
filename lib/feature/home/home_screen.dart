@@ -16,33 +16,60 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // [수정 1] Future 변수 선언
+  late Future<Map<String, dynamic>?> _homeDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // [수정 2] 앱 시작 시(위젯 생성 시) 딱 한 번만 데이터 로드
+    _homeDataFuture = HomeService.fetch_home_data();
+  }
+
+  // (선택 사항) 당겨서 새로고침 기능을 넣고 싶다면 아래 함수 사용
+  Future<void> _refreshData() async {
+    setState(() {
+      _homeDataFuture = HomeService.fetch_home_data();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>?>(
-        future: HomeService.fetch_home_data(),
+        future: _homeDataFuture, // [수정 3] 변수에 저장된 Future 사용
         builder: (context, snapshot) {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Scaffold(
+              backgroundColor: AppColors.white,
+              body: Center(child: CircularProgressIndicator()),
+              bottomNavigationBar: BottomNavBar(currentRoute: HomeScreen.routeName),
+            );
           }
 
           if (snapshot.hasError) {
             debugPrint("Snapshot Error: ${snapshot.error}");
-            return Center(child: Text('에러 발생: ${snapshot.error}'));
+            return Scaffold(
+              backgroundColor: AppColors.white,
+              body: Center(child: Text('에러 발생: ${snapshot.error}')),
+              bottomNavigationBar: BottomNavBar(currentRoute: HomeScreen.routeName),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('데이터를 불러오지 못했습니다.'));
+            return const Scaffold(
+              backgroundColor: AppColors.white,
+              body: Center(child: Text('데이터를 불러오지 못했습니다.')),
+              bottomNavigationBar: BottomNavBar(currentRoute: HomeScreen.routeName),
+            );
           }
 
           final result = snapshot.data!['result'];
+          // ... (이하 데이터 파싱 로직 동일) ...
           final schoolName = result['schoolName'];
           final schoolUserCount = result['schoolUserCount'];
           final schoolReviewCount = result['schoolReviewCount'];
           final schoolPlaceCount = result['schoolPlaceCount'];
-
-          // [추가] 추천 식당 리스트 파싱
           final List<dynamic> recommendedPlaces = result['recommendedPlaces'] ?? [];
 
           return GestureDetector(
@@ -50,44 +77,49 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Scaffold(
               backgroundColor: AppColors.white,
               body: SafeArea(
-                child: Column(
-                  children: [
-                    // 상단 영역 (로고 + 학교명)
-                    Container(
-                      width: double.infinity,
-                      color: AppColors.main,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                // [선택 사항] RefreshIndicator로 감싸면 당겨서 새로고침 가능
+                child: RefreshIndicator(
+                  onRefresh: _refreshData,
+                  color: AppColors.main,
+                  child: SingleChildScrollView(
+                    // SingleChildScrollView에 physics 추가 (새로고침을 위해)
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        // 상단 영역 (로고 + 학교명)
+                        Container(
+                          width: double.infinity,
+                          color: AppColors.main,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.asset(
-                                AppAssets.logo_white,
-                                height: 42,
-                              ),
-                              const SizedBox(width: 12),
-                              const SizedBox(width: 50),
-                              Expanded(
-                                child: Text(
-                                  schoolName,
-                                  style: AppTextStyles.pretendard_bold.copyWith(
-                                    color: AppColors.white,
-                                    fontSize: 17,
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    AppAssets.logo_white,
+                                    height: 42,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 50),
+                                  Expanded(
+                                    child: Text(
+                                      schoolName,
+                                      style: AppTextStyles.pretendard_bold.copyWith(
+                                        color: AppColors.white,
+                                        fontSize: 17,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
 
-                    // 스크롤 가능한 영역으로 감싸기 (화면 오버플로우 방지)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
+                        // 컨텐츠 영역
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
@@ -100,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             const SizedBox(height: 30),
 
-                            // [추가] 추천 식당 섹션
+                            // 추천 식당 섹션
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
@@ -113,20 +145,45 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 16),
 
-                            // 추천 식당 리스트 (가로 스크롤)
-                            SizedBox(
-                              height: 220, // 카드 높이 지정
-                              child: ListView.separated(
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: recommendedPlaces.length,
-                                separatorBuilder: (context, index) => const SizedBox(width: 16),
-                                itemBuilder: (context, index) {
-                                  final place = recommendedPlaces[index];
-                                  return _RecommendedPlaceCard(place: place);
-                                },
+                            if (recommendedPlaces.isEmpty)
+                              Container(
+                                height: 220,
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: AppColors.grey_1.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                margin: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.refresh, size: 32, color: AppColors.grey_4),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      '화면을 당겨 새로고침해 주세요!',
+                                      style: AppTextStyles.pretendard_medium.copyWith(
+                                        color: AppColors.grey_5,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              SizedBox(
+                                height: 220,
+                                child: ListView.separated(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: recommendedPlaces.length,
+                                  separatorBuilder: (context, index) => const SizedBox(width: 16),
+                                  itemBuilder: (context, index) {
+                                    final place = recommendedPlaces[index];
+                                    return _RecommendedPlaceCard(place: place);
+                                  },
+                                ),
                               ),
-                            ),
 
                             const SizedBox(height: 30),
 
@@ -177,9 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 40), // 하단 여백
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
 
