@@ -63,7 +63,7 @@ class _RestaurantBottomSheetState extends State<RestaurantBottomSheet> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
-                                widget.restaurantInfo['imageUrl'] ?? "",
+                                widget.restaurantInfo['imageUrl'] ?? "https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/07/urbanbrush-20210720213004046257.jpg",
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
