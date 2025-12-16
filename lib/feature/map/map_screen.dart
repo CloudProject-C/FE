@@ -24,7 +24,7 @@ class _MapScreenState extends State<MapScreen> {
 
   // 필터 영역
   String selectedSort = "추천순(유사도)";
-  String selectedCategory = "한식";
+  String selectedCategory = "전체";
 
   final Map<String, String> Kor_Eng_Dictionary = {
     "한식": "KOREAN",
@@ -33,6 +33,7 @@ class _MapScreenState extends State<MapScreen> {
     "중식": "CHINESE",
     "카페": "CAFE",
     "디저트": "DESSERT",
+    "전체": "ALL",
 
     "거리순": "DISTANCE",
     "평점순": "LIKES",
@@ -182,7 +183,7 @@ class _MapScreenState extends State<MapScreen> {
           Expanded(
             child: CustomDropdownFilter(
               selected: selectedCategory,
-              items: const ["한식", "양식", "일식", "중식", "카페", "디저트"],
+              items: const ["전체", "한식", "양식", "일식", "중식", "카페", "디저트"],
               onSelected: (value) {
                 setState(() => selectedCategory = value);
               },
