@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:campit_frontend/shared/constants/app_colors.dart';
 import 'package:campit_frontend/shared/constants/app_text_styles.dart';
 import 'package:campit_frontend/shared/ui/bars/bottom_nav_bar.dart';
-import 'package:campit_frontend/feature/map/map.dart';
+import 'map_platform.dart';
 
 class MapScreen extends StatefulWidget {
   static const routeName = "/map";
@@ -106,7 +106,7 @@ class _MapScreenState extends State<MapScreen> {
                     });
                   },
                   children: [
-                    MapArea(category: Kor_Eng_Dictionary[selectedCategory]),
+                    MapPlatform(category: Kor_Eng_Dictionary[selectedCategory]),
                     ListScreen(
                       category: Kor_Eng_Dictionary[selectedCategory],
                       sort: Kor_Eng_Dictionary[selectedSort] ?? "",

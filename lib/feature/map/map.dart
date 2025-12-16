@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:campit_frontend/feature/map/draggable_sheet.dart';
 import 'package:campit_frontend/feature/map/restaurant_detail_screen.dart';
 import 'package:campit_frontend/shared/constants/app_assets.dart';
