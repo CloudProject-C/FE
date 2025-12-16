@@ -34,6 +34,18 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  dio: ^5.4.0
+  json_annotation: ^4.9.0
+  path_provider: ^2.0.14
+  permission_handler: ^12.0.1
+  image_picker: ^1.2.0
+  flutter_secure_storage: ^9.2.4
+  image_gallery_saver_plus: ^4.0.1
+  flutter_naver_map: ^1.4.1+1
+  location: ^8.0.1
+  url_launcher: ^6.3.2
+  geolocator: ^14.0.2
+  square_progress_bar: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +68,27 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: default
+      fonts:
+        - asset: assets/fonts/PRETENDARD-REGULAR.OTF
+          weight: 400
+        - asset: assets/fonts/PRETENDARD-MEDIUM.OTF
+          weight: 500
+        - asset: assets/fonts/PRETENDARD-BOLD.OTF
+          weight: 700
+        - asset: assets/fonts/PRETENDARD-EXTRABOLD.OTF
+          weight: 800
+        - asset: assets/fonts/PRETENDARD-BLACK.OTF
+          weight: 900
+  assets:
+    - assets/logo/onboarding/
+    - assets/logo/home/
+    - assets/icon/bottom_bar_icon/
+    - assets/icon/map/
+    - assets/images/onboard_preference/
+    - assets/images/food_category/onboarding/
+    - assets/images/food_category/daily/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
