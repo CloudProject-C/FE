@@ -3,7 +3,6 @@ import 'package:campit_frontend/feature/home/home_screen.dart';
 import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
 import 'package:campit_frontend/feature/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:campit_frontend/feature/account/login_screen.dart';
 
@@ -13,10 +12,12 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FlutterNaverMap().init(
-    clientId: 'vxsqc58u7x',
-    onAuthFailed: (ex) => print("인증 실패: $ex"),
-  );
+  if (!kIsWeb) {
+    await FlutterNaverMap().init(
+      clientId: 'vxsqc58u7x',
+      onAuthFailed: (ex) => print("인증 실패: $ex"),
+    );
+  }
 
   runApp(
     const MyApp(),
@@ -28,42 +29,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final app = MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LoginScreen(),
-        //'/login': (context) => LoginScreen(),
-        '/home': (context) => HomeScreen(),
-        '/preference': (context) => DaliyFoodPreferenceScreen(),
-        '/map': (context) => MapScreen(),
-        '/profile': (context) => ProfileScreen(),
-      },
-    );
-
-    // 웹에서는 화면 크기를 제한해서 가운데 정렬
-    if (kIsWeb) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: const Color(0xFFF2F2F2),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 375, // iPhone width
-                maxHeight: 812, // iPhone height
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: app, // 기존 MaterialApp을 안에 렌더링
+      builder: (context, child) {
+        if (kIsWeb) {
+          return Scaffold(
+            backgroundColor: const Color(0xFFF2F2F2),
+            body: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 375,
+                  maxHeight: 812,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: child,
+                ),
               ),
             ),
-          ),
-        ),
-      );
-    }
-
-    // 모바일/데스크탑은 원래대로 전체 화면
-    return app;
+          );
+        }
+        return child!;
+      },
+      initialRoute: '/',
+      routes: {
+        '/': (_) => LoginScreen(),
+        '/home': (_) => HomeScreen(),
+        '/preference': (_) => DaliyFoodPreferenceScreen(),
+        '/map': (_) => MapScreen(),
+        '/profile': (_) => ProfileScreen(),
+      },
+    );
   }
 }
