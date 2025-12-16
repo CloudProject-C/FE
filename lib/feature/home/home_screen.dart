@@ -153,16 +153,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Text(
                                             'CampEat이란?',
-                                            style: AppTextStyles.pretendard_regular.copyWith(
-                                              color: AppColors.grey_4,
+                                            style: AppTextStyles.pretendard_bold.copyWith(
+                                              color: AppColors.grey_5,
                                               fontSize: 18,
                                             ),
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
                                             '우리 학교 학생들만의 맛집 공유 플랫폼! 500m 인증을 통해 진짜 후기만 모아요. 내 취향에 맞는 맛집을 AI가 추천해드려요.',
-                                            style: AppTextStyles.pretendard_regular.copyWith(
-                                              color: AppColors.grey_4,
+                                            style: AppTextStyles.pretendard_medium.copyWith(
+                                              color: AppColors.grey_5,
                                               height: 1.45,
                                               fontSize: 14,
                                             ),
@@ -419,22 +419,22 @@ class StatisticsCard extends StatelessWidget {
         Icon(
           icon,
           color: AppColors.main,
-          size: 22,
+          size: 28,
         ),
         const SizedBox(height: 6),
         Text(
           label,
-          style: AppTextStyles.pretendard_regular.copyWith(
-            color: AppColors.grey_4,
-            fontSize: 13,
+          style: AppTextStyles.pretendard_medium.copyWith(
+            color: AppColors.grey_5,
+            fontSize: 14,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: AppTextStyles.pretendard_regular.copyWith(
+          style: AppTextStyles.pretendard_bold.copyWith(
             color: AppColors.main,
-            fontSize: 15,
+            fontSize: 16,
           ),
         ),
       ],
