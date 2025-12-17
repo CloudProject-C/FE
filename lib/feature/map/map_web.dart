@@ -1,9 +1,6 @@
-import 'dart:ui_web' as ui;
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
 import 'package:flutter/material.dart';
 
-class MapArea extends StatefulWidget {
+class MapArea extends StatelessWidget {
   final String? category;
 
   const MapArea({
@@ -12,48 +9,37 @@ class MapArea extends StatefulWidget {
   });
 
   @override
-  State<MapArea> createState() => _MapAreaState();
-}
-
-class _MapAreaState extends State<MapArea> {
-  static bool _registered = false;
-  final String _viewType = 'naver-map-view';
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (!_registered) {
-      ui.platformViewRegistry.registerViewFactory(
-        _viewType,
-            (int viewId) {
-          final div = html.DivElement()
-            ..id = 'naver-map-$viewId'
-            ..style.width = '100%'
-            ..style.height = '100%';
-          return div;
-        },
-      );
-      _registered = true;
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      js_util.callMethod(
-        html.window,
-        'initNaverMap',
-        ['naver-map-0'],
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 300, // 테스트용, 반드시 숫자
-      color: Colors.red, // 임시
-      child: const HtmlElementView(
-        viewType: 'naver-map-view',
+      height: double.infinity, // 부모 위젯 크기에 맞춤
+      color: Colors.white, // 배경색
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.construction, // 공사중 아이콘
+            size: 48,
+            color: Colors.grey,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            '웹 버전 지도는 아직 개발중입니다.',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '모바일 앱을 이용해 주세요.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+          ),
+        ],
       ),
     );
   }
