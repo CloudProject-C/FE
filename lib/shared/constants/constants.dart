@@ -5,5 +5,5 @@ String get baseUrl {
   if (kIsWeb) {
     return '/api'; // Vercel rewrite
   }
-  return 'http://54.156.48.62:8080'; // mobile
+  return 'http://18.209.108.20:8080'; // mobile
 }
