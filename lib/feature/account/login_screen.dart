@@ -70,9 +70,9 @@ class _LoginScreenState extends State<LoginScreen> {
         //throw Exception('Login failed: ${response.statusCode}');
         ///throw Exception 대신 email, pw일치하지 않다는 ui바를 호출
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('이메일 또는 비밀번호가 일치하지 않습니다.'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(response.body),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
