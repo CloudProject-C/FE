@@ -54,6 +54,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (_) => LoginScreen(),
+        '/login': (_) => LoginScreen(),
         '/home': (_) => HomeScreen(),
         '/preference': (_) => DaliyFoodPreferenceScreen(),
         '/map': (_) => MapScreen(),
