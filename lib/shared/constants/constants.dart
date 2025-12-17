@@ -3,4 +3,4 @@ import 'package:flutter/foundation.dart';
 
 const String baseUrl = kIsWeb
     ? '/api'
-    : 'http://3.93.43.151:8080';
+    : 'http://54.81.11.162:8080';
