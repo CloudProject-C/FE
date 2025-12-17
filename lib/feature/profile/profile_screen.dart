@@ -7,6 +7,7 @@ import 'package:campit_frontend/feature/profile/settings_screen.dart';
 import 'package:campit_frontend/feature/profile/my_reviews_screen.dart';
 import 'package:campit_frontend/feature/profile/liked_restaurants_screen.dart';
 import 'package:campit_frontend/services/profile/profile_service.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -162,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   profileImage: profileImage,
                 ),
                 const SizedBox(height: 24),
-                _PreferenceSection(foodPreferences: foodPreferences),
+                const _PreferenceSection(),
                 const SizedBox(height: 24),
                 _SettingsSection(onSettingsTap: _openSettings),
                 const SizedBox(height: 24),
@@ -382,37 +383,10 @@ class _StatCard extends StatelessWidget {
 
 /// 선호 음식 영역
 class _PreferenceSection extends StatelessWidget {
-  final List<String> foodPreferences;
-
-  const _PreferenceSection({
-    required this.foodPreferences,
-  });
-
-  String _toKoreanLabel(String code) {
-    switch (code) {
-      case 'KOREAN':
-        return '한식';
-      case 'WESTERN':
-        return '양식';
-      case 'CHINESE':
-        return '중식';
-      case 'JAPANESE':
-        return '일식';
-      case 'ASIAN':
-        return '아시안';
-      case 'CAFE':
-        return '카페';
-      case 'FASTFOOD':
-        return '패스트푸드';
-      default:
-        return code;
-    }
-  }
+  const _PreferenceSection();
 
   @override
   Widget build(BuildContext context) {
-    final prefs = foodPreferences.map(_toKoreanLabel).toList();
-
     return Container(
       width: double.infinity,
       color: Colors.white,
@@ -428,22 +402,18 @@ class _PreferenceSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (prefs.isEmpty)
-            Text(
-              '선호 음식이 아직 설정되지 않았습니다.',
-              style: AppTextStyles.pretendard_regular.copyWith(
-                fontSize: 12,
-                color: AppColors.grey_5,
+
+          // 🔥 매운맛 고정
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: const [
+              _PreferenceTile(
+                label: '매운맛',
+                imagePath: AppAssets.spicy,
               ),
-            )
-          else
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: prefs
-                  .map((label) => _PreferenceTile(label: label))
-                  .toList(),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -452,9 +422,11 @@ class _PreferenceSection extends StatelessWidget {
 
 class _PreferenceTile extends StatelessWidget {
   final String label;
+  final String imagePath;
 
   const _PreferenceTile({
     required this.label,
+    required this.imagePath,
   });
 
   @override
@@ -480,10 +452,11 @@ class _PreferenceTile extends StatelessWidget {
               color: AppColors.grey_1,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: Text(
-                '🍜',
-                style: TextStyle(fontSize: 20),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -500,6 +473,7 @@ class _PreferenceTile extends StatelessWidget {
     );
   }
 }
+
 
 /// 설정 / 로그아웃 영역
 class _SettingsSection extends StatelessWidget {
