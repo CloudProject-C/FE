@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       setState(() {
         nickname = (result?['nickname'] ?? nickname).toString();
-        schoolName = (result?['schoolName'] ?? schoolName).toString();
+        schoolName = schoolName;
         myReviewCount = (result?['myReviewCount'] ?? 0) as int;
         myPlaceLikeCount = (result?['myPlaceLikeCount'] ?? 0) as int;
 
