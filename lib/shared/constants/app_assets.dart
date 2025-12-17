@@ -26,5 +26,6 @@ class AppAssets {
   ///images
 
   //onboard_preference
-  static const spicy = 'assets/images/onboard_preference/매운맛';
+  static const meat_protein = 'assets/images/food_category/daily/meat_protein';
+  static const rice = 'assets/images/food_category/daily/rice';
 }

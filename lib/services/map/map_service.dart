@@ -11,13 +11,19 @@ class MapService {
     await Future.delayed(const Duration(seconds: 1));
 
     try {
-      final fetchRestaurantsUri = Uri.parse(
+      final fetchRestaurantsUri = (category == "ALL") ? Uri.parse(
         "$baseUrl/v1/places/map"
             "?latitude=$lat"
             "&longitude=$lng"
             "&radius=150"
             "&sort=$sort"
-            "&category=$category",
+      ) : Uri.parse(
+        "$baseUrl/v1/places/map"
+            "?latitude=$lat"
+            "&longitude=$lng"
+            "&radius=300"
+            "&sort=$sort"
+            "&category=$category"
       );
       final _accessToken = await StorageService.getAccessToken();
       final response = await http.get(
@@ -41,7 +47,7 @@ class MapService {
         return result;
 
       } else {
-        print('서버 Error: ${response}');
+        print('서버 Error: ${response.body}');
         return null;
       }
     } catch (e) {

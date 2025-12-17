@@ -1,4 +1,5 @@
 // lib/main.dart
+import 'package:campit_frontend/feature/account/onboard_preference_screen.dart';
 import 'package:campit_frontend/feature/home/home_screen.dart';
 import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
 import 'package:campit_frontend/feature/profile/profile_screen.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (_) => LoginScreen(),
+        '/login': (_) => LoginScreen(),
         '/home': (_) => HomeScreen(),
         '/preference': (_) => DaliyFoodPreferenceScreen(),
         '/map': (_) => MapScreen(),

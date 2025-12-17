@@ -1,28 +1,46 @@
-import 'dart:ui_web' as ui;
-import 'dart:html';
 import 'package:flutter/material.dart';
 
 class MapArea extends StatelessWidget {
   final String? category;
 
-  MapArea({
+  const MapArea({
     super.key,
     required this.category,
-  }) {
-    ui.platformViewRegistry.registerViewFactory(
-      'naver-map',
-          (int viewId) {
-        final div = DivElement()
-          ..id = 'naver-map-div'
-          ..style.width = '100%'
-          ..style.height = '100%';
-        return div;
-      },
-    );
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const HtmlElementView(viewType: 'naver-map');
+    return Container(
+      width: double.infinity,
+      height: double.infinity, // 부모 위젯 크기에 맞춤
+      color: Colors.white, // 배경색
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.construction, // 공사중 아이콘
+            size: 48,
+            color: Colors.grey,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            '웹 버전 지도는 아직 개발중입니다.',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '모바일 앱을 이용해 주세요.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

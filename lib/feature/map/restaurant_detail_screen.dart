@@ -246,6 +246,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                   placeName: _restaurantInfo!['placeName'],
                   currentLoc: _currentLoc,
                   restaurantInfo: widget.restaurantInfo,
+                  onReviewSubmitted: () {
+                    // _fetchReviewsOnly() 또는 _fetchRestaurantDetail() 호출
+                    _fetchReviewsOnly();
+                  },
                 ),
                 const SizedBox(height: 32),
 
@@ -602,12 +606,14 @@ class _ActionButtons extends StatefulWidget {
   final String placeName;
   final LocationData? currentLoc;
   final Map<String, dynamic>? restaurantInfo;
+  final VoidCallback onReviewSubmitted;
 
   const _ActionButtons({
     required this.id,
     required this.placeName,
     required this.currentLoc,
     this.restaurantInfo,
+    required this.onReviewSubmitted,
   });
 
   @override
@@ -643,6 +649,25 @@ class _ActionButtonsState extends State<_ActionButtons> {
     });
   }
 
+  void _navigateToReviewWrite() async {
+    // [수정] await를 사용하여 결과를 기다림
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReviewWriteScreen(
+          placeId: widget.id,
+          placeName: widget.placeName,
+        ),
+      ),
+    );
+
+    // [추가] 결과가 true라면 (리뷰가 등록되었다면) 데이터 새로고침
+    if (result == true) {
+      print("리뷰 등록 완료 감지 -> 데이터 새로고침");
+      widget.onReviewSubmitted();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -654,6 +679,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
             child: PrimaryButton(
               text: "리뷰 작성",
               onTap: () {
+                _navigateToReviewWrite();
 
                 ///실기기 배포 시 글쓰기 주석 해제하기(에뮬레이터에선 location 문제가 있음)
                 // if (!_canWrite) {
@@ -664,15 +690,15 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 //   return;
                 // }
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ReviewWriteScreen(
-                      placeId: widget.id, // 현재 상세 페이지의 식당 ID
-                      placeName: widget.placeName,// 식당 이름
-                    ),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => ReviewWriteScreen(
+                //       placeId: widget.id, // 현재 상세 페이지의 식당 ID
+                //       placeName: widget.placeName,// 식당 이름
+                //     ),
+                //   ),
+                // );
               },
               height: 46,
               width: double.infinity,

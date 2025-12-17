@@ -7,6 +7,7 @@ import 'package:campit_frontend/feature/profile/settings_screen.dart';
 import 'package:campit_frontend/feature/profile/my_reviews_screen.dart';
 import 'package:campit_frontend/feature/profile/liked_restaurants_screen.dart';
 import 'package:campit_frontend/services/profile/profile_service.dart';
+import 'package:campit_frontend/shared/constants/app_assets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -162,7 +163,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   profileImage: profileImage,
                 ),
                 const SizedBox(height: 24),
-                _PreferenceSection(foodPreferences: foodPreferences),
+                const _PreferenceSection(),
+                const SizedBox(height: 24),
+                const _FeedbackSection(),
                 const SizedBox(height: 24),
                 _SettingsSection(onSettingsTap: _openSettings),
                 const SizedBox(height: 24),
@@ -382,37 +385,10 @@ class _StatCard extends StatelessWidget {
 
 /// 선호 음식 영역
 class _PreferenceSection extends StatelessWidget {
-  final List<String> foodPreferences;
-
-  const _PreferenceSection({
-    required this.foodPreferences,
-  });
-
-  String _toKoreanLabel(String code) {
-    switch (code) {
-      case 'KOREAN':
-        return '한식';
-      case 'WESTERN':
-        return '양식';
-      case 'CHINESE':
-        return '중식';
-      case 'JAPANESE':
-        return '일식';
-      case 'ASIAN':
-        return '아시안';
-      case 'CAFE':
-        return '카페';
-      case 'FASTFOOD':
-        return '패스트푸드';
-      default:
-        return code;
-    }
-  }
+  const _PreferenceSection();
 
   @override
   Widget build(BuildContext context) {
-    final prefs = foodPreferences.map(_toKoreanLabel).toList();
-
     return Container(
       width: double.infinity,
       color: Colors.white,
@@ -428,22 +404,18 @@ class _PreferenceSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (prefs.isEmpty)
-            Text(
-              '선호 음식이 아직 설정되지 않았습니다.',
-              style: AppTextStyles.pretendard_regular.copyWith(
-                fontSize: 12,
-                color: AppColors.grey_5,
+
+          // 고기/고단백 고정
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: const [
+              _PreferenceTile(
+                label: '고기/고단백',
+                imagePath: AppAssets.meat_protein,
               ),
-            )
-          else
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: prefs
-                  .map((label) => _PreferenceTile(label: label))
-                  .toList(),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -452,9 +424,11 @@ class _PreferenceSection extends StatelessWidget {
 
 class _PreferenceTile extends StatelessWidget {
   final String label;
+  final String imagePath;
 
   const _PreferenceTile({
     required this.label,
+    required this.imagePath,
   });
 
   @override
@@ -480,10 +454,11 @@ class _PreferenceTile extends StatelessWidget {
               color: AppColors.grey_1,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: Text(
-                '🍜',
-                style: TextStyle(fontSize: 20),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -499,6 +474,160 @@ class _PreferenceTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 고객 피드백 영역
+class _FeedbackSection extends StatelessWidget {
+  const _FeedbackSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '고객 피드백',
+            style: AppTextStyles.pretendard_bold.copyWith(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '서비스 개선을 위해 의견을 남겨주세요.',
+            style: AppTextStyles.pretendard_regular.copyWith(
+              fontSize: 13,
+              color: AppColors.grey_5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _showFeedbackBottomSheet(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.main,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: Text(
+                '의견 남기기',
+                style: AppTextStyles.pretendard_bold.copyWith(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _showFeedbackBottomSheet(BuildContext context) {
+  final controller = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (context) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '의견 보내기',
+              style: AppTextStyles.pretendard_bold.copyWith(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              maxLines: 4,
+              maxLength: 200,
+              style: AppTextStyles.pretendard_regular.copyWith(
+                color: Colors.black,
+              ),
+              decoration: InputDecoration(
+                hintText: '불편했던 점이나 개선 의견을 자유롭게 작성해주세요.',
+                hintStyle: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_5,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.grey_3),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.grey_3),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('의견이 전달되었습니다. 감사합니다!'),
+                    ),
+                  );
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: AppColors.main,
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: Text(
+                  '보내기',
+                  style: AppTextStyles.pretendard_bold.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 /// 설정 / 로그아웃 영역
