@@ -47,7 +47,7 @@ class MapService {
         return result;
 
       } else {
-        print('서버 Error: ${response}');
+        print('서버 Error: ${response.body}');
         return null;
       }
     } catch (e) {

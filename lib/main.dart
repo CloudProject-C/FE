@@ -1,4 +1,5 @@
 // lib/main.dart
+import 'package:campit_frontend/feature/account/onboard_preference_screen.dart';
 import 'package:campit_frontend/feature/home/home_screen.dart';
 import 'package:campit_frontend/feature/home/daliy_preference_screen.dart';
 import 'package:campit_frontend/feature/profile/profile_screen.dart';
