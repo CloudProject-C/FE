@@ -411,8 +411,8 @@ class _PreferenceSection extends StatelessWidget {
             runSpacing: 10,
             children: const [
               _PreferenceTile(
-                label: '고기/고단백',
-                imagePath: AppAssets.meat_protein,
+                label: '한식',
+                imagePath: 'assets/images/food_category/onboarding/korean.png',
               ),
             ],
           ),
