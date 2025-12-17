@@ -2,8 +2,8 @@
 import 'package:flutter/foundation.dart';
 
 String get baseUrl {
-  if (kIsWeb) {
-    return '/api'; // Vercel rewrite
-  }
-  return 'http://18.209.108.20:8080'; // mobile
+  // if (kIsWeb) {
+  //   return '/api'; // Vercel rewrite
+  // }
+  return 'http://3.93.43.151:8080'; // mobile
 }
