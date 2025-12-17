@@ -405,14 +405,14 @@ class _PreferenceSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // 🔥 매운맛 고정
+          // 고기/고단백 고정
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: const [
               _PreferenceTile(
-                label: '매운맛',
-                imagePath: AppAssets.spicy,
+                label: '고기/고단백',
+                imagePath: AppAssets.meat_protein,
               ),
             ],
           ),
@@ -536,11 +536,16 @@ void _showFeedbackBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (context) {
-      return Padding(
+      return Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
         padding: EdgeInsets.fromLTRB(
           24,
           24,
@@ -553,37 +558,69 @@ void _showFeedbackBottomSheet(BuildContext context) {
           children: [
             Text(
               '의견 보내기',
-              style: AppTextStyles.pretendard_bold.copyWith(fontSize: 16),
+              style: AppTextStyles.pretendard_bold.copyWith(
+                fontSize: 16,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
               maxLines: 4,
               maxLength: 200,
-              decoration: const InputDecoration(
+              style: AppTextStyles.pretendard_regular.copyWith(
+                color: Colors.black,
+              ),
+              decoration: InputDecoration(
                 hintText: '불편했던 점이나 개선 의견을 자유롭게 작성해주세요.',
-                border: OutlineInputBorder(),
+                hintStyle: AppTextStyles.pretendard_regular.copyWith(
+                  color: AppColors.grey_5,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.grey_3),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.grey_3),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.black),
+                ),
               ),
             ),
+
             const SizedBox(height: 16),
+
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: OutlinedButton(
                 onPressed: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('의견이 전달되었습니다. 감사합니다!')),
+                    const SnackBar(
+                      content: Text('의견이 전달되었습니다. 감사합니다!'),
+                    ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
+                style: OutlinedButton.styleFrom(
                   backgroundColor: AppColors.main,
-                  elevation: 0,
+                  side: BorderSide.none,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(999),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                child: const Text('보내기'),
+                child: Text(
+                  '보내기',
+                  style: AppTextStyles.pretendard_bold.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
