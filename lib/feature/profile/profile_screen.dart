@@ -165,6 +165,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 24),
                 const _PreferenceSection(),
                 const SizedBox(height: 24),
+                const _FeedbackSection(),
+                const SizedBox(height: 24),
                 _SettingsSection(onSettingsTap: _openSettings),
                 const SizedBox(height: 24),
               ],
@@ -474,6 +476,122 @@ class _PreferenceTile extends StatelessWidget {
   }
 }
 
+/// 고객 피드백 영역
+class _FeedbackSection extends StatelessWidget {
+  const _FeedbackSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '고객 피드백',
+            style: AppTextStyles.pretendard_bold.copyWith(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '서비스 개선을 위해 의견을 남겨주세요.',
+            style: AppTextStyles.pretendard_regular.copyWith(
+              fontSize: 13,
+              color: AppColors.grey_5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _showFeedbackBottomSheet(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.main,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: Text(
+                '의견 남기기',
+                style: AppTextStyles.pretendard_bold.copyWith(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _showFeedbackBottomSheet(BuildContext context) {
+  final controller = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '의견 보내기',
+              style: AppTextStyles.pretendard_bold.copyWith(fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              maxLines: 4,
+              maxLength: 200,
+              decoration: const InputDecoration(
+                hintText: '불편했던 점이나 개선 의견을 자유롭게 작성해주세요.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('의견이 전달되었습니다. 감사합니다!')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.main,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text('보내기'),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
 /// 설정 / 로그아웃 영역
 class _SettingsSection extends StatelessWidget {
