@@ -34,7 +34,6 @@
 
         el.__naverMap = map;
 
-        // 🔑 강제 리사이즈
         setTimeout(() => {
           map.refresh();
         }, 300);
@@ -44,19 +43,6 @@
     };
   </script>
 
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
@@ -74,8 +60,19 @@
 
   <title>campit_frontend</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- [중요] 렌더러 설정을 위해 전역 변수 선언 -->
+  <script>
+    window.flutterWebRenderer = "html";
+  </script>
 </head>
 <body>
-  <script src="flutter_bootstrap.js"></script>
+<!-- [수정] flutter_bootstrap.js 로드 및 설정 적용 -->
+<script src="flutter_bootstrap.js" async></script>
+
+<!-- 만약 위 방식이 안 될 경우를 대비한 구버전 호환 스크립트 (보통은 위 한 줄로 충분함) -->
+<script>
+  // Flutter 앱 로딩 완료 후 실행될 로직이 필요하다면 여기에 작성
+</script>
 </body>
 </html>
