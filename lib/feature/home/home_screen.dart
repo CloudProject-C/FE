@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
-                                '오늘의 추천 맛집 🍽️',
+                                '오늘의 추천 맛집',
                                 style: AppTextStyles.pretendard_bold.copyWith(
                                   fontSize: 18,
                                   color: AppColors.grey_6,
