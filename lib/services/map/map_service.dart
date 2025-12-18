@@ -15,13 +15,13 @@ class MapService {
         "$baseUrl/v1/places/map"
             "?latitude=$lat"
             "&longitude=$lng"
-            "&radius=150"
+            "&radius=1000"
             "&sort=$sort"
       ) : Uri.parse(
         "$baseUrl/v1/places/map"
             "?latitude=$lat"
             "&longitude=$lng"
-            "&radius=300"
+            "&radius=1000"
             "&sort=$sort"
             "&category=$category"
       );
